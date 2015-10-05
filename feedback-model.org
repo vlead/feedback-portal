@@ -1,0 +1,99 @@
+* Introduction
+
+  =Feedback Portal= is an application that allows the users of Virtual
+  Labs to post their feedback about a lab or an experiment.  The
+  portal has a fixed set of questions and the feedback is saved in the
+  database using =dataservice=.  This feedback can be used later for
+  improving a particular lab or an experiment.
+
+  Note: This document and the portal itself are work in progress.
+
+* Requirements
+
+  1. A front-end that displays relevant questions about a
+     lab/experiment.
+  2. An API to link this with the REST API of =dataservice=.
+     
+* Design & Implementation
+
+  If the request for the feedback portal comes from a specific lab or
+  an experiment, the portal pre-populates the lab name and the
+  experiment name in the feedback form and then displays it to the
+  user.  Here the assumption is that the Referrer URL works.
+
+  If the portal is requested directly from the hosted url say
+  "feedback.vlabs.ac.in" or if the portal is requested without a
+  referrer url being identified, then user has to choose a lab name
+  from the list of all labs and an experiment accordingly.
+
+** The UI
+   
+   The UI or the feedback form consists of fixed set of questions so
+   that it is easier for a user to assess a lab/experiment.
+
+   Following are the questions asked in the form:
+
+   + Name
+
+     Name of the user submitting feedback.
+   
+   + Email
+
+     Email address of the user.
+
+   + Type Of User
+
+     Type of the user like faculty or student.
+  
+   + Institute Name
+
+     Institute with which the user is associated.
+
+   + Discipline
+
+     Discipline or domain of the user.
+
+   + Lab Name
+
+     Name of the lab for which feedback is being submitted.
+
+   + Experiment Name
+
+     Name of the experiment for which feedback is being submitted.
+
+   + Have you attempted the experiment ?
+
+     This tries to find out if the user is submitting feedback after
+     attempting the experiment or without it.
+
+   + Does it work ?
+
+     Yes if it works, No otherwise. 
+    
+   + If No, what is the issue with it ?
+
+   + Specify the problems or difficulties faced while performing the
+     experiment.
+
+   + What are the most interesting things about the experiment?
+
+   + Why and how often do you plan to use Virtual Labs? 
+
+   + What are your suggestions about making them better? 
+
+
+   [[/feedback-portal/templates/feedback.html][Link to =feedback.html= file]]
+
+** Integration with =dataservice=
+
+   The feedback portal makes REST API calls to =dataservice= for
+   submitting the feedback data.   
+       
+   [[/feedback-portal/app.py][Link to app.py]]
+
+* Releases
+
+** v0.1.0
+  
+   This release contains the feedback portal, with new UI, and
+   integration with data service.
