@@ -19,13 +19,21 @@ feedback_ref = "http://virtual-labs.ac.in/labs/cse18/"
 def feedback_form():
     if request.method == 'GET':
         if feedback_ref is not None:
-            response = requests.get('http://localhost:5000/labs/1')
-            lab = response.json()
+#            response = requests.get('http://10.2.58.25:5000/labs/1')
+#            lab = response.json()
+#            return render_template('feedback.html',
+#                                   lab_name=lab['name'],
+#                                   lab_id=lab['id'])
+            response = requests.get('http://10.2.58.25:5000/experiments/663')
+            experiment = response.json()
             return render_template('feedback.html',
-                                   lab_name=lab['name'],
-                                   lab_id=lab['id'])
+                                   lab_name=experiment['lab']['name'],
+                                   lab_id=experiment['lab']['id'],
+                                   expt_name=experiment['name'],
+                                   expt_id=experiment['id'])
+
         else:
-            response = requests.get('http://localhost:5000/labs')
+            response = requests.get('http://10.2.58.25:5000/labs')
             return render_template('feedback.html',
                                    labs_list=response.json())
 
@@ -34,14 +42,16 @@ def feedback_form():
         feedback_data['lab'] = {'id': request.form.get('lab')}
         if not feedback_data['user_email']:
             feedback_data.pop('user_email')
-        if not feedback_data['experiment']:
+
+        if request.form.get('experiment'):
+            feedback_data['experiment'] = {'id':
+                                           request.form.get('experiment')}
+        else:
             feedback_data.pop('experiment')
-#        if request.form.get('experiment_id'):
-#            feedback_data['experiment'] = {'id':
-#                                           request.form.get('experiment_id')}
+
         feedback_data['ip'] = request.remote_addr
         print json.dumps(feedback_data)
-        response = requests.post('http://localhost:5000/feedback',
+        response = requests.post('http://10.2.58.25:5000/feedback',
                                  data=json.dumps(feedback_data))
         if response.status_code == 200:
             return redirect(url_for('thanks'))

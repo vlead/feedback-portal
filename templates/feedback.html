@@ -176,11 +176,12 @@ value="student" />
 <label class="description" for="element_10">Experiment Name </label>
 <div>
   {% if lab_name %}
-    <input id="experiment" name="experiment" class="element text medium"
-     type="text" maxlength="255" value=""/>
+    <input id="experiment_name" class="element text medium"
+    type="text" maxlength="255" value="{{ expt_name }}"/>
+    <input type="hidden" name="experiment" value="{{ expt_id }}" />
   {% else %}
     <select id="expts_dropdown" name="experiment">
-      <option> Please select a lab first </option>
+      <option selected> Please select a lab first </option>
     </select>
   {% endif %}  
 </div>  

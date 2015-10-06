@@ -43,13 +43,13 @@ $('#labs_dropdown').change(function() {
   console.log(selected_lab);
   $.ajax({
     type: "GET",
-    url: "http://localhost:5000/labs/14/experiments",
+    url: "http://10.2.58.25:5000/labs/1/experiments",
     success: function(response) {
       console.log(response);
       console.log(response.length);
       $('#expts_dropdown').empty();
       for(i=0; i<response.length; i++) {
-        $('#expts_dropdown').append('<option>' + response[i]['name'] + '</option>');
+        $('#expts_dropdown').append('<option value="' + response[i]['id'] + '">' + response[i]['name'] + '</option>');
       }
     },
     error: function() {
@@ -57,3 +57,4 @@ $('#labs_dropdown').change(function() {
     }
   });
 });
+
