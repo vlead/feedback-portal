@@ -1,55 +1,58 @@
-from flask import Flask, render_template, request, redirect, url_for, json, flash
-import requests
 import urllib
 
+from flask import Flask, render_template, request, redirect, url_for, json,\
+    flash
+import requests
+
+import config
+
 app = Flask(__name__)
-app.secret_key = 'some_key'
+app.config.from_object(config)
 
-# This will identify the address of the webpage that
-# requested the feedback form. By checking the referrer,
-# we can see from where the request originated.
-# def feedback_referrer():
-# ref = unicode(request.referrer)
-# return ref
-
-# fb_ref = urllib.quote('http://virtual-labs.ac.in/labs/cse01/')
-# fb_ref = urllib.quote('http://iitk.vlab.co.in/?sub=27&brch=83&sim=725&cnt=2')
-# fb_ref = urllib.quote('http://iitk.vlab.co.in/?sub=27&brch=83&sim=725&cnt=4')
-fb_ref = None
+# fb_ref = 'http://virtual-labs.ac.in/labs/cse01/'
+# fb_ref = 'http://iitk.vlab.co.in/?sub=27&brch=83&sim=725&cnt=2'
+# fb_ref = 'http://iitk.vlab.co.in/?sub=27&brch=83&sim=725&cnt=4'
 
 
 @app.route('/', methods=['GET', 'POST'])
 def feedback_form():
     if request.method == 'GET':
-        if fb_ref is not None:
-            response = requests.get('http://10.2.58.25:5000/labs?hosted_url=' + fb_ref)
-            if len(response.json()) != 0:
+        fb_ref = request.referrer
+        print fb_ref
+        if fb_ref:
+            response = requests.get(config.DS_URL +
+                                    '/labs?hosted_url=' + urllib.quote(fb_ref))
+            if len(response.json()) > 0:
                 lab = response.json()
                 return render_template('feedback.html',
                                        lab_name=lab[0]['name'],
                                        lab_id=lab[0]['id'])
 
             else:
-                response = requests.get('http://10.2.58.25:5000/experiments?content_url=' + fb_ref)
-                if len(response.json()) != 0:
-                    experiment = response.json()
+                response = requests.get(config.DS_URL +
+                                        '/experiments?content_url=' +
+                                        urllib.quote(fb_ref))
+                if len(response.json()) > 0:
+                    experiment = response.json()[0]
                     return render_template('feedback.html',
-                                           lab_name=experiment[0]['lab']['name'],
-                                           lab_id=experiment[0]['lab']['id'],
-                                           expt_name=experiment[0]['name'],
-                                           expt_id=experiment[0]['id'])
+                                           lab_name=experiment['lab']['name'],
+                                           lab_id=experiment['lab']['id'],
+                                           expt_name=experiment['name'],
+                                           expt_id=experiment['id'])
                 else:
-                    response = requests.get('http://10.2.58.25:5000/experiments?simulation_url=' + fb_ref)
-                    if len(response.json()) != 0:
-                        experiment = response.json()
+                    response = requests.get(config.DS_URL +
+                                            '/experiments?simulation_url=' +
+                                            urllib.quote(fb_ref))
+                    if len(response.json()) > 0:
+                        experiment = response.json()[0]
                         return render_template('feedback.html',
-                                               lab_name=experiment[0]['lab']['name'],
-                                               lab_id=experiment[0]['lab']['id'],
-                                               expt_name=experiment[0]['name'],
-                                               expt_id=experiment[0]['id'])
+                                               lab_name=experiment['lab']['name'],
+                                               lab_id=experiment['lab']['id'],
+                                               expt_name=experiment['name'],
+                                               expt_id=experiment['id'])
 
         else:
-            response = requests.get('http://10.2.58.25:5000/labs')
+            response = requests.get(config.DS_URL + '/labs')
             print type(response.json())
             return render_template('feedback.html',
                                    labs_list=response.json())
@@ -68,7 +71,7 @@ def feedback_form():
 
         feedback_data['ip'] = request.remote_addr
         print json.dumps(feedback_data)
-        response = requests.post('http://10.2.58.25:5000/feedback',
+        response = requests.post(config.DS_URL + '/feedback',
                                  data=json.dumps(feedback_data))
         if response.status_code == 200:
             return redirect(url_for('thanks'))
