@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, json, flash
 import requests
+import urllib
 
 app = Flask(__name__)
 app.secret_key = 'some_key'
@@ -11,29 +12,45 @@ app.secret_key = 'some_key'
 # ref = unicode(request.referrer)
 # return ref
 
-feedback_ref = "http://virtual-labs.ac.in/labs/cse18/"
-# feedback_ref = None
+# fb_ref = urllib.quote('http://virtual-labs.ac.in/labs/cse01/')
+# fb_ref = urllib.quote('http://iitk.vlab.co.in/?sub=27&brch=83&sim=725&cnt=2')
+# fb_ref = urllib.quote('http://iitk.vlab.co.in/?sub=27&brch=83&sim=725&cnt=4')
+fb_ref = None
 
 
-@app.route('/feedback', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def feedback_form():
     if request.method == 'GET':
-        if feedback_ref is not None:
-#            response = requests.get('http://10.2.58.25:5000/labs/1')
-#            lab = response.json()
-#            return render_template('feedback.html',
-#                                   lab_name=lab['name'],
-#                                   lab_id=lab['id'])
-            response = requests.get('http://10.2.58.25:5000/experiments/663')
-            experiment = response.json()
-            return render_template('feedback.html',
-                                   lab_name=experiment['lab']['name'],
-                                   lab_id=experiment['lab']['id'],
-                                   expt_name=experiment['name'],
-                                   expt_id=experiment['id'])
+        if fb_ref is not None:
+            response = requests.get('http://10.2.58.25:5000/labs?hosted_url=' + fb_ref)
+            if len(response.json()) != 0:
+                lab = response.json()
+                return render_template('feedback.html',
+                                       lab_name=lab[0]['name'],
+                                       lab_id=lab[0]['id'])
+
+            else:
+                response = requests.get('http://10.2.58.25:5000/experiments?content_url=' + fb_ref)
+                if len(response.json()) != 0:
+                    experiment = response.json()
+                    return render_template('feedback.html',
+                                           lab_name=experiment[0]['lab']['name'],
+                                           lab_id=experiment[0]['lab']['id'],
+                                           expt_name=experiment[0]['name'],
+                                           expt_id=experiment[0]['id'])
+                else:
+                    response = requests.get('http://10.2.58.25:5000/experiments?simulation_url=' + fb_ref)
+                    if len(response.json()) != 0:
+                        experiment = response.json()
+                        return render_template('feedback.html',
+                                               lab_name=experiment[0]['lab']['name'],
+                                               lab_id=experiment[0]['lab']['id'],
+                                               expt_name=experiment[0]['name'],
+                                               expt_id=experiment[0]['id'])
 
         else:
             response = requests.get('http://10.2.58.25:5000/labs')
+            print type(response.json())
             return render_template('feedback.html',
                                    labs_list=response.json())
 

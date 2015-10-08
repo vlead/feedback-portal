@@ -42,8 +42,8 @@ $('#labs_dropdown').change(function() {
   selected_lab = $(this).val()
   console.log(selected_lab);
   $.ajax({
-    type: "GET",
-    url: "http://10.2.58.25:5000/labs/1/experiments",
+    type: 'GET',
+    url: 'http://10.2.58.25:5000/labs/' + selected_lab + '/experiments',
     success: function(response) {
       console.log(response);
       console.log(response.length);
