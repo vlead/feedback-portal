@@ -4,10 +4,10 @@
             "platform": {
                 "arch": "i386", 
                 "build_steps": {
-                    "build": ["make"], 
+                    "build": [], 
                     "configure": [], 
-                    "post_build": ["service apache2 restart"], 
-                    "pre_build": ["sudo apt-get update", "sudo apt-get install -y python-pip", "pip install Flask"], 
+                    "post_build": [], 
+                    "pre_build": [], 
                     "status": []
                 }, 
                 "installer": [], 
@@ -63,7 +63,13 @@
             "platform": {
                 "arch": "i386", 
                 "hosting": "dedicated", 
-                "installer": [], 
+                "installer": [
+                  "sudo apt-get install -y python-dev",
+                  "sudo apt-get install -y python-setuptools",
+                  "sudo apt-get install -y python-pip",
+                  "sudo pip install requests",
+                  "sudo pip install flask"
+                  ], 
                 "lab_actions": {
                     "backup": [], 
                     "clean": [], 
@@ -72,8 +78,8 @@
                     "publish": [], 
                     "restore": [], 
                     "resume": [], 
-                    "shutdown": ["service apache2 stop"], 
-                    "start": ["service apache2 restart"], 
+                    "shutdown": [], 
+                    "start": [], 
                     "stats": [], 
                     "stop": []
                 }, 
