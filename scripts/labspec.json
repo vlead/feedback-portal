@@ -68,7 +68,7 @@
                   "sudo apt-get install -y python-dev python-setuptools python-pip",
                   "sudo apt-get install -y apache2 libapache2-mod-wsgi",
                   "pip install flask requests",
-                  "sudo bash configure.sh"
+                  "cp -R ../ /var/www/"
                 ],
                 "lab_actions": {
                     "backup": ["./backup"],
