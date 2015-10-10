@@ -12,10 +12,11 @@ update_app_config () {
   CONFIG_FILE="config.py"
 
   DS_URL="http://data.vlabs.ac.in"
+  SECRET_KEY=$(date +%s | sha256sum | head -c 32)
 
   echo "Updating config.py.."
-  # Update parts of the DB URI
   sed -i "s/<data-service-URL>/$DS_URL/" $CONFIG_FILE
+  sed -i "s/SECRET_KEY = ''/SECRET_KEY = '$SECRET_KEY'/" $CONFIG_FILE
 }
 
 update_apache_config() {
