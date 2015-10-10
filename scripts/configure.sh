@@ -8,22 +8,25 @@ if [[ `id -u` -ne 0 ]]; then
   exit 1;
 fi
 
+ABS_PATH_FBP=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )
+
 update_app_config () {
   CONFIG_FILE="config.py"
 
-  DS_URL="http://data.vlabs.ac.in"
+  # Make sure to escape the slashes in the URL, as sed will incur error if
+  # slashes are not escaped..
+  DS_URL="http:\/\/data.vlabs.ac.in"
   SECRET_KEY=$(date +%s | sha256sum | head -c 32)
 
   echo "Updating config.py.."
-  sed -i "s/<data-service-URL>/$DS_URL/" $CONFIG_FILE
-  sed -i "s/SECRET_KEY = ''/SECRET_KEY = '$SECRET_KEY'/" $CONFIG_FILE
+  sed -i "s/<data-service-URL>/$DS_URL/" $ABS_PATH_FBP/$CONFIG_FILE
+  sed -i "s/SECRET_KEY = ''/SECRET_KEY = '$SECRET_KEY'/" $ABS_PATH_FBP/$CONFIG_FILE
 }
 
 update_apache_config() {
   PROC_NAME="feedback-portal"
   WSGI_SCRIPT="feedback_portal.wsgi"
   APACHE_VHOST_FILE="/etc/apache2/sites-available/default"
-  ABS_PATH_FBP=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
   sed -i "/<\/VirtualHost>/i \
     WSGIScriptAlias / $ABS_PATH_FBP/$WSGI_SCRIPT
