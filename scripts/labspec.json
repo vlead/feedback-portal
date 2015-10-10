@@ -2,99 +2,99 @@
     "lab": {
         "build_requirements": {
             "platform": {
-                "arch": "i386", 
+                "arch": "i386",
                 "build_steps": {
-                    "build": [], 
-                    "configure": [], 
-                    "post_build": [], 
-                    "pre_build": [], 
+                    "build": [],
+                    "configure": [],
+                    "post_build": [],
+                    "pre_build": [],
                     "status": []
-                }, 
-                "installer": [], 
-                "os": "ubuntu", 
-                "osVersion": "12", 
+                },
+                "installer": [],
+                "os": "ubuntu",
+                "osVersion": "12",
                 "service_pack": ""
             }
-        }, 
+        },
         "description": {
             "developer": [
                 {
                     "contact": {
-                        "alternate_email": "", 
-                        "email": "", 
-                        "mobile_number": "", 
+                        "alternate_email": "",
+                        "email": "",
+                        "mobile_number": "",
                         "office_number": ""
-                    }, 
-                    "department": "", 
-                    "institute": "", 
-                    "name": "", 
-                    "organization": "", 
-                    "role": "", 
-                    "title": "", 
+                    },
+                    "department": "",
+                    "institute": "",
+                    "name": "",
+                    "organization": "",
+                    "role": "",
+                    "title": "",
                     "web": ""
-                }, 
+                },
                 {
                     "contact": {
-                        "alternate_email": "", 
-                        "email": "", 
-                        "mobile_number": "", 
+                        "alternate_email": "",
+                        "email": "",
+                        "mobile_number": "",
                         "office_number": ""
-                    }, 
-                    "department": "", 
-                    "institute": "", 
-                    "name": "", 
-                    "organization": "", 
-                    "role": "", 
-                    "title": "", 
+                    },
+                    "department": "",
+                    "institute": "",
+                    "name": "",
+                    "organization": "",
+                    "role": "",
+                    "title": "",
                     "web": ""
                 }
-            ], 
+            ],
             "discipline": [
                 ""
-            ], 
-            "id": "portal", 
-            "integration_level": 1, 
-            "name": "Feedback Portal", 
-            "server-side": true, 
-            "status": "Not Released", 
+            ],
+            "id": "feedback-portal",
+            "integration_level": 1,
+            "name": "Feedback Portal",
+            "server-side": true,
+            "status": "Not Released",
             "type": "Portal"
-        }, 
+        },
         "runtime_requirements": {
             "platform": {
-                "arch": "i386", 
-                "hosting": "dedicated", 
+                "arch": "i386",
+                "hosting": "dedicated",
                 "installer": [
-                  "sudo apt-get install -y python-dev",
-                  "sudo apt-get install -y python-setuptools",
-                  "sudo apt-get install -y python-pip",
+                  "sudo apt-get install -y python-dev python-setuptools python-pip",
+                  "sudo apt-get install -y apache2 libapache2-mod-wsgi"
                   "sudo pip install requests",
-                  "sudo pip install flask"
-                  ], 
+                  "sudo pip install flask",
+                  "sudo bash configure.sh"
+                ],
                 "lab_actions": {
-                    "backup": [], 
-                    "clean": [], 
-                    "init": [], 
-                    "pause": [], 
-                    "publish": [], 
-                    "restore": [], 
-                    "resume": [], 
-                    "shutdown": [], 
-                    "start": [], 
-                    "stats": [], 
-                    "stop": []
-                }, 
+                    "backup": ["./backup"],
+                    "clean": [],
+                    "init": [],
+                    "pause": [],
+                    "publish": [],
+                    "restore": ["./restore"],
+                    "resume": [],
+                    "shutdown": [],
+                    "start": ["./start"],
+                    "stats": [],
+                    "stop": ["./stop"]
+                },
                 "memory": {
-                    "max_required": "2gb", 
+                    "max_required": "2gb",
                     "min_required": "256mb"
-                }, 
-                "os": "ubuntu", 
-                "osVersion": "12", 
-                "servicepack": "", 
+                },
+                "os": "ubuntu",
+                "osVersion": "12",
+                "servicepack": "",
                 "storage": {
                     "min_required": "10gb"
                 }
             }
         }
-    }, 
+    },
     "template": "1.0"
 }
