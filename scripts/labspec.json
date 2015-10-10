@@ -65,9 +65,8 @@
                 "hosting": "dedicated",
                 "installer": [
                   "sudo apt-get install -y python-dev python-setuptools python-pip",
-                  "sudo apt-get install -y apache2 libapache2-mod-wsgi"
-                  "sudo pip install requests",
-                  "sudo pip install flask",
+                  "sudo apt-get install -y apache2 libapache2-mod-wsgi",
+                  "sudo pip install flask requests",
                   "sudo bash configure.sh"
                 ],
                 "lab_actions": {
