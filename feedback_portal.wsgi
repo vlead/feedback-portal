@@ -4,4 +4,4 @@ BASE_DIR = os.path.join(os.path.dirname(__file__))
 
 sys.path.insert(0, BASE_DIR)
 
-from src import app as application
+from app import app as application
