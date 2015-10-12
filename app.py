@@ -21,16 +21,18 @@ def feedback_form():
         print fb_ref
         if fb_ref:
             response = requests.get(config.DS_URL +
-                                    '/labs?hosted_url=' + urllib.quote(fb_ref))
+                                    '/experiments?content_url=' +
+                                    urllib.quote(fb_ref))
             if len(response.json()) > 0:
-                lab = response.json()
+                experiment = response.json()[0]
                 return render_template('feedback.html',
-                                       lab_name=lab[0]['name'],
-                                       lab_id=lab[0]['id'])
-
+                                       lab_name=experiment['lab']['name'],
+                                       lab_id=experiment['lab']['id'],
+                                       expt_name=experiment['name'],
+                                       expt_id=experiment['id'])
             else:
                 response = requests.get(config.DS_URL +
-                                        '/experiments?content_url=' +
+                                        '/experiments?simulation_url=' +
                                         urllib.quote(fb_ref))
                 if len(response.json()) > 0:
                     experiment = response.json()[0]
@@ -39,23 +41,14 @@ def feedback_form():
                                            lab_id=experiment['lab']['id'],
                                            expt_name=experiment['name'],
                                            expt_id=experiment['id'])
+
                 else:
-                    response = requests.get(config.DS_URL +
-                                            '/experiments?simulation_url=' +
-                                            urllib.quote(fb_ref))
-                    if len(response.json()) > 0:
-                        experiment = response.json()[0]
-                        return render_template('feedback.html',
-                                               lab_name=experiment['lab']['name'],
-                                               lab_id=experiment['lab']['id'],
-                                               expt_name=experiment['name'],
-                                               expt_id=experiment['id'])
+                    # this calls the genric feedback
+                    return render_template('feedback.html')
 
         else:
-            response = requests.get(config.DS_URL + '/labs')
-            print type(response.json())
-            return render_template('feedback.html',
-                                   labs_list=response.json())
+            # this calls the generic feedback
+            return render_template('feedback.html')
 
     if request.method == 'POST':
         feedback_data = request.form.to_dict()

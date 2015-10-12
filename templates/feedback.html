@@ -146,86 +146,61 @@ value="student" />
 <label class="choice" for="element_14_2">Student</label>
 </span>
 </li> <li id="li_6" >
-<label class="description" for="element_6">Institute Name </label>
+{% if expt_name %}
+<label class="description" for="element_6">What is the name of your institute ? </label>
 <div>
 <input id="element_6" name="user_institute" class="element text medium" type="text" maxlength="255" value=""/>
 </div>
 </li> 
-<li id="li_8" >
-<label class="description" for="element_8">Discipline </label>
 <div>
-<input id="element_8" name="user_discipline" class="element text medium" type="text" maxlength="255" value=""/>
-</div>
 </li> <li id="li_9" >
 <label class="description" for="element_9">Lab Name </label>
 <div>
-  {% if lab_name %}
-    <input id="lab_name" class="element text medium" type="text"
+  <input id="lab_name" class="element text medium" type="text"
 	   maxlength="255" value="{{ lab_name }}"/>
-    <input type="hidden" name="lab" value="{{ lab_id }}" />
-  {% else %}  
-    <select id="labs_dropdown" name="lab">
-      <option value="" selected> Please select a lab </option>
-      {% for lab in labs_list %}
-        <option value="{{ lab['id'] }}">{{ lab['name'] }}</option>
-      {% endfor %}
-    </select>
-  {% endif %}
+  <input type="hidden" name="lab" value="{{ lab_id }}" />
 </div>
 </li> <li id="li_10" >
 <label class="description" for="element_10">Experiment Name </label>
 <div>
-  {% if lab_name %}
-    <input id="experiment_name" class="element text medium"
-    type="text" maxlength="255" value="{{ expt_name }}"/>
-    <input type="hidden" name="experiment" value="{{ expt_id }}" />
-  {% else %}
-    <select id="expts_dropdown" name="experiment">
-      <option selected> Please select a lab first </option>
-    </select>
-  {% endif %}  
+  <input id="experiment_name" class="element text medium"
+  type="text" maxlength="255" value="{{ expt_name }}"/>
+  <input type="hidden" name="experiment" value="{{ expt_id }}" />
 </div>  
-</li> <li id="li_3" >
-<label class="description" for="element_3">Have you attempted the experiment ?
-</label>
-<div>
-  <input type="radio" name="experiment_attempted" value=True>Yes<br>
-  <input type="radio" name="experiment_attempted" value=False>No
-</div>
-</li>
-<li id="li_11" >
-<label class="description" for="element_11">Does it work ? </label>
-<div>
-  <input type="radio" name="experiment_works" value=True>Yes<br>
-  <input type="radio" name="experiment_works" value=False>No
-</div>
 </li> <li id="li_12" >
-<label class="description" for="element_12"> If No, what is the issue with it ?
+<label class="description" for="element_12"> What is your feedback about the
+  experiment ?
 </label>
 <div>
-<textarea id="element_12" name="if_no_what_issue" class="element textarea medium"></textarea>
+<textarea id="element_12" name="feedback_about_experiment" class="element textarea medium"></textarea>
 </div>
 </li> <li id="li_20" >
-<label class="description" for="element_20">Specify the problems or difficulties faced while performing the experiment. </label>
+<label class="description" for="element_20">What are your suggestions about
+  making the experiment better ? </label>
 <div>
-<textarea id="element_20" name="problem_while_performing_experiment" class="element textarea medium"></textarea>
-</div>
-</li> <li id="li_21" >
-<label class="description" for="element_21">What are the most interesting things about the experiment? </label>
-<div>
-<textarea id="element_21" name="most_interesting_things" class="element textarea medium"></textarea>
-</div>
-</li> <li id="li_22" >
-<label class="description" for="element_22"> Why and how often do you plan to use Virtual Labs? </label>
-<div>
-<textarea id="element_22" name="why_how_plan_to_use_vlabs" class="element textarea medium"></textarea>
-</div>
-</li> <li id="li_13" >
-<label class="description" for="element_13">What are your suggestions about making them better? </label>
-<div>
-<textarea id="element_13" name="suggestions" class="element textarea medium"></textarea>
+<textarea id="element_20" name="suggestions_about_experiment" class="element textarea medium"></textarea>
 </div>
 </li>
+{% else %}
+<li id="li_12" >
+ <label class="description" for="element_12"> How useful do you think Virtual
+   Labs is for an engineering student ?
+ </label>
+ <div>
+   <textarea id="element_12" name="how_useful_are_labs" class="element textarea
+     medium"></textarea>
+ </div>
+ </li> 
+ <li id="li_12" >
+ <label class="description" for="element_12"> What are your suggestions about
+   making Virtual Labs better ?
+ </label>
+ <div>
+   <textarea id="element_12" name="suggestions_in_general" class="element textarea
+     medium"></textarea>
+ </div>
+ </li> 
+{% endif %}
 <li class="buttons">
 <input id="saveForm" class="button_text" type="submit" value="Submit" />
 </li>
