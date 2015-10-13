@@ -9,10 +9,6 @@ import config
 app = Flask(__name__)
 app.config.from_object(config)
 
-# fb_ref = 'http://virtual-labs.ac.in/labs/cse01/'
-# fb_ref = 'http://iitk.vlab.co.in/?sub=27&brch=83&sim=725&cnt=2'
-# fb_ref = 'http://iitk.vlab.co.in/?sub=27&brch=83&sim=725&cnt=4'
-
 
 @app.route('/', methods=['GET', 'POST'])
 def feedback_form():
@@ -21,18 +17,16 @@ def feedback_form():
         print fb_ref
         if fb_ref:
             response = requests.get(config.DS_URL +
-                                    '/experiments?content_url=' +
-                                    urllib.quote(fb_ref))
+                                    '/labs?hosted_url=' + urllib.quote(fb_ref))
             if len(response.json()) > 0:
-                experiment = response.json()[0]
+                lab = response.json()
                 return render_template('feedback.html',
-                                       lab_name=experiment['lab']['name'],
-                                       lab_id=experiment['lab']['id'],
-                                       expt_name=experiment['name'],
-                                       expt_id=experiment['id'])
+                                       lab_name=lab[0]['name'],
+                                       lab_id=lab[0]['id'])
+
             else:
                 response = requests.get(config.DS_URL +
-                                        '/experiments?simulation_url=' +
+                                        '/experiments?content_url=' +
                                         urllib.quote(fb_ref))
                 if len(response.json()) > 0:
                     experiment = response.json()[0]
@@ -41,10 +35,21 @@ def feedback_form():
                                            lab_id=experiment['lab']['id'],
                                            expt_name=experiment['name'],
                                            expt_id=experiment['id'])
-
                 else:
-                    # this calls the genric feedback
-                    return render_template('feedback.html')
+                    response = requests.get(config.DS_URL +
+                                            '/experiments?simulation_url=' +
+                                            urllib.quote(fb_ref))
+                    if len(response.json()) > 0:
+                        experiment = response.json()[0]
+                        return render_template('feedback.html',
+                                               lab_name=experiment['lab']['name'],
+                                               lab_id=experiment['lab']['id'],
+                                               expt_name=experiment['name'],
+                                               expt_id=experiment['id'])
+
+                    else:
+                        # this calls the genric feedback
+                        return render_template('feedback.html')
 
         else:
             # this calls the generic feedback

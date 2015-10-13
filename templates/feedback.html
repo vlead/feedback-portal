@@ -154,10 +154,25 @@ function prefill()
 	   <label class="description" for="element_12"> What is your feedback about the experiment ?
 	   </label>
 	   <textarea id="element_12" name="feedback_about_experiment"
-       class="form-control"></textarea><br>
+       class="form-control"></textarea><br><br>
 	   <label class="description" for="element_20">What are your suggestions about
 	   making the experiment better ? </label>
 	   <textarea id="element_20" name="suggestions_about_experiment"
+       class="form-control" required></textarea><br>
+	</div>
+  </div>
+  {% elif lab_name %}
+	<div class="col-md-8">
+	  <input id="element_6" name="user_institute" class="form-control" type="text" maxlength="255" value="" placeholder="What is the name of your institute ? "/><br><input id="lab_name" class="form-control" type="text"
+	   maxlength="255" value="{{ lab_name }}" placeholder="Lab Name" disabled/>
+	   <input type="hidden" name="lab" value="{{ lab_id }}" /><br>
+	   <label class="description" for="element_12"> What is your feedback about the lab ?
+	   </label>
+	   <textarea id="element_12" name="feedback_about_lab"
+       class="form-control"></textarea><br><br>
+	   <label class="description" for="element_20">What are your suggestions about
+	   making the lab better ? </label>
+	   <textarea id="element_20" name="suggestions_about_lab"
        class="form-control" required></textarea><br>
 	</div>
   </div>
