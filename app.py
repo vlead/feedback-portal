@@ -52,15 +52,12 @@ def feedback_form():
 
     if request.method == 'POST':
         feedback_data = request.form.to_dict()
-        feedback_data['lab'] = {'id': request.form.get('lab')}
-        if not feedback_data['user_email']:
-            feedback_data.pop('user_email')
+        if request.form.get('lab'):
+            feedback_data['lab'] = {'id': request.form.get('lab')}
 
         if request.form.get('experiment'):
             feedback_data['experiment'] = {'id':
                                            request.form.get('experiment')}
-        else:
-            feedback_data.pop('experiment')
 
         feedback_data['ip'] = request.remote_addr
         print json.dumps(feedback_data)
