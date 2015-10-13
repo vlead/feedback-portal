@@ -145,9 +145,16 @@ function prefill()
   {% if expt_name %}
   <div class="row">
 	<div class="col-md-8">
-	  <input id="element_6" name="user_institute" class="form-control" type="text" maxlength="255" value="" placeholder="What is the name of your institute ? "/><br><input id="lab_name" class="form-control" type="text"
+	  <input id="element_6" name="user_institute" class="form-control" type="text" maxlength="255" value=""/><br>
+	  <label class="description" for="element_12"> 
+	    Lab Name
+	  </label>
+	  <input id="lab_name" class="form-control" type="text"
 	   maxlength="255" value="{{ lab_name }}" placeholder="Lab Name" disabled/>
 	   <input type="hidden" name="lab" value="{{ lab_id }}" /><br>
+	   <label class="description" for="element_12"> 
+	    Experiment Name
+	  </label>
 	   <input id="experiment_name" class="form-control"
 	   type="text" maxlength="255" value="{{ expt_name }}" placeholder="Experiment Name" disabled/>
 	   <input type="hidden" name="experiment" value="{{ expt_id }}"/><br>
@@ -164,7 +171,11 @@ function prefill()
   {% elif lab_name %}
   <div class="row">
 	<div class="col-md-8">
-	  <input id="element_6" name="user_institute" class="form-control" type="text" maxlength="255" value="" placeholder="What is the name of your institute ? "/><br><input id="lab_name" class="form-control" type="text"
+	  <input id="element_6" name="user_institute" class="form-control" type="text" maxlength="255" value="" placeholder="What is the name of your institute ? "/><br>
+	  <label class="description" for="element_12"> 
+	    Lab Name
+	  </label>
+	  <input id="lab_name" class="form-control" type="text"
 	   maxlength="255" value="{{ lab_name }}" placeholder="Lab Name" disabled/>
 	   <input type="hidden" name="lab" value="{{ lab_id }}" /><br>
 	   <label class="description" for="element_12"> What is your feedback about the lab ?
