@@ -141,6 +141,7 @@ function prefill()
   	  <label class="choice" for="element_14_2">Student</label>
   	</div>
   </div>
+  <br>
   {% if expt_name %}
   <div class="row">
 	<div class="col-md-8">
@@ -152,10 +153,12 @@ function prefill()
 	   <input type="hidden" name="experiment" value="{{ expt_id }}"/><br>
 	   <label class="description" for="element_12"> What is your feedback about the experiment ?
 	   </label>
-	   <textarea id="element_12" name="feedback_about_experiment" class="form-control"></textarea><br>
+	   <textarea id="element_12" name="feedback_about_experiment"
+       class="form-control"></textarea><br><br>
 	   <label class="description" for="element_20">What are your suggestions about
 	   making the experiment better ? </label>
-	   <textarea id="element_20" name="suggestions_about_experiment" class="form-control"></textarea><br>
+	   <textarea id="element_20" name="suggestions_about_experiment"
+       class="form-control" required></textarea><br>
 	</div>
   </div>
 {% else %}
@@ -164,11 +167,13 @@ function prefill()
  	  <label class="description" for="element_12"> How useful do you think Virtual
  	  Labs is for an engineering student ?
  	  </label>
- 	  <textarea id="element_12" name="how_useful_are_labs" class="form-control"></textarea><br>
+ 	  <textarea id="element_12" name="how_useful_are_labs"
+      class="form-control"></textarea><br><br>
  	  <label class="description" for="element_12"> What are your suggestions about
  	  making Virtual Labs better ?
  	  </label>
- 	  <textarea id="element_12" name="suggestions_in_general" class="form-control"></textarea><br>
+ 	  <textarea id="element_12" name="suggestions_in_general"
+      class="form-control" required></textarea><br>
  	</div>
    </div>
 {% endif %}
