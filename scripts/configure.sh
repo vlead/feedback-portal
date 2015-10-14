@@ -15,7 +15,7 @@ update_app_config () {
 
   # Make sure to escape the slashes in the URL, as sed will incur error if
   # slashes are not escaped..
-  DS_URL="http:\/\/data.vlabs.ac.in"
+  DS_URL="http:\/\/data.base1.vlabs.ac.in"
   SECRET_KEY=$(date +%s | sha256sum | head -c 32)
 
   echo "Updating config.py.."
