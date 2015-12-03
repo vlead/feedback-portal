@@ -6,32 +6,31 @@
   database using =dataservice=.  This feedback can be used later for
   improving a particular lab or an experiment.
 
-  Note: This document and the portal itself are work in progress.
+  Note: This document is work in progress.
 
 * Requirements
 
-  1. A front-end that displays relevant questions about a
-     lab/experiment.
-  2. An API to link this with the REST API of =dataservice=.
+  1. A front-end(UI) that displays relevant questions about a lab, an
+     experiment or Virtual Labs in general.
+  2. An API to integrate this portal with =dataservice=.
      
 * Design & Implementation
 
-  If the request for the feedback portal comes from a specific lab or
-  an experiment, the portal pre-populates the lab name and the
-  experiment name in the feedback form and then displays it to the
-  user.  Here the assumption is that the Referrer URL works.
-
-  If the portal is requested directly from the hosted url say
-  "feedback.vlabs.ac.in" or if the portal is requested without a
-  referrer url being identified, then user has to choose a lab name
-  from the list of all labs and an experiment accordingly.
+  The feedback form will be available from three different places(levels - lab
+  level, experiment level and directly from =feedback.vlabs.ac.in=). The IP of
+  the user is detected at the backend and is not part of the questionnaire.
 
 ** The UI
    
-   The UI or the feedback form consists of fixed set of questions so
-   that it is easier for a user to assess a lab/experiment.
+   The UI or the feedback form consists of fixed set of questions so that it is
+   easier for a user to assess a lab/experiment. The UI is as follows,
+   depending on the place from where the request has originated :
 
-   Following are the questions asked in the form:
+ 1) *Generic Feedback Form*
+    
+    This is the form that can be directly accessed from
+    =feedback.vlabs.ac.in=. This form is also served if the request comes from
+    the =vlabs= landing page. Following is the questionnaire for this form -
 
    + Name
 
@@ -45,51 +44,66 @@
 
      Type of the user like faculty or student.
   
-   + Institute Name
+   + How useful do you think Virtual Labs is for an engineering student ?
 
-     Institute with which the user is associated.
+   + What are your suggestions about making Virtual Labs better ? 
 
-   + Discipline
 
-     Discipline or domain of the user.
+ 2) *Experiment Specific Feedback Form* 
+
+    This feedback form can be rendered from any experiment of a lab. Questions
+    asked are:
+
+   + Name
+
+   + Email
+
+   + Type Of User
+
+   + What is the name of your institute ?
 
    + Lab Name
 
-     Name of the lab for which feedback is being submitted.
-
+     Lab name refers to the lab about which the feedback is being given. This
+     is a pre-populated field.
+ 
    + Experiment Name
 
-     Name of the experiment for which feedback is being submitted.
+     Experiment name refers to the experiment about which the feedback is being
+     given. This is a pre-populated field.
 
-   + Have you attempted the experiment ?
+   + What is your feedback about the experiment ?
 
-     This tries to find out if the user is submitting feedback after
-     attempting the experiment or without it.
-
-   + Does it work ?
-
-     Yes if it works, No otherwise. 
-    
-   + If No, what is the issue with it ?
-
-   + Specify the problems or difficulties faced while performing the
-     experiment.
-
-   + What are the most interesting things about the experiment?
-
-   + Why and how often do you plan to use Virtual Labs? 
-
-   + What are your suggestions about making them better? 
+   + What are your suggestions about making the experiment better ?
 
 
-   [[/feedback-portal/templates/feedback.html][Link to =feedback.html= file]]
+ 3) *Lab Specific Feedback Form*
+
+    Feedback form rendered from a lab has following questions:
+
+   + Name
+
+   + Email
+
+   + Type Of User
+
+   + What is the name of your institute ?
+
+   + Lab Name
+
+     This is a pre-populated field.
+
+   + What is your feedback about the lab ?
+
+   + What are your suggestions about making the lab better ?
+
 
 ** Integration with =dataservice=
 
    The feedback portal makes REST API calls to =dataservice= for
    submitting the feedback data.   
        
-   [[/feedback-portal/app.py][Link to app.py]]
+   [[https://github.com/vlead/feedback-portal/blob/develop/app.py][Link to app.py]]
 
 * Releases
 
