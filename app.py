@@ -9,10 +9,6 @@ import config
 app = Flask(__name__)
 app.config.from_object(config)
 
-# fb_ref = 'http://virtual-labs.ac.in/labs/cse01/'
-# fb_ref = 'http://iitk.vlab.co.in/?sub=27&brch=83&sim=725&cnt=2'
-# fb_ref = 'http://iitk.vlab.co.in/?sub=27&brch=83&sim=725&cnt=4'
-
 
 @app.route('/', methods=['GET', 'POST'])
 def feedback_form():
@@ -51,23 +47,22 @@ def feedback_form():
                                                expt_name=experiment['name'],
                                                expt_id=experiment['id'])
 
+                    else:
+                        # this calls the genric feedback
+                        return render_template('feedback.html')
+
         else:
-            response = requests.get(config.DS_URL + '/labs')
-            print type(response.json())
-            return render_template('feedback.html',
-                                   labs_list=response.json())
+            # this calls the generic feedback
+            return render_template('feedback.html')
 
     if request.method == 'POST':
         feedback_data = request.form.to_dict()
-        feedback_data['lab'] = {'id': request.form.get('lab')}
-        if not feedback_data['user_email']:
-            feedback_data.pop('user_email')
+        if request.form.get('lab'):
+            feedback_data['lab'] = {'id': request.form.get('lab')}
 
         if request.form.get('experiment'):
             feedback_data['experiment'] = {'id':
                                            request.form.get('experiment')}
-        else:
-            feedback_data.pop('experiment')
 
         feedback_data['ip'] = request.remote_addr
         print json.dumps(feedback_data)

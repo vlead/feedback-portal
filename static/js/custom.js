@@ -36,25 +36,3 @@ $('.navbar-collapse ul li a').click(function() {
     $('.navbar-toggle:visible').click();
 });
 
-// Experiments in the dropdown come from the selected lab 
-// in the Labs dropdown
-$('#labs_dropdown').change(function() {
-  selected_lab = $(this).val()
-  console.log(selected_lab);
-  $.ajax({
-    type: 'GET',
-    url: 'http://10.2.58.25:5000/labs/' + selected_lab + '/experiments',
-    success: function(response) {
-      console.log(response);
-      console.log(response.length);
-      $('#expts_dropdown').empty();
-      for(i=0; i<response.length; i++) {
-        $('#expts_dropdown').append('<option value="' + response[i]['id'] + '">' + response[i]['name'] + '</option>');
-      }
-    },
-    error: function() {
-      console.log("Error retrieving data"); 
-    }
-  });
-});
-
