@@ -5,11 +5,22 @@ from flask import Flask, render_template, request, redirect, url_for, json,\
 import requests
 
 import config
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
 app.config.from_object(config)
+mail=Mail(app)
 
-
+app.config.update(
+    DEBUG=True,
+    #EMAIL SETTINGS
+    MAIL_HOST='smtp.admin.iiit.ac.in',
+    MAIL_SERVER='smtp.gmail.com',    
+    MAIL_PORT=465,
+    MAIL_USE_SSL=True,
+    MAIL_USERNAME = 'madhavipuliraju@gmail.com',
+    MAIL_PASSWORD = '<password>'
+)
 @app.route('/', methods=['GET', 'POST'])
 def feedback_form():
     if request.method == 'GET':
@@ -68,7 +79,11 @@ def feedback_form():
         print json.dumps(feedback_data)
         response = requests.post(config.DS_URL + '/feedback',
                                  data=json.dumps(feedback_data))
+
         if response.status_code == 200:
+            msg = Message('Feedback-data from feedback-portal', sender = 'madhavipuliraju@gmail.com', recipients = ['madhavi@vlabs.ac.in', 'sripathi@vlabs.ac.in', 'kammari.sripathi@gmail.com'])
+            msg.body = json.dumps(feedback_data)
+            mail.send(msg)
             return redirect(url_for('thanks'))
         else:
             flash('Error posting your feedback')
