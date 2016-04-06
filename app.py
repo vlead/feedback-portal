@@ -76,10 +76,11 @@ def feedback_form():
             smtpserver = smtplib.SMTP("smtp.gmail.com", 587)
             smtpserver.ehlo()
             smtpserver.starttls()
-            smtpserver.login('madhavipuliraju@gmail.com', 'thanishwar')
+            smtpserver.login('noreply-feedback@vlabs.ac.in', 'tEpfq]0{jaWh*kv"m6^u')
             
-            msg = MIMEText(str(feedback_data["user_name"]))
-            msg['Subject'] = 'Data from feedback portal'
+            msg = MIMEText("Name: %s\t  Email: %s\n Q1. How useful do you think Virtual Labs is for an engineering student ?\n A: %s\n Q2. What are your suggestions about making Virtual Labs better ?\n A: %s\n" % (str(feedback_data["user_name"]), str(feedback_data["user_email"]),str(feedback_data["how_useful_are_labs"]), str(feedback_data["suggestions_in_general"])))
+            subject = 'Feedback from %s' % str(feedback_data["user_name"])
+            msg['Subject'] = subject
             msg['From'] = "madhavipuliraju@gmail.com"
             msg['To'] = "feedback@vlabs.ac.in"
 
