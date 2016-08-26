@@ -1,0 +1,59 @@
+* Feedback service : 
+
+1) Feedback service should be a micro service and not a part of Data services.
+
+2) Feedback service gets the data from labs which are running on openEdx. And
+   openEdx should provide the following data to feedback service:
+
+   - Discipline name/id
+   - Lab name/id
+   - Experiment name/id
+   - Gateway ip
+   - User id
+   - Date
+
+3) This service can be queried using different fields ( lab name ,date,gateway
+ip address, experiment) to get feedback data.
+
+4) Authentication for feedback service needs to be implemented. (Also to which
+   user feedback data should be exposed - TBD).
+  
+5) Integration of Feedback Service to Outreach Portal - Phase II of the open
+edX project (Needs to be discussed)
+
+6) Dashboard should be implemented to fetch/get the feedback data from the feedback
+   service. 
+
+
+* Outreach portal to consume feedback service
+
+1) In Outreach portal, NCC (Nodal Centre Coordinator) should fill the gateway
+   IP, date of the workshop to get the actual usage for the completed
+   workshop. Data will be served by feedback service.
+
+   
+* Following is the final decision for the UI of the form:
+
+Feedback form should be very concise and user friendly. It should not take much
+time for user to fill the feedback. 
+
+1) Feedback form should be pre-populated with Lab name and experiment name.
+
+2) The IP (field key is ip) of the user is detected automatically at the
+   back-end and is not part of the questionnaire.
+
+3) The feedback form will be available from three different levels(places)
+
+a) Genric Feedback Form
+
+ Questionnaire to be decided and answers should be in form of radio button.
+
+b) Experiment Specific Feedback Form:
+
+ Questionnaire to be decided and answers should be in form of radio button.
+
+c) Lab Specific Feedback Form:
+
+ Questionnaire to be decided and answers should be in form of radio button.
+
+
