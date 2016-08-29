@@ -12,16 +12,13 @@
    - User id
    - Date
 
-3) This service can be queried using different fields ( lab name ,date,gateway
-ip address, experiment) to get feedback data.
+3) This service can be queried using different fields ( lab name ,date,gateway ip address,
+   experiment) to get feedback data.
 
 4) Authentication for feedback service needs to be implemented. (Also to which
    user feedback data should be exposed - TBD).
   
-5) Integration of Feedback Service to Outreach Portal - Phase II of the open
-edX project (Needs to be discussed)
-
-6) Dashboard should be implemented to fetch/get the feedback data from the feedback
+5) Dashboard should be implemented to fetch/get the feedback data from the feedback
    service. 
 
 
