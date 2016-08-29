@@ -1,4 +1,4 @@
-* Requriements for the Feedback service : 
+* Requriements for the Feedback service 
 
 1) Feedback service should be a micro service and not a part of Data services.
 
@@ -32,7 +32,7 @@ edX project (Needs to be discussed)
    workshop. Data will be served by feedback service.
 
    
-*  Requirements for the UI form:
+*  Requirements for the UI form
 
 Feedback form should be very concise and user friendly. It should not take much
 time for user to fill the feedback. 
