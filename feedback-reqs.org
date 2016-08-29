@@ -32,7 +32,7 @@ edX project (Needs to be discussed)
    workshop. Data will be served by feedback service.
 
    
-* Following is the final decision for the UI of the form:
+*  Requirements for the UI form:
 
 Feedback form should be very concise and user friendly. It should not take much
 time for user to fill the feedback. 
