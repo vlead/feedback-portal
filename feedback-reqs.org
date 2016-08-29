@@ -1,9 +1,9 @@
-* Requriements for the Feedback service 
+* Requriements for the Feedback Service 
 
-1) Feedback service should be a micro service and not a part of Data services.
+1) Feedback service should be a micro service and not a part of data service.
 
 2) Feedback service gets the data from labs which are running on Open edX. 
-   Open edX should provide the following data to feedback service:
+   Open edX should provide the following data fields to feedback service:
 
    - Discipline name/id
    - Lab name/id
