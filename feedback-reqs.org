@@ -53,3 +53,5 @@ c) Lab Specific Feedback Form:
 
  Questionnaire to be decided and answers should be in form of radio button.
 
+* Design
+  Design is captured at https://docs.google.com/drawings/d/1h7Tqof8X9u_V3qKAs8Yu6Jk9VzxjIzDz78FynwGYCVk/edit
