@@ -1,4 +1,4 @@
-* Feedback service : 
+* Requriements for the Feedback service : 
 
 1) Feedback service should be a micro service and not a part of Data services.
 
@@ -25,7 +25,7 @@ edX project (Needs to be discussed)
    service. 
 
 
-* Outreach portal to consume feedback service
+* Requirements for the Outreach portal to consume the feedback service
 
 1) In Outreach portal, NCC (Nodal Centre Coordinator) should fill the gateway
    IP, date of the workshop to get the actual usage for the completed
