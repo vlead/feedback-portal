@@ -243,6 +243,7 @@
 | civil20     | Fluid Mechanics lab                                                                                      |
 |-------------+--------------------------------------------------------------------------------------|
 
+
 * Notation
   The system is defined as the data model.  There is a certain notation that is
   used for defining the data model. 
@@ -318,6 +319,7 @@ TYPE Answer
 TYPE Response 
 #+END_SRC
 
+
 * Relations and cardinality constraints over entity types 
   :PROPERTIES:
   :CUSTOM_ID: cardinal_constraints
@@ -373,7 +375,7 @@ is a relation =r: A? > K!=.
 
 * Assumptions
 
-1) IP Address 
+1) Gateway IP, User id, Lab id, Discipline id will be provided by the OpenedX.
 
 * System state
   The system's state is captured by a set of /state variables/.
@@ -410,6 +412,7 @@ Sets
   dis-usage-set      : feedback-set.dis_id ; set of all feedbacks of a discipline
 
 #+END_SRC
+
 
 * Operations 
 
