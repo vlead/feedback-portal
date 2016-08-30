@@ -344,9 +344,8 @@ For each relation, we define its inverse next to it.
    The following diagrams summarizes all the cardinality constraints across all
    entities.
 
-*** Relationships of Feedback
-    This diagrams depicts the relationships between User, Role, Session, Email
-    and Name entities
+   This diagrams depicts the relationships between User, Role, Session, Email
+   and Name entities
 #+BEGIN_HTML
 <img src="https://docs.google.com/drawings/d/1k3AovJg7GJe65MI_LAJA_3RdMsmlP9eTC8wLBbmfwdY/pub?w=960&h=720">
 <p align="center"> Feedback Relations </p>
@@ -363,13 +362,13 @@ is a relation =r: A? > K!=.
 |-----+-----------+------------------------------|
 |     | Entity    | Key                          |
 |-----+-----------+------------------------------|
-|  1. | Feedback  | ip address                   |
+|  1. | Feedback  | ip address, date             |
 |-----+-----------+------------------------------|
-|  2. | Response  |                              |
+|  2. | Response  | Feedback                     |
 |-----+-----------+------------------------------|
-|  3. | Question  |                              |
+|  3. | Question  | Response                     |
 |-----+-----------+------------------------------|
-|  4. | Answer    |                              |
+|  4. | Answer    | Response                     |
 |-----+-----------+------------------------------|
 
 
@@ -391,10 +390,8 @@ is a relation =r: A? > K!=.
 ;;; Primary state variables
 
 Sets
- question-set  : set[Question]  ; set of questions in the system
- answer-set    : set[Answer]    ; set of answers in the system
- feedback-set  : set[Feedback]  ; set of all feedbacks in the system
- response-set  : set[Response]  ; set of all Question & Answer Responses in the system
+  feedback-set  : set[Feedback]  ; set of all feedbacks in the system
+  response-set  : set[Response]  ; set of all Question & Answer Responses in the system
 
  #+END_SRC
 
@@ -404,12 +401,15 @@ Sets
 :END: 
 
 #+BEGIN_SRC spec :tangle spec.txt
+  question-set  : response-set.question  ; set of questions in the system
+  answer-set    : response-set.answer    ; set of answers in the system
   
-  workshop-usage-set : feedback-set.gate_way_ip and feedback-set.date  ; set of all feedbacks of a workshop 
-  nc-usage-set       : feedback-set.gate_way_ip ; set of all feedbacks of a nodal centre 
-  lab-usage-set      : feedback-set.lab_id ; set of all feedbacks of a lab 
-  exp-usage-set      : feedback-set.exp_id ; set of all feedbacks of a experiment 
-  dis-usage-set      : feedback-set.dis_id ; set of all feedbacks of a discipline
+  workshop-set : feedback-set.workshop  ; determine the workshop of each feedback identified 
+                                        ; by IP and date.  The number of feddback elements in 
+                                        ; the feedback-set that match a workshop determine the usage. 
+
+  lab-usage-set      : feedback-set.exp_id ; set of all feedbacks of a lab
+  exp-usage-set      : feedback-set.exp_id ; set of all feedbacks of an experiment in a lab
 
 #+END_SRC
 
