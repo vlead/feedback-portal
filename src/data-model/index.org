@@ -1,6 +1,6 @@
-#+TITLE: Outreach Portal 3.0 Data Model
+#+TITLE: Feedback Portal 2.0 Data Model
 #+AUTHOR: VLEAD
-#+DATE: [2016-06-03 Tue]
+#+DATE: [2016-08-29 Mon]
 #+PROPERTY: results output
 #+PROPERTY: exports code
 #+SETUPFILE: ../org-templates/level-1.org
@@ -15,6 +15,233 @@
 
   The purpose of this document is to describe the expected behaviour of the new
   outreach portal. It is a specification for the new requirements of this portal.
+
+
+* LabId assigned for each lab
+
+     Rules for assigning a LabId to a Lab
+     1. LabId = discipline Id + number
+     2. All the legacy lab ids will remain the same
+     3. For a new lab, the number that is concatenated to the discipline Id is
+        derived in the following way:
+        - Fetch the labs in that particular discipline
+        - Get the highest number
+        - Increment it by one
+
+*Note* - The legacy lab ids are not changed even if the given lab id
+ does not match the discipline.
+
+|-------------+--------------------------------------------------------------------------------------|
+| lab_id      | Name                                                                                 |
+|-------------+--------------------------------------------------------------------------------------|
+| ae01        | Aerospace Structures Lab                                                             |
+| bio15       | Bio-reactor Modeling and Simulation Lab                                              |
+| bio16       | Biomedical and Signal Processing Laboratory                                          |
+| ccnsb01     | Molecular Fluorescence Spectroscopy                                                  |
+| ccnsb02     | Colloid and Surface Chemistry                                                        |
+| ccnsb03     | Molecular Absorption Spectroscopy                                                    |
+| ccnsb04     | Quantum Chemistry                                                                    |
+| ccnsb05     | Circular Dichroism Spectroscopy                                                      |
+| ccnsb06     | Physical Chemistry (IIIT-H)                                                          |
+| ccnsb07     | Molecular Interactions                                                               |
+| che02       | Virtual Lab for Mass Transfer                                                        |
+| chem01      | Chemical Engineering                                                                 |
+| chem05      | Unit Operations, Reaction Engineering and Process Control                            |
+| chs12       | Virtual Chemistry Lab                                                                |
+| chs13       | Ultrafast Laser Spectroscopy                                                         |
+| chs14       | Analytical Lab                                                                       |
+| civil07     | Strength of Materials Lab                                                            |
+| civil09     | Traffic Engineering                                                                  |
+| civil11     | Virtual Satellite Image Processing and Analysis                                      |
+| civil13     | Urban Transportation Systems Planning                                                |
+| civil15     | Surveying Lab                                                                        |
+| civil16     | Virtual Smart Structures and Dynamics Lab                                            |
+| cse01       | Data Structures                                                                      |
+| cse02       | Computer Programming                                                                 |
+| cse03       | Programming and Data Structure                                                       |
+| cse04       | Problem Solving                                                                      |
+| cse05       | Principles of Programming Languages                                                  |
+| cse06       | Data Mining                                                                          |
+| cse07       | Databases                                                                            |
+| cse08       | Software Engineering                                                                 |
+| cse09       | Linux Lab                                                                            |
+| cse10       | Computer Architecture and Organization                                               |
+| cse11       | Computer Organization                                                                |
+| cse12       | FPGA and Embedded System Lab                                                         |
+| cse13       | Advanced VLSI                                                                        |
+| cse14       | VLSI                                                                                 |
+| cse15       | Digital Logic Design                                                                 |
+| cse16       | Speech Signal Processing (IIIT-H)                                                    |
+| cse17       | Mobile Robotics                                                                      |
+| cse18       | Computer Graphics                                                                    |
+| cse19       | Image Processing                                                                     |
+| cse20       | Pattern Recognition                                                                  |
+| cse21       | Optical Remote Sensing                                                               |
+| cse22       | Artificial Neural Networks                                                           |
+| cse23       | Computational Linguistics                                                            |
+| cse24       | Natural Language Processing                                                          |
+| cse25       | Wireless Sensor Networks                                                             |
+| cse26       | Network Security                                                                     |
+| cse28       | Advanced Network Technologies                                                        |
+| cse29       | Cryptography                                                                         |
+| cse30       | Analog CMOS VLSI Circuit Design                                                      |
+| ece01       | Speech Signal Processing (IIT-G)                                                     |
+| ece02       | Electro Magnetic Transmission (Virtual MEMS Lab)                                     |
+| ece03       | Transducer and Instrumentation Virtual Lab                                           |
+| ece04       | Electronic design using DSP, FPGA, CPLD and Micro Controllers                        |
+| ece05       | Digital VLSI Design Virtual Lab                                                      |
+| ece06       | Digital Signal Processing Lab                                                        |
+| ece07       | Digital Electronics Circuit Lab                                                      |
+| ece08       | Engineering Electromagnetic Lab                                                      |
+| ece09       | Wireless Lab                                                                         |
+| ece10       | Signals and Systems Laboratory                                                       |
+| ece11       | Systems, Communication and Control Laboratory                                        |
+| ece18       | RF Microwave Characterization Lab                                                    |
+| ece19       | Hybrid Electronics                                                                   |
+| ece21       | Virtual Queuing Networks Modelling                                                   |
+| ece22       | Virtual Microwave and Antenna Lab                                                    |
+| ece23       | Digital Electronics                                                                  |
+| ece26       | Virtual Advanced Lab for Interactive Design and Test in Electronics                  |
+| ece28       | FPGA and Digital Design                                                              |
+| eee01       | Power Electronics                                                                    |
+| eee02       | Electrical Machines Laboratory                                                       |
+| eee03       | Electronic Instrumentation                                                           |
+| eee05       | Sensors Modeling and Simulation                                                      |
+| eee06       | Virtual Power Laboratory                                                             |
+| eee07       | Virtual Power Electronics and Electric Drives Lab                                    |
+| eee08       | Industrial Electric Drives and Application of PLC                                    |
+| eee09       | Industrial Automation Laboratory                                                     |
+| eee10       | Electrical Machines                                                                  |
+| eee12       | PLC                                                                                  |
+| eee23       | Biomedical Signal and Image Processing                                               |
+| eee24       | Machine Lab                                                                          |
+| eerc01      | Basic Engineering Mechanics and Strength of Materials                                |
+| eerc02      | Soil Mechanics                                                                       |
+| eerc03      | Hydraulics and Fluid Mechanics                                                       |
+| eerc04      | Basic Structural Analysis                                                            |
+| eerc05      | Geotechnical Engineering Lab                                                         |
+| eerc06      | Structural Dynamics                                                                  |
+| emt         | Electro Magnetic Theory                                                              |
+| hss01       | Creative Design, Prototyping and Experiential Simulation Lab                         |
+| hss02       | Virtual English and Communication Lab                                                |
+| hss03       | Virtual Anthropology Lab                                                             |
+| mech01      | Virtual Laboratory Experience in Fluid and Thermal Sciences                          |
+| mech04      | Vibration and Acoustics Lab                                                          |
+| mech05      | Mechanics of Machine                                                                 |
+| mech08      | Material Response to Microstructural, Mechanical, Thermal and Biological Stimuli     |
+| mech17      | Micromachining Laboratory                                                            |
+| mech18      | Fab Laboratory                                                                       |
+| mech21      | Machine Dynamics and Mechanical Vibrations                                           |
+| mech26      | Metal Forming and Solid Mechanics                                                    |
+| ece29       | Remote Triggered Fiber Optics Communication Lab                                      |
+| mech28      | Robotics Simulation Lab                                                              |
+| mech32      | Virtual Lab for Multiphase Flow                                                      |
+| mech31      | Condition Monitoring and Fault Simulation Lab                                        |
+| mech30      | Mechanical Systems and Signal Processing                                             |
+| mech27      | Mine Automation and Virtual Reality                                                  |
+| chem-engg01 | Chemical Process Dynamics                                                            |
+| ee26        | Virtual High Voltage Lab                                                             |
+| ee25        | Basic Electrical and Electronics Lab                                                 |
+| ece30       | Microelectronics and VLSI Engineering                                                |
+| mech29      | Mechanisms and Robotics Lab                                                          |
+| ee27        | Electro Mechanical Conversion                                                        |
+| mech33      | Virtual Lab for Mechanical Vibrations                                                |
+| mech34      | Machinery Health Assessment Lab                                                      |
+| mech35      | Virtual Robotics Lab                                                                 |
+| chem-engg02 | Hydrodynamics and Transport phenomena in Packed Bed and Heat Exchangers              |
+| civil17     | Structural Engineering Lab                                                           |
+| ee28        | Electrical Machines, Power Electronics and Drives, Power Systems and Instrumentation |
+| ece31       | Virtual Circuits Laboratory                                                          |
+| mech36      | Virtual and Remote Robotic and Mechatronic Laboratory                                |
+| ece39       | VLSI Design and Verification                                                         |
+| biotech25   | Virtual Proteomics Laboratory                                                        |
+| ece32       | Technology CAD (TCAD) Laboratory                                                     |
+| ee32        | Single Board Heater System                                                           |
+| ee33        | Power Systems Lab                                                                    |
+| biotech08   | Bioinformatics Virtual Lab I                                                         |
+| phy-sc20    | Virtual Optics Lab                                                                   |
+| phy-sc21    | Solid State Physics Virtual Lab                                                      |
+| biotech09   | Bioinformatics Virtual Lab II                                                        |
+| biotech10   | Bioinformatics Virtual Lab III                                                       |
+| biotech07   | Systems Biology Virtual Lab                                                          |
+| biotech06   | Computer-Aided Drug Design Virtual Lab                                               |
+| biotech05   | Ecology Virtual Lab                                                                  |
+| ece33       | Fading Channels and Mobile Communications                                            |
+| biotech04   | Biological Image processing Virtual Lab                                              |
+| biotech11   | Bio-inspired Robotics Virtual Lab (Remote Triggered)                                 |
+| biotech12   | Virtual Biophysics Lab (Remote Triggered)                                            |
+| biotech20   | Neurophysiology (pilot)                                                              |
+| biotech19   | Neuron Simulation Lab (pilot)                                                        |
+| biotech01   | Biochemistry Virtual Lab I                                                           |
+| biotech02   | Biochemistry Virtual Lab II                                                          |
+| biotech18   | Population Ecology Virtual Lab I                                                     |
+| biotech17   | Population Ecology Virtual Lab II                                                    |
+| biotech16   | Immunology Virtual Lab I                                                             |
+| civil18     | Soft Computing Tools in Engineering                                                  |
+| biotech15   | Immunology Virtual Lab II                                                            |
+| biotech14   | Microbiology Virtual Lab I                                                           |
+| biotech13   | Microbiology Virtual Lab II                                                          |
+| biotech03   | Molecular biology Virtual Lab I                                                      |
+| biotech21   | Molecular biology Virtual Lab II                                                     |
+| biotech22   | Cell biology Virtual Lab I                                                           |
+| biotech23   | Cell biology Virtual Lab II                                                          |
+| phy-sc22    | Virtual Mechanics Lab/Nonlinear Dynamics                                             |
+| phy-sc23    | Virtual Advanced Mechanics Lab                                                       |
+| phy-sc24    | Laser Optics Virtual Lab                                                             |
+| ee31        | Analog Signals, Network and Measurement Laboratory                                   |
+| phy-sc25    | Virtual Electricity and Magnetism Lab                                                |
+| phy-sc26    | Virtual Heat and Thermodynamics Lab                                                  |
+| phy-sc27    | Virtual Modern Physics Lab                                                           |
+| phy-sc28    | Virtual Harmonic Motion and Waves Lab                                                |
+| phy-sc29    | Virtual Physical Energy and Materials Science Lab                                    |
+| chem06      | Physical Chemistry(Amrita)                                                           |
+| chem07      | Organic Chemistry                                                                    |
+| chem09      | Inorganic Chemistry                                                                  |
+| chem08      | Electrochemistry                                                                     |
+| cse31       | Virtual Wireless and Security                                                        |
+| ee29        | Real Time Embedded Systems Laboratory                                                |
+| civil19     | Advanced Geotechnical Lab                                                            |
+| mech37      | Acoustics Virtual Lab                                                                |
+| mech38      | General Purpose Production Shop Simulation Lab                                       |
+| mech39      | Mechatronics Lab                                                                     |
+| mech40      | Nanocomposite, Fabrication, Biomaterials and Signal Processing Laboratory            |
+| mech48      | Virtual Combustion and Atomization Laboratory                                        |
+| mech41      | Manufacturing Laboratory                                                             |
+| aero02      | In-flight Particle History Lab                                                       |
+| aero03      | Aerospace Virtual laboratory                                                         |
+| phy-sc30    | Optical Device Characterizations                                                     |
+| mech42      | Kinematics and Dynamics of Mechanisms                                                |
+| phy-sc31    | Low Temp Electrical Transport and Property Measurements                              |
+| mech43      | Mechanical Sciences - Liquid Crystal                                                 |
+| mat-sc01    | Thermal Processing and Microstructural Characterization                              |
+| chem-engg03 | Binary Distillation                                                                  |
+| mech44      | Laser Based Flow Diagnostics Laboratory                                              |
+| ece34       | Advanced Communication                                                               |
+| mech45      | Internet Based Virtual CNC Lab                                                       |
+| chem-engg04 | Control Systems/Magnetic Levitation System                                           |
+| mech46      | Mechanical Engineering Lab                                                           |
+| ece35       | Microelectronics Lab                                                                 |
+| mech47      | Model Based Fault Detection Lab                                                      |
+| ece36       | Virtual Pulse, Switching and Analogue Circuits                                       |
+| biotech26   | Biomedical Instrumentation Lab                                                       |
+| ee34        | Virtual Interactive Lab                                                              |
+| dsgn-engg04 | Ergonomics Lab for Assessing Physical Aspects of Design                              |
+| ee30        | Substation Automation Lab                                                            |
+| ece37       | Advanced Pulse and Switching Lab                                                     |
+| cse32       | Information System Analysis and Design virtual Lab                                   |
+| ece38       | Semiconductor Devices Laboratory                                                     |
+| biotech24   | Plant Metabolic Pathways Virtual Laboratory                                          |
+| aero04      | Satellite Modelling and Simulation                                                   |
+| phy01       | Virtual Astrophysics Lab                                                             |
+| phy12       | Virtual Microwave Laboratory                                                         |
+| phy14       | Physical Sciences                                                                    |
+| phy19       | Virtual Laboratory on Oscillations                                                   |
+| txtl01      | Carpet Analysis                                                                      |
+| txtl02      | Electrical Conductivity                                                              |
+| txtl03      | SEM Central Facility                                                                 |
+| ece40       | Electronics Devices and Circuits                                                     |
+| civil20     | Fluid Mechanics lab                                                                                      |
+|-------------+--------------------------------------------------------------------------------------|
 
 
 * Notation
@@ -49,215 +276,49 @@ zero, one or more elements of =B=.
 | exactly one element of =B=     | r: A > B! |
 |--------------------------------+-----------|
    
-** Example of Entity Relationship notation
-    
-#+begin_example
- [email, user] : User? > Email!
-#+end_example
-
-Encodes the following items of information:
-
- - =email= is a relation /from/ the set =User= /to/ the set
-   =Email=.
-
- - =User= is called the /domain/ of the relation =email=.
-
- - =Email= is called the /codomain/ of the relation =email=.
-
- - The relation =email= relates each element of =User= to
-   /exactly one/ element of =Email=.  This is written as 
-
- #+begin_example
- email: User > Email!
- #+end_example
-
- - =user= is a relation /from/ the set =Email= /to/ the set
-   =User=.
-
- - =Email= is called the /domain/ of the relation =user=.
-
- - =User= is called the /codomain/ of the relation =user=.
-
- - The relation =user= relates each element of =Email= to
-   /at most one/ element of =User=.  This is written as 
-
- #+begin_example
- user: Email > User?
- #+end_example
-
 
 * Abstract Entity Types
   The following are the abstract data types in our system. 
-** User
+** Feedback
 :PROPERTIES:
 :CUSTOM_ID: entity_user
 :END: 
-  Requirement satisfied: [[../requirements/index.org::#req_user][User]]
+  Requirement satisfied: [[../requirements/index.org::#req_user][Feedback]]
 
 #+BEGIN_SRC spec :tangle spec.txt
 ;;; Entity Types
-TYPE User
+TYPE Feedback
 #+END_SRC
 
-** Name
+** Question
 :PROPERTIES:
 :CUSTOM_ID: entity_name
 :END: 
-  Requirement satisfied: [[../requirements/index.org::#req_user_name][Name]]
+  Requirement satisfied: [[../requirements/index.org::#req_user_name][Question]]
 #+BEGIN_SRC spec :tangle spec.txt
 ;;; Entity Types
-TYPE Name
+TYPE Question
 #+END_SRC
-** Email
+** Answer
 :PROPERTIES:
 :CUSTOM_ID: entity_email
 :END: 
-  Requirement satisfied: [[../requirements/index.org::#req_user_identification][Email]]
+  Requirement satisfied: [[../requirements/index.org::#req_user_identification][Answer]]
 #+BEGIN_SRC spec :tangle spec.txt
 ;;; Entity Types
-TYPE Email
+TYPE Answer
 #+END_SRC
 
-** Role
+** Response
 :PROPERTIES:
 :CUSTOM_ID: entity_role
 :END: 
-  Requirement satisfied: [[../requirements/index.org::#req_role][Role]]
+  Requirement satisfied: [[../requirements/index.org::#req_role][Response]]
 #+BEGIN_SRC spec :tangle spec.txt
 ;;; Entity Types
-TYPE Role (admin + reviewer + guest + OCC(OC) + NCC(NC) + NOC )
-#+END_SRC
-** NodalCentre
-:PROPERTIES:
-:CUSTOM_ID: entity_nodal_centre
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_nodal_centre][NodalCentre]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE NodalCentre (abbreviated: NC )
-#+END_SRC
-** OutreachCentre
-:PROPERTIES:
-:CUSTOM_ID: entity_outreach_centre
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_outreach_centre][OutreachCentre]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE OutreachCentre ( abbreviated: OC )
-#+END_SRC
-** Institute
-:PROPERTIES:
-:CUSTOM_ID: entity_institute
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_institute][Institute]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE Institute
-#+END_SRC
-** Session
-:PROPERTIES:
-:CUSTOM_ID: entity_session
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_session][Session]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE Session
-#+END_SRC
-** Workshop
-:PROPERTIES:
-:CUSTOM_ID: entity_workshop
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_workshop][workshop]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE Workshop
-#+END_SRC
-** Status
-:PROPERTIES:
-:CUSTOM_ID: entity_status
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_status][status]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE Status (pending + cancelled + completed + pending approval + approved + rejected)
-#+END_SRC
-** OCTarget
-:PROPERTIES:
-:CUSTOM_ID: entity_oc_target
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_oc_target][oc_target]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE OCTarget
-#+END_SRC
-** NCTarget
-:PROPERTIES:
-:CUSTOM_ID: entity_nc_target
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_nc_target][nc_target]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE NCTarget
-#+END_SRC
-** WSTarget
-:PROPERTIES:
-:CUSTOM_ID: entity_ws_target
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_ws_target][ws_target]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE WSTarget (Workshop is abbreviated to WS here)
-#+END_SRC
-** FileType
-:PROPERTIES:
-:CUSTOM_ID: entity_type
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_type][type]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE Type (This is an entity used to denote the type of artefact being uploaded)
-#+END_SRC
-** Artefact
-:PROPERTIES:
-:CUSTOM_ID: entity_artefact
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_artefact][artefact]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE Artefact 
-#+END_SRC
-** AuditEntry
-:PROPERTIES:
-:CUSTOM_ID: entity_audit_entry
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_audit_entry][audit_entry]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE AuditEntry
-#+END_SRC
-** COMMENT Operation
-:PROPERTIES:
-:CUSTOM_ID: entity_operation
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_operation][operation]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE Operation
-#+END_SRC
-** COMMENT UserStatus
-:PROPERTIES:
-:CUSTOM_ID: entity_user_status
-:END: 
-  Requirement satisfied: [[../requirements/index.org::#req_user_status][user_status]]
-#+BEGIN_SRC spec :tangle spec.txt
-;;; Entity Types
-TYPE UserStatus (active + inactive)
+TYPE Response 
 #+END_SRC
 
-Note: Outreach Centre Coordinator is abrreviated as OCC
-      Nodal Centre Coordinator is abrreviated as NCC
-      National Outreach Coordinator is abrreviated as NOC
-       
 
 * Relations and cardinality constraints over entity types 
   :PROPERTIES:
@@ -272,29 +333,9 @@ For each relation, we define its inverse next to it.
 
 ;;; Relations with cardinality constraints
 
-[email, user]          : User ?      >    Email !
-[name, user]           : User        >    Name !
-[roles, users]         : User        >    Role +
-[host, oc]             : OC ?        >    Institute ! 
-[spokes, hub]          : OC !        >    NC
-[host, nc]             : NC ?        >    Institute !
-[octargets, oc]        : OC !        >    OCTarget
-[nctargets, nc]        : NC !        >    NCTarget
-[user, sessions]       : Session     >    User !
-[role, sessions]       : Session     >    Role !
-[location, workshops]  : Workshop    >    Institute !
-[wstarget, workshop]   : Workshop ?  >    WSTarget !
-[photos, workshop]     : Workshop ?  >    Artefact +
-[reports, workshop]    : Workshop ?  >    Artefact +
-[feedback, workshop]   : Workshop ?  >    Artefact +
-[attendance, workshop] : Workshop ?  >    Artefact +
-[status, workshops]    : Workshop    >    Status !         
-[owner, workshops]     : Workshop    >    Role !
-[artefact, type]       : Type !      >    Artefact
-[operation, audit]     : AuditEntry  >    Operation !
-
-Note: if s1.user = s2.user -> 
-         s1.role != s2.role, where s1 and s2 belong to session-set
+[feedback, response]   : Feedback !  >    Response *
+[response, question]   : Response !  >    Question !
+[response, answer]     : Response !  >    Answer +
 
 #+END_SRC
 
@@ -302,40 +343,15 @@ Note: if s1.user = s2.user ->
 ** Diagrams
    The following diagrams summarizes all the cardinality constraints across all
    entities.
-*** Relationships of User
-    This diagrams depicts the relationships between User, Role, Session, Email
-    and Name entities
+
+   This diagrams depicts the relationships between User, Role, Session, Email
+   and Name entities
 #+BEGIN_HTML
-<img src="https://docs.google.com/drawings/d/1Yd7QJUEX5DlwZd0RpUtVM1zYwexTOBPJvWzGHeYXEhg/pub?w=960&h=720">
-<p align="center"> User Relations </p>
+<img src="https://docs.google.com/drawings/d/1k3AovJg7GJe65MI_LAJA_3RdMsmlP9eTC8wLBbmfwdY/pub?w=960&h=720">
+<p align="center"> Feedback Relations </p>
 
 #+END_HTML
-  To edit the user relations image click [[https://docs.google.com/drawings/d/1Yd7QJUEX5DlwZd0RpUtVM1zYwexTOBPJvWzGHeYXEhg/edit][here]]
-
-
-*** Relationships of Outreach and Nodal Centers
-p    This diagrams depicts the relationships between Nodal Center, Outreach
-    Center, their hosts and their targets. 
-
-#+BEGIN_HTML
-<img src="https://docs.google.com/drawings/d/1yTyZuVOcHjg7JACaoxGnGHcO_jc3YBULrSpziqSMBB4/pub?w=960&amp;h=720">
-<p align="center"> OC and NC Relations </p>
-#+END_HTML
-
-    To edit the user relations image click [[https://docs.google.com/drawings/d/1yTyZuVOcHjg7JACaoxGnGHcO_jc3YBULrSpziqSMBB4/edit][here]]
-
-
-*** Relationships of Workshops
-    This diagrams depicts the relationships between Workshop, its artefacts and
-    status.
-#+BEGIN_HTML
-<img src="https://docs.google.com/drawings/d/1O7VGdfUzBAu1gxf3cgPWmj1oL95dnKH-WfYed1ZKHZY/pub?w=960&amp;h=720">
-<p align="center"> Workshop and its relations </p>
-
-#+END_HTML
-
-
-  To edit the workshop relations image click [[https://docs.google.com/drawings/d/1O7VGdfUzBAu1gxf3cgPWmj1oL95dnKH-WfYed1ZKHZY/edit][here]].
+  To edit the feedback relations image click [[https://docs.google.com/drawings/d/1k3AovJg7GJe65MI_LAJA_3RdMsmlP9eTC8wLBbmfwdY/edit][here]]
 
 
 * Keys
@@ -344,49 +360,21 @@ An entity =K= is called a /key for/ an entity =A= if there
 is a relation =r: A? > K!=.
 
 |-----+-----------+------------------------------|
-|  1. | Entity    | Key                          |
+|     | Entity    | Key                          |
 |-----+-----------+------------------------------|
-|  2. | Name      | name string                  |
+|  1. | Feedback  | ip address, date             |
 |-----+-----------+------------------------------|
-|  3. | Email     | email string                 |
+|  2. | Response  | Feedback                     |
 |-----+-----------+------------------------------|
-|  4. | User      | Email                        |
+|  3. | Question  | Response                     |
 |-----+-----------+------------------------------|
-|  5. | Session   | User and Role                |
-|-----+-----------+------------------------------|
-|  6. | Institute | alphabetic string            |
-|-----+-----------+------------------------------|
-|  7. | OC        | Institute                    |
-|-----+-----------+------------------------------|
-|  8. | NC        | Institute                    |
-|-----+-----------+------------------------------|
-|  9. | OCTarget  | OC and Date                  |
-|-----+-----------+------------------------------|
-| 10. | NCTarget  | NC and Date                  |
-|-----+-----------+------------------------------|
-| 11. | Workshop  | NC, location(Institute),     |
-|     |           | name of workshop,            |
-|     |           | Date                         |
-|-----+-----------+------------------------------|
-| 12. | Status    | name of type string          |
-|-----+-----------+------------------------------|
-| 13. | WSTarget  | NCTarget, Date,              |
-|     |           | usage of type integer,       |
-|     |           | experiments of type integer, |
-|     |           | participants of type integer |
-|-----+-----------+------------------------------|
-| 14. | Type      | name of type string          |
-|-----+-----------+------------------------------|
-| 15. | Artefact  | file path                    |
+|  4. | Answer    | Response                     |
 |-----+-----------+------------------------------|
 
 
 * Assumptions
 
-1) Artifact may be photos, reports, attendance or feedback.
-2) The Session Entity also contains a 'last-active' time, which may be used to
-   delete a user if he remains inactive past a specified time and hasn't logged
-   out.
+1) Gateway IP, User id, Lab id, Discipline id will be provided by the OpenedX.
 
 
 * System state
@@ -397,25 +385,14 @@ is a relation =r: A? > K!=.
 :CUSTOM_ID: primary_entity_sets
 :END:    
 
-For the purpose of /the application/, we maintain eight primary
-state variables.  
-
-   user-set meets the requirement [[../requirements/index.org::#req_user_composition][user composition]] and session-set meets the
-   requirement [[../requirements/index.org::#req_session_login][mandatory login]]
 
 #+BEGIN_SRC spec :tangle spec.txt
 
 ;;; Primary state variables
 
 Sets
- user-set      : set[User]      ; set of users in the system
- role-set      : set[Role]      ; set of roles in the system
- session-set   : set[Session]   ; set of sessions in the system
- oc-set        : set[OC]        ; set of outreach centres in the system
- status-set    : set[Status]    ; set of all status that a wokshop can be
- type-set      : set[Type]      ; set of all types that an artefact can be
- operation-set : set[Operation] ; set of all operations that can happen on the system
- audit-set     : set[Audit]     ; set of all audit entries
+  feedback-set  : set[Feedback]  ; set of all feedbacks in the system
+  response-set  : set[Response]  ; set of all Question & Answer Responses in the system
 
  #+END_SRC
 
@@ -425,73 +402,15 @@ Sets
 :END: 
 
 #+BEGIN_SRC spec :tangle spec.txt
-  name-set           : user-set.name       ; set of names in the system
-  email-set          : user-set.email      ; set of emails in the system
-  nc-set             : oc-set.spokes       ; set of nodal centers in the system
-  oc-institute-set   : oc-set.host         ; set of institutes in the system which are OCs
-  nc-institute-set   : nc-set.host         ; set of institutes in the system which are NCs
-  ws-institute-set   : nc-set.workshops.location ; set of institutes in the system where workshops are conducted. 
-  institute-set      : oc-institute-set U nc-institute-set U ws-institute-set ;; all institutes in the system.
-  workshop-set       : nc-set.workshops     ; set of all workshops 
-  oc-target-set      : oc-set.octargets  ; set of all targets for all outreach centers
-  nc-target-set      : nc-set.nctargets  ; set of all targets for all nodal centers
-  ws-target-set      : nc-set.workshops.wstarget  ; set of all targets for all workshops in the system
-  artefact-set       : nc-set.workshops.artefacts : set of all artefacts in the system
-  logged-in-user-set : session-set.user    ; set of logged in users
-  admin-user-set     : user-set.role==admin; set of admin users
-  active-user-set    : user-set.userStatus==active; set of active users
-  inactive-user-set  : user-set.userStatus==inactive ; set of inactive users
+  question-set  : response-set.question  ; set of questions in the system
+  answer-set    : response-set.answer    ; set of answers in the system
+  
+  workshop-set : feedback-set.workshop  ; determine the workshop of each feedback identified 
+                                        ; by IP and date.  The number of feddback elements in 
+                                        ; the feedback-set that match a workshop determine the usage. 
 
-#+END_SRC
-
-
-** Referential Integrity Constraints over entity-sets
-   
-*** Admin User
-:PROPERTIES:
-:CUSTOM_ID: admin_user
-:END:    
-
-    There is atleast one user whose role is =admin=.  This rule meets
-    requirement [[../requirements/index.org::#req_role_admin][user with admin role]].
-#+BEGIN_SRC spec :tangle spec.txt
-
-;;; The admin-user
-admin-user-set     : user-set.role==admin; set of admin users
-and admin-user-set != NULL
-    
-#+END_SRC
-
-
-*** Referential Integrity over primary and derived entity sets
-:PROPERTIES:
-:CUSTOM_ID: referential_constraints
-:END: 
-
-Meets requirements [[../requirements/index.org::#req_user_uniqueness][uniqueness of a user]], [[../requirements/index.org::#req_user_role][role of a user]] and [[../requirements/index.org::#req_session_constraints][session constraints]]
-#+BEGIN_SRC spec :tangle spec.txt
-
-;;; Relation variables with Referential Integrity
-[email, user]          :  user-set !      >   email-set !
-[name, user]           :  user-set +      >   name-set !    
-[roles, users]         :  user-set        >   role-set +   
-[sessions, user]       :  user-set !      >   session-set
-[host, oc]             :  oc-set ?        >   institute-set !
-[spokes, hub]          :  oc-set !        >   nc-set
-[host, nc]             :  nc-set ?        >   institute-set !
-[octargets, oc]        :  oc-set !        >   oc-target-set
-[nctargets, nc]        :  nc-set !        >   nc-target-set
-[role, sessions]       :  session-set     >   role-set !
-[location, workshops]  :  workshop-set    >   institute-set !
-[wstarget, workshop]   :  workshop-set ?  >   ws-target-set !
-[photos, workshop]     :  workshop-set ?  >   artefact-set +
-[reports, workshop]    :  workshop-set !  >   artefact-set +
-[feedback, workshop]   :  workshop-set !  >   artefact-set +
-[attendance, workshop] :  workshop-set !  >   artefact-set +
-[status, workshops]    :  workshop-set    >   status-set !
-[owner, workshops]     :  workshop-set    >   role-set !
-[type, artefact]       :  artefact-set    >   type-set !
-[operation, audit]     :  audit-set       >   operation-set !
+  lab-usage-set      : feedback-set.exp_id ; set of all feedbacks of a lab
+  exp-usage-set      : feedback-set.exp_id ; set of all feedbacks of an experiment in a lab
 
 #+END_SRC
 
@@ -502,474 +421,94 @@ CRUD operations.
 
 Each operation is performed on an entity instance or an
 entity-set.   The operation may take additional parameters.
-It also takes as a  parameter of the credentials of the
-actor performing the operation.
 
  - C  create a user      
  - R  read from a user   
  - U  update a user      
  - D  delete a user      
 
-** Actor
-   
-Operations are performed by Actors.  Our application has 
-the  actors:  =session=. 
-
-** Add User
+** Add Question
 *** Parameters
 #+BEGIN_SRC spec :tangle spec.txt
-    u: User, s: Session
+    q: Question, s: Session
 #+END_SRC   
 *** Actor credentials
 #+BEGIN_SRC spec :tangle spec.txt
-    s.role==admin or s.role==NOC or s.role==OCC(oc) where oc:oc-set
+    s.key == key where key:key need to be passed by the client 
 #+END_SRC   
 *** Referential Integrity
 #+BEGIN_SRC spec :tangle spec.txt
     s: session-set
-    u: ~user-set
+    q: ~question-set
 #+END_SRC   
 *** Effect
 #+BEGIN_SRC spec :tangle spec.txt
-    u = new user
-    active-user-set = active-user-set U {u}
-    roles(u)= {guest}
-
+    q = new question
+    question-set = question-set U {q}
 #+END_SRC   
 
-** Add Role to a User
+
+
+** Add Answer
 *** Parameters
 #+BEGIN_SRC spec :tangle spec.txt
-    u: User, r: Role, s: Session
+    a: Answer, s: Session
 #+END_SRC   
 *** Actor credentials
 #+BEGIN_SRC spec :tangle spec.txt
-    s.role == admin or s.role == OCC(oc)
+    s.key == key where key:key need to be passed by the client 
 #+END_SRC   
 *** Referential Integrity
 #+BEGIN_SRC spec :tangle spec.txt
-    s:session-set AND
-    u:active-user-set AND
-    r: ~ roles(u)     AND      
-    (s.role == admin and 
-     r: role-set)             OR
-    (s.role == OCC(oc) and 
-     r == NCC(nc)      and
-     nc: nc-set        and 
-     hub(nc) == oc)
-
-#+END_SRC   
-*** Effect
-#+BEGIN_SRC spec :tangle spec.txt
-    r is added to u.roles
-    roles(u) = roles(u) U {r}
-#+END_SRC   
-** Add institute
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    name: Name, address: String, s: Session
-#+END_SRC   
-*** Actor credentials
-#+BEGIN_SRC spec :tangle spec.txt
-    s.role == admin or s.role == OCC(oc) or s.role == NCC(nc)
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt
-    s:session-set
-    i: ~institute-set
-#+END_SRC   
-*** Effect
-#+BEGIN_SRC spec :tangle spec.txt
-     i= newinstitute   
-     We also check that the created institute does not exist in the institute set.
-     institute-set = institute-set U {i}
-#+END_SRC   
-
-** Create OC
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    i:Institute, s:Session
-#+END_SRC   
-*** Actor Credentials
-#+BEGIN_SRC spec :tangle spec.txt
-    s.role==admin
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt
-    s:session-set
-    i:institute-set
-    i:~ oc-institute-set 
-    i:~ nc-institute-set
-#+END_SRC   
-*** Effect
-#+BEGIN_SRC spec :tangle spec.txt
-    role-set' =role-set U OCC(oc)
-#+END_SRC   
-** Create NC
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    i:Institute, oc:OC, s:Session
-#+END_SRC   
-*** Actor Credentials
-#+BEGIN_SRC spec :tangle spec.txt
-    s.role==admin or s.role==OCC(oc) and oc:oc-set
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt
-    s:session-set
-    i:institute-set  
-    i:~ nc-institute-set
-    if i : oc-institute-set
-        i.oc == oc      #Note : i.oc represtsents the oc associated with i
-#+END_SRC   
-*** Effect
-#+BEGIN_SRC spec :tangle spec.txt
-    role-set' =role-set U NCC(nc)
-#+END_SRC       
-
-** Edit OC
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    oc: OC, name: Name, s:Session
-#+END_SRC   
-*** Actor Credentials
-#+BEGIN_SRC spec :tangle spec.txt
-    s.role==admin
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt
-    s:session-set
-    oc:oc-set
-#+END_SRC   
-*** Effect
-#+BEGIN_SRC spec :tangle spec.txt
-    oc.name = name
-    role-set' =role-set U OCC(oc)
-#+END_SRC   
-** Edit NC
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    nc: NC, name: Name, s:Session
-#+END_SRC   
-*** Actor Credentials
-#+BEGIN_SRC spec :tangle spec.txt
-    s.role==admin or s.role==OCC(oc) where hub(nc)==oc
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt
-    s:session-set
-    nc:nc-set
-#+END_SRC   
-*** Effect
-#+BEGIN_SRC spec :tangle spec.txt
-    nc.name = name
-    role-set' =role-set U NCC(nc)
-#+END_SRC   
-** login
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    u: User, r:Role
-#+END_SRC   
-*** Actor Credentials
-#+BEGIN_SRC spec :tangle spec.txt
-#+END_SRC       
-*** Referential-Integrity
-#+BEGIN_SRC spec :tangle spec.txt
-    u:active-user-set
-    r:role-set
-    r:user.roles
-#+END_SRC      
-*** Effect
-#+BEGIN_SRC spec :tangle spec.txt
-    A session for that user is added to the session-set
-    s: newsession
-    session-set = session-set U {s}
-#+END_SRC   
-** logout 
-
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    s:Session
-#+END_SRC   
-*** Referential-Integrity
-#+BEGIN_SRC spec :tangle spec.txt
-    s:session-set
-#+END_SRC       
-*** Effect
-#+BEGIN_SRC spec :tangle spec.txt
-    s is removed from the session-set
-    session-set = session-set - {s}
-#+END_SRC           
-** create AuditEntry
-
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    o:Operation 
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt
-    
-#+END_SRC       
-*** Remarks
-#+BEGIN_SRC spec :tangle spec.txt
-    This function logs an Audit to the database. 
-    old-data is a string containing the values of the object before it is changed.
-    updating-entity-id contains the id of the object being changed
-    current-session-id contains the id of the session of the user who is changing the object
-
-    This function logs an AuditEntry to the database. 
-#+END_SRC          
-*** Effect
-#+BEGIN_SRC spec :tangle spec.txt
-    An AuditEntry record is created and saved in the database.
-#+END_SRC    
-** delete User
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    u: User, s:  Session
-#+END_SRC   
-*** Actor credentials
-#+BEGIN_SRC spec :tangle spec.txt    
-    s.role==admin  or s.role==OCC(oc) where oc:oc-set 
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt    
-    u: active-user-set
     s: session-set
-    u:~logged-in-user-set
-#+END_SRC       
-
-
-*** Remarks
-#+BEGIN_SRC spec :tangle spec.txt   
-   An admin can delete any user
-   A user with role OCC can delete a user with role NCC only if he belongs to
-   an NC that is a spoke of the OC. 
- #+END_SRC
+    a: ~answer-set
+#+END_SRC   
 *** Effect
 #+BEGIN_SRC spec :tangle spec.txt
-    active-user-set= active-user-set - {u}   
-    u.activeStatus=false
-    inactive-user-set = inactive-user-set U {u}
+    a = new answer
+    answer-set = answer-set U {a}
 #+END_SRC   
-** update User
+
+
+** Add Response
 *** Parameters
 #+BEGIN_SRC spec :tangle spec.txt
-    n: Name,e:Email, u: User, s:  Session
+    a: Answer, q: Question, s: Session
 #+END_SRC   
 *** Actor credentials
-#+BEGIN_SRC spec :tangle spec.txt    
-    s.role==admin or s.role==NOC or s.role==OCC(oc) where oc:oc-set
-    
+#+BEGIN_SRC spec :tangle spec.txt
+    s.key == key where key:key need to be passed by the client 
 #+END_SRC   
 *** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt    
-    u: active-user-set
+#+BEGIN_SRC spec :tangle spec.txt
     s: session-set
-    u:~logged-in-user-set
-    e:~email-set
-#+END_SRC         
-*** Effect 
-#+BEGIN_SRC spec :tangle spec.txt
-    The user details are updated.
+    a: answer-set
+    q: question-set
 #+END_SRC   
-*** Note
+*** Effect
 #+BEGIN_SRC spec :tangle spec.txt
-    Not sure if user should be logged-in. 
-    If the constraint of user not being logged in is implemented, 
-    then there should be a way to include session time-outs.
-    
-#+END_SRC      
-*** Remarks
-#+BEGIN_SRC spec :tangle spec.txt   
-   An admin can update any user.
-   A user with role OCC(oc) can update a user with role NCC(nc) such that
-   hub of nc == oc (oc:oc-set and nc:nc-set) .
-   
+    r = new response
+    response-set = response-set U {r}
 #+END_SRC   
-   
 
 
-** create workshop
+** Add Feedback
 *** Parameters
 #+BEGIN_SRC spec :tangle spec.txt
-    i: Institute, t: WSTarget, s:  Session
+    r: Response s: Session
 #+END_SRC   
 *** Actor credentials
-#+BEGIN_SRC spec :tangle spec.txt    
-    s.role==NCC(nc) where nc:nc-set
+#+BEGIN_SRC spec :tangle spec.txt
+    s.key == key where key:key need to be passed by the client 
 #+END_SRC   
 *** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt    
+#+BEGIN_SRC spec :tangle spec.txt
     s: session-set
-    i: institute-set
-#+END_SRC         
-*** Effect 
+    r: response-set
+#+END_SRC   
+*** Effect
 #+BEGIN_SRC spec :tangle spec.txt
-    w = new workshop
-    workshop-set = (workshop-set) U {w}
-    A workshop with the given details is created and added to workshop-set
+    f = new feedback
+    feedback-set = feedback-set U {f}
+    A feedback with the given responses is created and added to feedback-set
 #+END_SRC   
-*** Remarks
-#+BEGIN_SRC spec :tangle spec.txt   
-    Only a user with the role of NCC(nc) can create a workshop.   
-#+END_SRC   
-** edit workshop
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    w: Workshop, t: WSTarget, s:  Session
-#+END_SRC   
-*** Actor credentials
-#+BEGIN_SRC spec :tangle spec.txt    
-    s.role==NCC(nc) where nc:nc-set
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt    
-    s: session-set
-    w: workshop-set
-#+END_SRC         
-*** Effect 
-#+BEGIN_SRC spec :tangle spec.txt
-    A workshop is updated with the given details.
-    w.target = t
-#+END_SRC   
-*** Remarks
-#+BEGIN_SRC spec :tangle spec.txt   
-
-    A user with the role of OCC(oc) or NCC(nc) can update a workshop.
-    A user need not pass all three parameters to update the details of a workshop.
-    We did not feel the necessity for a method to delete a workshop.
-#+END_SRC   
-
-** approve workshop
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    w: Workshop, s:  Session
-#+END_SRC   
-*** Actor credentials
-#+BEGIN_SRC spec :tangle spec.txt    
-    s.role==OCC(oc) where oc:oc-set and oc == hub(nc), where nc: nc-set and nc is the nodal centre to which the workshop belongs.
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt    
-    s: session-set
-    w: workshop-set
-#+END_SRC         
-*** Effect 
-#+BEGIN_SRC spec :tangle spec.txt
-    w.status = approved
-#+END_SRC   
-*** Remarks
-#+BEGIN_SRC spec :tangle spec.txt   
-    Only a user with the role of OCC(oc) can approve a workshop.   
-#+END_SRC   
-** reject workshop
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    w: Workshop, s:  Session
-#+END_SRC   
-*** Actor credentials
-#+BEGIN_SRC spec :tangle spec.txt    
-    s.role==OCC(oc) where oc:oc-set and oc == hub(nc), where nc: nc-set and nc is the nodal centre to which the workshop belongs.
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt    
-    s: session-set
-    w: workshop-set
-#+END_SRC         
-*** Effect 
-#+BEGIN_SRC spec :tangle spec.txt
-    w.status = rejected
-#+END_SRC   
-*** Remarks
-#+BEGIN_SRC spec :tangle spec.txt   
-    Only a user with the role of OCC(oc) can reject a workshop.   
-#+END_SRC   
-** reschedule workshop
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    w: Workshop, s:  Session, wt: WSTarget
-#+END_SRC   
-*** Actor credentials
-#+BEGIN_SRC spec :tangle spec.txt    
-    s.role==NCC(nc) where nc: nc-set
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt    
-    s: session-set
-    w: workshop-set
-#+END_SRC         
-*** Effect 
-#+BEGIN_SRC spec :tangle spec.txt
-    w.target = wt
-#+END_SRC   
-*** Remarks
-#+BEGIN_SRC spec :tangle spec.txt   
-    The workshop target is changed to a new target.
-#+END_SRC   
-** add artefact
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    w: Workshop, a: Artefact, s:  Session
-#+END_SRC   
-*** Actor credentials
-#+BEGIN_SRC spec :tangle spec.txt    
-    s.role==NCC(nc) where nc:nc-set
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt    
-    s: session-set
-    w: workshop-set
-#+END_SRC         
-*** Effect 
-#+BEGIN_SRC spec :tangle spec.txt
-    a is added to w.artefacts
-    a = new artefact
-    artefacts(w) =artefacts(w) U {a}
-    The artefact is added to the workshop's artefact set.
-#+END_SRC   
-*** Remarks
-#+BEGIN_SRC spec :tangle spec.txt   
-    Artefacts may consist of photos, report, attendance or feedback.
-#+END_SRC   
-
-
-** delete artefact
-*** Parameters
-#+BEGIN_SRC spec :tangle spec.txt
-    w: Workshop, a: Artefact, s:  Session
-#+END_SRC   
-*** Actor credentials
-#+BEGIN_SRC spec :tangle spec.txt    
-    s.role==NCC(nc) where nc:nc-set
-#+END_SRC   
-*** Referential Integrity
-#+BEGIN_SRC spec :tangle spec.txt    
-    s: session-set
-    w: workshop-set
-    a: w.artefact-set
-#+END_SRC         
-*** Effect 
-#+BEGIN_SRC spec :tangle spec.txt
-    The artefact is deleted from the workshop's artefact set.
-    atefacts(w) = artefacts(w) - {a}
-#+END_SRC   
-*** Remarks
-#+BEGIN_SRC spec :tangle spec.txt   
-    Artefacts may consist of photos, report, attendance or feedback.
-#+END_SRC   
-
-
-
-
-
-
-* Workshop workflow diagram
-
-#+BEGIN_HTML
-<img src="https://docs.google.com/drawings/d/1av_XMueESqLkUdYRGZuJskeTzr9yl8_agsGq1JedMMg/pub?w=960&h=720">
-#+END_HTML
-
-   [[https://docs.google.com/drawings/d/1wz8_vM-U33oc8VuOgkMh5B7ZixISCFUWlSOUZftCebk/edit][edit image]]
-
-   
