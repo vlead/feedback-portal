@@ -1,0 +1,1405 @@
+#+TITLE: Entities
+#+AUTHOR: VLEAD
+#+DATE: [2016-06-07 Tue]
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+
+In the object implementation of the Outreach Portal, 
+all entities are Objects.  In addition, there is an object 
+called =System= that holds the state of the application 
+(=user-set=, =session-set=, etc.).
+
+Each of the entities of the data model is implemented as
+an object.  Each entity is defined via a class definition, a
+constructor and getter and setter methods that access and
+mutate the fields of the entity. 
+
+The main idea in the object model is that certain relations
+of the data model (those that are total functions) are
+implemented as /fields/.  For example the =User= object has
+a field called =email= that holds an object of type =Email=.
+
+As a start, we do not implement all relations of the data
+model.  For example, the relation =user: Email > User?= is
+not implemented.  It should be, if we desire to have an
+implementation that is /complete/ with respect to the data
+model.  Which elements of the data model are implemented and
+which are not are decisions based on the end user
+requirements of the application.
+
+
+* Base Classes
+#+NAME: base_classes
+#+BEGIN_SRC python
+Name = ClassTemplate.mk_class("Name")
+Email = ClassTemplate.mk_class("Email")
+Role = ClassTemplate.mk_class("Role")
+User = ClassTemplate.mk_class("User")
+Session = ClassTemplate.mk_class("Session")
+Institute = ClassTemplate.mk_class("Institute")
+OC = ClassTemplate.mk_class("OC")
+NC = ClassTemplate.mk_class("NC")
+Workshop = ClassTemplate.mk_class("Workshop")
+Status = ClassTemplate.mk_class("Status")
+FileType = ClassTemplate.mk_class("FileType")
+Artefact = ClassTemplate.mk_class("Artefact")
+OCTarget = ClassTemplate.mk_class("OCTarget")
+NCTarget = ClassTemplate.mk_class("NCTarget")
+WSTarget = ClassTemplate.mk_class("WSTarget")
+
+#+END_SRC
+
+
+* Type Predicates
+#+NAME: type_predicates
+#+BEGIN_SRC python
+is_name = is_inst(Name)
+check_name = check_pred(is_name)
+
+is_email = is_inst(Email)
+check_email = check_pred(is_email)
+
+is_role = is_inst(Role)
+check_role = check_pred(is_role)
+
+is_user = is_inst(User)
+check_user = check_pred(is_user)
+
+is_session = is_inst(Session)
+check_session = check_pred(is_session)
+
+is_institute = is_inst(Institute)
+check_institute = check_pred(is_institute)
+
+is_oc = is_inst(OC)
+check_oc = check_pred(is_oc)
+
+is_nc = is_inst(NC)
+check_nc = check_pred(is_nc)
+
+is_workshop = is_inst(Workshop)
+check_workshop = check_pred(is_workshop)
+
+is_status = is_inst(Status)
+check_status = check_pred(is_status)
+
+is_file_type = is_inst(FileType)
+check_file_type = check_pred(is_file_type)
+
+is_artefact = is_inst(Artefact)
+check_artefact = check_pred(is_artefact)
+
+is_oc_target = is_inst(OCTarget)
+check_oc_target = check_pred(is_oc_target)
+
+is_nc_target = is_inst(NCTarget)
+check_nc_target = check_pred(is_nc_target)
+
+is_ws_target = is_inst(WSTarget)
+check_ws_target = check_pred(is_ws_target)
+
+def are_roles_or_empty_list(rls):
+    ret_val = True
+
+    if is_list(rls):
+        for rl in rls:
+            if not is_role(rl):
+                ret_val = False
+    else:
+        ret_val = False
+
+    return ret_val
+
+def is_oc_or_none(value):
+    if value == None or is_oc(value):
+        return True
+    else:
+        return False
+
+def is_nc_or_none(value):
+    if value == None or is_nc(value):
+        return True
+    else:
+        return False
+
+def are_spokes_or_empty_list(spo):
+    ret_val = True
+    if is_list(spo):
+        for nc in spo:
+            if not is_nc(nc):
+                ret_val = False
+    else:
+        ret_val = False
+
+    return ret_val
+
+def is_user_status(s):
+    ret_val = True
+
+    if is_str(s) and (s=="active" or s=="inactive"):
+        ret_val = True
+    else:        
+        ret_val = False
+
+    return ret_val
+
+def is_workshop_or_none(value):
+    if value == None or is_workshop(value):
+        return True
+    else:
+        return False
+
+def are_workshops_or_empty_list(wkshps):
+    ret_val = True
+    if is_list(wkshps):
+        for w in wkshps:
+            if not is_workshop(w):
+                ret_val = False
+    else:
+        ret_val = False
+
+    return ret_val
+
+def are_artefacts_or_empty_list(artefacts):
+    ret_val = True
+    if is_list(artefacts):
+        for a in artefacts:
+            if not is_artefact(a):
+                ret_val = False
+    else:
+        ret_val = False
+
+    return ret_val
+
+def is_oc_target_or_none(value):
+    if value == None or is_oct(value):
+        return True
+    else:
+        return False
+
+def are_oc_targets_or_empty_list(oc_targets):
+    ret_val = True
+    if is_list(oc_targets):
+        for oct in oc_targets:
+            if not is_oc_target(oct):
+                ret_val = False
+    else:
+        ret_val = False
+
+    return ret_val
+
+
+def is_nc_target_or_none(value):
+    if value == None or is_nc_target(value):
+        return True
+    else:
+        return False
+
+def are_nc_targets_or_empty_list(nc_targets):
+    ret_val = True
+    if is_list(nc_targets):
+        for nct in nc_targets:
+            if not is_nc_target(nct):
+                ret_val = False
+    else:
+        ret_val = False
+
+    return ret_val
+
+def is_ws_target_or_none(value):
+    if value == None or is_ws_target(value):
+        return True
+    else:
+        return False
+
+def are_ws_targets_or_empty_list(ws_targets):
+    ret_val = True
+    if is_list(ws_targets):
+        for wst in ws_targets:
+            if not is_ws_target(wst):
+                ret_val = False
+    else:
+        ret_val = False
+
+    return ret_val
+
+#+END_SRC
+
+
+* Name
+=Name= is a value class with type =is_alphabetic_str=.
+
+#+NAME: class_Name
+#+begin_src python
+Name.add_attributes(name=is_alphabetic_str)
+Name.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("name") == other.get("name")
+
+#+end_src
+
+*** Test Name
+#+NAME: class_TestName
+#+BEGIN_SRC python
+class TestName(TestCase):
+    TESTING = True
+
+    def test_instantiate_name(self):
+        print "test_instantiate_name"
+        self.assertEqual(is_name(Name(name="Jimi Hendrix")), True)
+        self.assertEqual(Name(name="Jimi Hendrix").get("name"), "Jimi Hendrix")
+        self.assertRaises(TypeError, Name, name="Jimi 123 Hendrix")
+
+    def test_name_equality(self):
+        print "test_name_equality"
+        self.assertEqual(Name(name="Jimi Hendrix") == 
+                         Name(name="Jimi Hendrix"), 
+                         True)
+
+        self.assertEqual(Name(name="Jimi Hendrix") == 
+                         Name(name="Bo Didley"), 
+                         False)
+
+#+END_SRC
+
+
+* Email
+=Name= is a value class with type =is_email_str=.
+#+NAME: class_Email
+#+begin_src python
+Email.add_attributes(email=is_email_str)
+
+Email.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("email") == other.get("email")
+
+#+end_src
+
+** Test Email
+#+NAME: class_TestEmail
+#+BEGIN_SRC python
+class TestEmail(TestCase):
+    TESTING = True
+
+    def test_instantiate_email(self):
+        print "test_instantiate_email"
+        self.assertEqual(is_email(Email(email="jimi@gnu.org")), True)
+        self.assertEqual(Email(email="jimi@gnu.org").get("email"),
+                             "jimi@gnu.org")
+        self.assertRaises(TypeError, Name, name="jimi@@gnu.org")
+
+
+    def test_equality_of_email(self):
+        print "test_equality_of_email"
+        self.assertEqual(Email(email="jimi@gnu.org") ==
+                             Email(email="jimi@gnu.org"), True)
+        
+        self.assertEqual(Email(email="didley@gnu.org") ==
+                             Email(email="jimi@gnu.org"), False)
+
+#+END_SRC
+
+
+* Role
+   =Role= is an entity that has a field =name= which is an alphabetic string
+
+#+NAME: class_Role
+#+BEGIN_SRC python
+Role = ClassTemplate.mk_class("Role", 
+                              name=is_alphabetic_str,
+                              centre_oc=is_oc_or_none,
+                              centre_nc=is_nc_or_none)
+
+Role.__eq__ = lambda self,other: \
+	    isinstance(other, self.__class__) and \
+	    self.get("name") == other.get("name") and \
+            self.get('centre_oc') == other.get('centre_oc') and \
+            self.get('centre_nc') == other.get('centre_nc')
+
+Role.admin = Role(name="admin", centre_oc=None, centre_nc=None)
+Role.reviewer = Role(name="reviewer", centre_oc=None, centre_nc=None)
+Role.guest = Role(name="guest", centre_oc=None, centre_nc=None)
+Role.is_admin = lambda role: role.name == 'admin'
+Role.is_reviewer = lambda role: role.name == 'reviewer'
+Role.is_guest = lambda role: role.guest == 'guest'
+
+#+END_SRC
+
+** Test Role
+#+NAME: class_TestRole
+#+BEGIN_SRC python
+class TestRole(TestCase):
+    TESTING = True
+
+    def test_instantiate_role(self):
+        print "test_instantiate_role"
+        a_role = Role(name="admin", centre_oc=None, centre_nc=None)
+        self.assertEqual(is_role(a_role), True)
+        self.assertEqual(a_role.get("name"), "admin")
+        self.assertRaises(TypeError, Role, name="admin123", centre=None)
+
+    def test_set_and_get_role(self):
+        print "test_sets_on_role"
+        u_role = Role(name="guest", centre_oc=None, centre_nc=None)
+        self.assertEqual(u_role.get("name"), "guest")
+        u_role.set(name="admin")
+        self.assertEqual(u_role.get("name"), "admin")
+
+    # def test_set_and_get_centre(self):
+    #     print "test_set_and_get_centre"
+    #     oc = OC(institute=Institute(name="IIITH", address="Hyderabad"),spokes=[], oc_target = None)
+    #     occ_role = Role(name="OCC", centre_oc=oc,centre_nc=None)
+    #     self.assertEqual(occ_role.get("name"), "OCC")
+    #     self.assertEqual(occ_role.get("centre_oc"), oc)
+
+#+END_SRC
+
+
+* User
+  A =User= entity has fields =name= of type =Name=, =email= of type =Email= and
+  role of type =Role=.
+
+#+NAME: class_User
+#+BEGIN_SRC python
+User.add_attributes(name=is_name, 
+                    email=is_email,
+                    roles=are_roles_or_empty_list)
+
+User.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("email") == other.get("email")
+
+def append_role(self,role):
+    if is_role(role):
+        roles = self.get('roles')
+        roles.append(role)
+        self.set(roles=roles)
+
+User.append_role = append_role
+
+#+END_SRC
+
+** Test User
+#+Name: class_TestUser
+#+BEGIN_SRC python
+class TestUser(TestCase):
+    TESTING = True
+
+    def test_instantiate_user(self):
+        print "test_instantiate_user"
+        user = User(name=Name(name="Jimi Hendrix"),
+                    email=Email(email="jimi@gnu.org"),
+                    roles=[])
+
+        self.assertEqual(is_user(user), True)
+
+    def test_sets_on_user(self):
+        print "test_sets_on_user"
+        user = User(name=Name(name="Jimi Hendrix"),
+                    email=Email(email="jimi@gnu.org"),
+                    roles=[Role(name="guest", centre_oc=None, centre_nc=None)]
+                    )
+
+        self.assertEqual(user.get("name").get("name"), "Jimi Hendrix")
+        self.assertEqual(user.get("email").get("email"), "jimi@gnu.org")
+        self.assertEqual(user.get("roles")[0].get("name"), "guest")
+
+    def test_equality_on_user(self):
+        print "test_equality_on_user"
+        user1 = User(name=Name(name="Jimi Hendrix"),
+                     email=Email(email="jimi@gnu.org"),
+                     roles=[])
+
+        user2 = User(name=Name(name="Jimi Hendrix"),
+                     email=Email(email="jimi@gnu.org"),
+                     roles=[]) 
+
+        user3 = User(name=Name(name="John Roy"),
+                     email=Email(email="roy@gnu.org"),
+                     roles=[])
+
+        self.assertEqual(user1 == user2, True)
+        self.assertEqual(user1 == user3, False)
+        
+    def test_append_role(self):
+        print "test_append_role"
+        user = User(name=Name(name="Jimi Hendrix"),
+                     email=Email(email="jimi@gnu.org"),
+                     roles=[])
+
+        user.append_role(Role(name="guest", centre_oc=None, centre_nc=None))
+        self.assertTrue(len(user.get('roles')) == 1)
+
+#+END_SRC
+
+
+* Session
+    A session stores the user information.  The session object defines the set
+    of operations allowed by the system.
+
+#+NAME: class_Session
+#+BEGIN_SRC python
+Session.add_attributes(user=is_user, role=is_role)
+Session.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("user") == other.get("user") and \
+                  self.get("role") == other.get("role") 
+
+#+END_SRC
+
+** Test Session
+
+   Test cases to test Seesion entity
+
+#+NAME: class_TestSession
+#+BEGIN_SRC python
+class TestSession(TestCase):
+    TESTING = True
+
+    def test_instantiate_session(self):
+        print "test_instantiate_user"
+        user = User(name=Name(name="Jimi Hendrix"),
+                    email=Email(email="jimi@gnu.org"),
+                    roles=[])
+
+        role = Role(name="admin", centre_oc=None, centre_nc=None)
+        session = Session(user=user, role=role)
+        self.assertEqual(is_session(session), True)
+
+    def test_sets_on_session(self):
+        print "test_sets_on_session"
+        user = User(name=Name(name="Jimi Hendrix"),
+                    email=Email(email="jimi@gnu.org"),
+                    roles=[])
+
+        role = Role(name="admin", centre_oc=None, centre_nc=None)
+        session = Session(user=user, role=role)
+
+        user = User(name=Name(name="Bo Didley"),
+                    email=Email(email="didley@gnu.org"),
+                    roles=[])
+
+        session.set(user=user)
+        self.assertEqual(session.get("user").get("email").get("email"),
+                         "didley@gnu.org")
+
+    def test_equality_on_session(self):
+        print "test_equality_on_session"
+        role1 = Role(name="admin", centre_oc=None, centre_nc=None)
+        role2 = Role(name="occ", centre_oc=None, centre_nc=None)
+
+        user1 = User(name=Name(name="Jimi Hendrix"),
+                    email=Email(email="jimi@gnu.org"),
+                    roles=[role1])
+
+        user2 = User(name=Name(name="Jimi Hendrix"),
+                    email=Email(email="jimi@gmail.org"),
+                    roles=[role1])
+
+        session1 = Session(user=user1, role=role1)
+        session2 = Session(user=user1, role=role1)
+        session3 = Session(user=user2, role=role1)
+        self.assertEqual(session1 == session2, True)
+        self.assertEqual(session1 == session3, False)
+
+#+END_SRC
+
+
+* Institute
+
+=Institute= is an entity that has two fields =name= which is an alphabetic
+string and =address= which is a string
+
+#+NAME: class_Institute
+#+BEGIN_SRC python
+
+Institute.add_attributes(name=is_alphabetic_str, address=is_str)
+
+Institute.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("name") == other.get("name")
+
+#+END_SRC
+
+** Test Institute
+#+NAME: class_TestInstitute
+#+BEGIN_SRC python
+class TestInstitute(TestCase):
+    TESTING = True
+
+    def test_instantiate_institute(self):
+        print "test_instantiate_institute"
+        institute = Institute(name="IIIT",address="Hyderabad")
+        self.assertEqual(is_institute(institute), True)
+        self.assertEqual(institute, institute)
+        self.assertEqual(institute.get("name"), "IIIT")
+        self.assertRaises(TypeError, Institute, name="IIIT123")
+
+    def test_equality_on_institute(self):
+        print "test_equality_on_institute"
+        institute1 = Institute(name="IIIT",address="Hyderabad")
+        institute2 = Institute(name="IIIT",address="Hyderabad")
+        institute3 = Institute(name="IITD",address="Delhi")
+        self.assertEqual(institute1 == institute2, True)
+        self.assertEqual(institute1 == institute3, False)
+
+#+END_SRC
+
+
+* OC
+  A =OC= entity has fields =name= of type =Name=,
+  institute of type =Institute=.
+
+#+NAME: class_OC
+#+BEGIN_SRC python
+OC.add_attributes(institute=is_institute, 
+                  spokes=are_spokes_or_empty_list,
+                  oc_targets=are_oc_targets_or_empty_list)
+
+OC.__eq__ = lambda self,other: \
+	    isinstance(other, self.__class__) and \
+	    self.get("institute") == other.get("institute")
+
+def append_spoke_to_oc(self, spoke):
+    if is_nc(spoke):
+        spokes = self.get('spokes')
+        spokes.append(spoke)
+        self.set(spokes=spokes)
+
+def add_oc_target_to_oc(self, oc_target):
+    if is_oc_target(oc_target):
+        oc_targets = self.get("oc_targets")
+        oc_targets.append(oc_target)
+        self.set(oc_targets=oc_targets)
+
+OC.append_spoke = append_spoke_to_oc
+OC.add_oc_target = add_oc_target_to_oc
+
+#+END_SRC
+
+** Test OC
+#+NAME: class_TestOC
+#+BEGIN_SRC python
+class TestOC(TestCase):
+    TESTING = True
+
+    def test_instatiate_OC(self):
+        print "test_instantiate_OC"
+        oc = OC(institute=Institute(name="IIITH", address="Hyderabad"),
+                spokes=[], 
+                oc_targets=[])
+
+        self.assertEqual(is_oc(oc), True)
+        self.assertEqual(oc.get("institute").get("name"), "IIITH")
+
+    def test_set_spokes_on_OC(self):
+        print "test_set_spokes_on_oc"
+        oc = OC(institute=Institute(name="IIITH",address="Hyderabad"),
+                spokes=[], 
+                oc_targets=[])
+
+        nc = NC(institute=Institute(name="HCU",address="Hyderabad"),
+                    hub=oc, nc_targets=[], workshops=[])
+        
+        self.assertEqual((nc.get("institute")).get("name"), "HCU")
+
+        oc.append_spoke(nc)
+
+        self.assertEqual(oc.get('spokes')[0].get("institute").get("name"),
+                             "HCU")
+
+    def test_add_oc_target_to_OC(self):
+        print "test_add_oc_target_to_OC"
+        oc = OC(institute=Institute(name="IIITH",address="Hyderabad"),
+                spokes=[], 
+                oc_targets=[])
+        date_check = "2016-06-12"
+        date_format = "%Y-%m-%d"
+        date = datetime.datetime.strptime(date_check, date_format).date()
+        oc_target = OCTarget(usage=300, oc=oc, nc_targets=[], date=date)
+
+        oc.add_oc_target(oc_target)
+        self.assertEqual(oc.get("oc_targets")[0].get("usage"), 300)
+
+    def test_to_client_OC(self):
+        print "test_to_client_oc"
+
+        oc = OC(institute=Institute(name="IIITH",address="Hyderabad"),
+                spokes=[], 
+                oc_targets=[])
+        oc_dict = oc.to_client()
+
+        self.assertEqual("IIITH", oc_dict['institute']['name'])
+        self.assertEqual("Hyderabad", oc_dict['institute']['address'])
+    
+    def test_equality_of_oc(self):
+        print "test_equality_of_oc"
+        oc1 = OC(institute=Institute(name="IIITH",address="Hyderabad"),
+                 spokes=[], oc_targets=[])
+        oc2 = OC(institute=Institute(name="IIITH",address="Hyderabad"),
+                 spokes=[], oc_targets=[])
+        oc3 = OC(institute=Institute(name="IITD",address="Delhi"),
+                 spokes=[], oc_targets=[])
+        
+        self.assertEqual(oc1 == oc2, True)
+        self.assertEqual(oc1 == oc3, False)
+        
+#+END_SRC
+
+
+* NC
+  A =NC= entity has fields =name= of type =Name=,
+ institute of type =Institute=.
+#+NAME: class_NC
+#+BEGIN_SRC python
+NC.add_attributes(institute=is_institute, 
+                  hub=is_oc, 
+                  nc_targets=are_nc_targets_or_empty_list,
+                  workshops=are_workshops_or_empty_list)
+
+NC.__eq__ = lambda self,other: \
+	    isinstance(other, self.__class__) and \
+	    self.get("institute") == other.get("institute")
+
+def add_workshop_to_nc(self, workshop):
+    if is_workshop(workshop):
+        workshops = self.get("workshops")
+        workshops.append(workshop)
+        self.set(workshops=workshops)
+
+def add_nc_target_to_nc(self, nc_target):
+    if is_nc_target(nc_target):
+        nc_targets = self.get("nc_targets")
+        nc_targets.append(nc_target)
+        self.set(nc_targets=nc_targets)
+
+NC.add_workshop = add_workshop_to_nc
+NC.add_nc_target = add_nc_target_to_nc
+
+#+END_SRC
+
+** Test NC
+
+#+NAME: class_TestOC
+#+BEGIN_SRC python
+class TestNC(TestCase):
+    TESTING = True
+
+    def test_instatiate_NC(self):
+        print "test_instantiate_NC"
+        nc = NC(institute=Institute(name="HCU",address="Hyderabad"), 
+                hub=OC(institute=Institute(name="IIITH", address="Hyderabad"),
+                spokes=[], oc_targets=[]), 
+                nc_targets=[],
+                workshops=[])
+        nc.get("hub").append_spoke(nc)
+        self.assertEqual(is_nc(nc), True)
+        
+    def test_equality_of_nc(self):
+        print "test_equality_of_nc"
+        nc1 = NC(institute=Institute(name="HCU",address="Hyderabad"), 
+                 hub=OC(institute=Institute(name="IIITH", address="Hyderabad"),
+                 spokes=[], oc_targets=[]), 
+                 nc_targets=[],
+                 workshops=[])
+        nc2 = NC(institute=Institute(name="HCU",address="Hyderabad"), 
+                 hub=OC(institute=Institute(name="IIITH", address="Hyderabad"),
+                 spokes=[], oc_targets=[]), 
+                 nc_targets=[],
+                 workshops=[])
+        nc3 = NC(institute=Institute(name="NITK",address="karnataka"), 
+                 hub=OC(institute=Institute(name="IIITH", address="Hyderabad"),
+                 spokes=[], oc_targets=[]), 
+                 nc_targets=[],
+                 workshops=[])
+        self.assertEqual(nc1 == nc2, True)
+        self.assertEqual(nc1 == nc3, False)
+
+#+END_SRC
+
+
+* Status
+   =Status= is an entity that has a field =name= which is an alphabetic string
+
+#+NAME: class_Status
+#+BEGIN_SRC python
+Status.add_attributes(name=is_alphabetic_str)
+Status.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("name") == other.get("name")
+
+Status.pending = Status(name="pending")
+Status.cancelled = Status(name="cancelled")
+Status.completed = Status(name="completed")
+Status.pending_approval = Status(name="pending for approval")
+Status.rejected = Status(name="rejected")
+Status.approved = Status(name="approved")
+
+Status.is_pending = lambda status: status.get('name') == 'pending'
+Status.is_cancelled = lambda status: status.get('name') == 'cancelled'
+Status.is_completed = lambda status: status.get('name') == 'completed'
+Status.is_pending_approval = lambda status: status.get('name') == 'pending for approval'
+Status.is_rejected = lambda status: status.get('name') == 'rejected'
+Status.is_approved = lambda status: status.get('name') == 'approved'
+
+#+END_SRC
+
+** Test Status
+#+NAME: class_TestStatus
+#+BEGIN_SRC python
+class TestStatus(TestCase):
+    TESTING = True
+
+    def test_instantiate_status(self):
+        print "test_instantiate_status"
+        self.assertEqual(is_status(Status(name="completed")), True)
+        a_status = Status(name="completed")
+        self.assertEqual(check_status(a_status), a_status)
+        self.assertEqual(Status(name="completed").get("name"), "completed")
+        self.assertRaises(TypeError, Status, name="invalid123")
+
+    def test_set_and_get_status(self):
+        print "test_sets_on_status"
+        u_status = Status(name="completed")
+        self.assertEqual(u_status.get("name"), "completed")
+        u_status.set(name="pending for approval")
+        self.assertEqual(u_status.get("name"), "pending for approval")
+
+    def test_equality_on_status(self):
+        print "test_equality_on_status"
+        self.assertEqual(Status.pending == Status.pending, True)
+        self.assertEqual(Status.completed == Status.pending, False)
+
+#+END_SRC
+
+
+* Workshop
+  A workshop is an entity that takes two arguments Institute, and Target.
+
+#+NAME: class_Workshop
+#+BEGIN_SRC python
+Workshop.add_attributes(name=is_alphabetic_str,
+                         institute=is_institute, 
+                         ws_target=is_ws_target,
+                         nc=is_nc, 
+                         artefacts=are_artefacts_or_empty_list,
+                         status=is_status,
+                         date=is_date,
+                         usage=is_int,
+                         participants=is_int,
+                         experiments=is_int)
+
+Workshop.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("name") == other.get("name") and \
+                  self.get("institute") == other.get("institute") and \
+                  self.get("nc") == other.get("nc") and \
+                  self.get("date") == other.get("date")
+
+def add_artefact(self, artefact):
+    if is_artefact(artefact):
+        artefacts = self.get("artefacts")
+        artefacts.append(artefact)
+        self.set(artefacts=artefacts)
+
+def add_ws_target_to_workshop(self, ws_target):
+    if is_ws_target(ws_target):
+        self.set(ws_target=ws_target)
+
+Workshop.add_artefact = add_artefact
+Workshop.add_ws_target = add_ws_target_to_workshop
+
+#+END_SRC
+
+** Test Workshop
+
+   Test cases to test workshop entity
+
+#+NAME: class_TestWorkshop
+#+BEGIN_SRC python
+class TestWorkshop(TestCase):
+    TESTING = True
+    print "Test create workshop"
+    def test_instatiate_Workshop(self):
+        print "test_instantiate_workshop"
+        status = Status(name="pending")
+        oc = OC(institute=Institute(name="IIITH", 
+                address="Hyderabad"), 
+                oc_targets=[], spokes=[])
+        nc = NC(institute=Institute(name="IIITH",address="Hyderabad"), 
+                hub=oc, nc_targets=[], workshops=[])
+
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        oc_target = OCTarget(usage=400, date=date, oc=oc, nc_targets=[])
+        nc_target = NCTarget(usage=400, date=date, nc=nc, 
+                             oc_target=oc_target, ws_targets=[])
+        ws_target = WSTarget(usage=4000, participants=200, experiments=20,
+                                 date=date, nc_target=nc_target)
+
+        workshop = Workshop(name="Test workshop",
+                            institute=Institute(name="IIITH", 
+                                                address="Hyderabad"), 
+                            nc=nc,
+                            ws_target=ws_target,
+                            status=status, 
+                            artefacts=[],
+                            date=date,
+                            participants=0,
+                            experiments=0,
+                            usage=0)
+
+        self.assertEqual(is_workshop(workshop), True)
+    
+    def test_equality_on_workshop(self):
+        print "test_equality_on_workshop"
+        status = Status(name="pending")
+        oc = OC(institute=Institute(name="IIITH", 
+                address="Hyderabad"), 
+                oc_targets=[], spokes=[])
+        nc = NC(institute=Institute(name="IIITH",address="Hyderabad"), 
+                hub=oc, nc_targets=[], workshops=[])
+
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+        oc_target = OCTarget(usage=400, date=date, oc=oc, nc_targets=[])
+        nc_target = NCTarget(usage=400, date=date, nc=nc, 
+                             oc_target=oc_target, ws_targets=[])
+        ws_target = WSTarget(usage=4000, participants=200, experiments=20,
+                                 date=date, nc_target=nc_target)
+
+        workshop1 = Workshop(name="Test workshop",
+                             institute=Institute(name="IIITH", 
+                             address="Hyderabad"), 
+                             nc=nc,
+                             ws_target=ws_target,
+                             status=status, 
+                             artefacts=[],
+                             date=date,
+                             participants=0,
+                             experiments=0,
+                             usage=0)
+
+        workshop2 = Workshop(name="Test workshop",
+                             institute=Institute(name="IIITH", 
+                             address="Hyderabad"), 
+                             nc=nc,
+                             ws_target=ws_target,
+                             status=status, 
+                             artefacts=[],
+                             date=date,
+                             participants=200,
+                             experiments=0,
+                             usage=500)
+
+        date = datetime.datetime.strptime("30-07-2017", "%d-%m-%Y").date()
+        workshop3 = Workshop(name="Test workshop",
+                             institute=Institute(name="IIITH", 
+                             address="Hyderabad"), 
+                             nc=nc,
+                             ws_target=ws_target,
+                             status=status, 
+                             artefacts=[],
+                             date=date,
+                             participants=200,
+                             experiments=0,
+                             usage=500)
+
+        self.assertEqual(is_workshop(workshop1), True)
+        self.assertEqual(workshop1 == workshop2, True)
+        self.assertEqual(workshop1 == workshop3, False)
+        
+#+END_SRC
+
+
+* FileType
+   =Type= is an entity that has a field =name= which is an alphabetic string
+
+#+NAME: class_FileType
+#+BEGIN_SRC python
+FileType.add_attributes(name=is_alphabetic_str)
+FileType.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("name") == other.get("name")
+
+FileType.photo = FileType(name="photo")
+FileType.feedback = FileType(name="feedback")
+FileType.report = FileType(name="report")
+FileType.attendance = FileType(name="attendance")
+
+#+END_SRC
+
+** Test File Type
+#+NAME: class_TestFileType
+#+BEGIN_SRC python
+class TestFileType(TestCase):
+    TESTING = True
+
+    def test_instantiate_file_type(self):
+        print "test_instantiate_file_type_objects_entities"
+        self.assertEqual(is_file_type(FileType(name="photo")), True)
+        file_type = FileType.photo
+        self.assertEqual(check_file_type(file_type), file_type)
+        self.assertRaises(TypeError, FileType, name="invalid123")
+
+    def test_set_and_get_file_type(self):
+        print "test_sets_on_file_type"
+        u_type = FileType(name="feedback")
+        self.assertEqual(u_type.get("name"), "feedback")
+        u_type.set(name="photo")
+        self.assertEqual(u_type.get("name"), "photo")
+
+    def test_equality_on_file_type(self):
+        print "test_equality_on_type"
+        self.assertEqual(FileType(name="feedback") == FileType(name="feedback"), True)
+        self.assertEqual(FileType(name="feedback") == FileType(name="complaines"), False)
+    
+#+END_SRC
+
+
+* Artefact
+#+NAME: class_Artefact
+#+BEGIN_SRC python
+Artefact.add_attributes(name=is_alphabetic_str, 
+                        path=is_string,
+                        file_type=is_file_type,
+                        workshop=is_workshop)
+
+Artefact.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("path") == other.get("path")
+
+#+END_SRC
+
+** Test Artefact
+#+NAME: class_TestArtefact
+#+BEGIN_SRC python
+class TestArtefact(TestCase):
+    TESTING = True
+
+    def test_instantiate_artefact(self):
+        print "test_instantiate_artefact"
+
+        status = Status(name="pending")
+        oc = OC(institute=Institute(name="IIITH", 
+                address="Hyderabad"), 
+                oc_targets=[], spokes=[])
+        nc = NC(institute=Institute(name="IIITH",address="Hyderabad"), 
+                hub=oc, nc_targets=[], workshops=[])
+
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        oc_target = OCTarget(usage=400, date=date, oc=oc, nc_targets=[])
+        nc_target = NCTarget(usage=400, date=date, nc=nc, 
+                             oc_target=oc_target, ws_targets=[])
+        ws_target = WSTarget(usage=4000, participants=200, experiments=20,
+                                 date=date, nc_target=nc_target)
+
+        workshop = Workshop(name="Test workshop",
+                            institute=Institute(name="IIITH", 
+                                                address="Hyderabad"), 
+                            nc=nc,
+                            ws_target=ws_target,
+                            status=status, 
+                            artefacts=[],
+                            date=date,
+                            participants=0,
+                            experiments=0,
+                            usage=0)
+
+        artefact = Artefact(name="attendance", 
+                     path="/home/file.txt", 
+                     file_type=FileType(name="attendance"),
+                     workshop=workshop)
+
+        self.assertEqual(is_artefact(artefact), True)
+        self.assertEqual(artefact.get("file_type").get("name"), "attendance")
+        self.assertRaises(TypeError, Artefact, name="123")
+
+    def test_equality_on_artefact(self):
+        print "test_equality_on_artefact"
+
+        status = Status(name="pending")
+        oc = OC(institute=Institute(name="IIITH", 
+                address="Hyderabad"), 
+                oc_targets=[], spokes=[])
+        nc = NC(institute=Institute(name="IIITH",address="Hyderabad"), 
+                hub=oc, nc_targets=[], workshops=[])
+
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        oc_target = OCTarget(usage=400, date=date, oc=oc, nc_targets=[])
+        nc_target = NCTarget(usage=400, date=date, nc=nc, 
+                             oc_target=oc_target, ws_targets=[])
+        ws_target = WSTarget(usage=4000, participants=200, experiments=20,
+                                 date=date, nc_target=nc_target)
+
+        workshop = Workshop(name="Test workshop",
+                            institute=Institute(name="IIITH", 
+                                                address="Hyderabad"), 
+                            nc=nc,
+                            ws_target=ws_target,
+                            status=status, 
+                            artefacts=[],
+                            date=date,
+                            participants=0,
+                            experiments=0,
+                            usage=0)
+
+        artefact1 = Artefact(name="attendance", 
+                                 path="/home/file.txt", 
+                                 file_type=FileType(name="attendance"),
+                                 workshop=workshop)
+
+        artefact2 = Artefact(name="attendance", 
+                                 path="/home/file.txt", 
+                                 file_type=FileType(name="attendance"),
+                                 workshop=workshop)
+
+        artefact3 = Artefact(name="attendance", 
+                                 path="/home/vlead/file.txt", 
+                                 file_type=FileType(name="attendance"),
+                                 workshop=workshop)
+
+        self.assertEqual(artefact1 == artefact2, True)
+        self.assertEqual(artefact1 == artefact3, False)
+        
+#+END_SRC
+
+
+* OCTarget
+#+NAME: class_OCTarget
+#+BEGIN_SRC python
+OCTarget.add_attributes(usage=is_int, 
+                        date=is_date, 
+                        oc=is_oc,
+                        nc_targets=are_nc_targets_or_empty_list)
+
+OCTarget.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("date") == other.get("date") and \
+                  self.get("oc") == other.get("oc")
+
+#+END_SRC
+
+** Test OCTarget
+#+NAME: class_TestOCTarget
+#+BEGIN_SRC python
+class TestOCTarget(TestCase):
+    TESTING = True
+
+    def test_instantiate_octarget(self):
+        print "test_instantiate_octarget"
+        date_format = "%Y-%m-%d"
+        t_date = datetime.date.today()
+        date = datetime.datetime.strptime(str(t_date), date_format).date()
+        oc = OC(institute=Institute(name="IIITH", 
+                address="Hyderabad"), 
+                oc_targets=[], spokes=[])
+
+        oc_target = OCTarget(usage=300, date=date, oc=oc, nc_targets=[])
+        self.assertEqual(is_oc_target(oc_target), True)
+        self.assertEqual(oc_target.get("usage"), 300)
+        self.assertRaises(TypeError, OCTarget, usage = "abc")
+
+    def test_equality_of_octarget(self):
+        print "test_equality_of_octarget"
+
+        date_str_1 = "2016-06-30"
+        date_str_2 = "2017-07-30"
+        date_format = "%Y-%m-%d"
+        date = datetime.datetime.strptime(date_str_1, date_format).date()
+        oc = OC(institute=Institute(name="IIITH", 
+                address="Hyderabad"), 
+                oc_targets=[], spokes=[])
+
+        oc_target_1 = OCTarget(usage=300, date=date, oc=oc, nc_targets=[])
+        oc_target_2 = OCTarget(usage=300, date=date, oc=oc, nc_targets=[])
+        date = datetime.datetime.strptime(date_str_2, date_format).date()
+        oc_target_3 = OCTarget(usage=300, date=date, oc=oc, nc_targets=[])
+
+        self.assertEqual(oc_target_1 == oc_target_2, True)
+        self.assertEqual(oc_target_1 == oc_target_3, False)
+
+#+END_SRC
+
+
+* NCTarget
+#+NAME: class_NCTarget
+#+BEGIN_SRC python
+NCTarget.add_attributes(usage=is_int, 
+                            date=is_date, 
+                            ws_targets=are_ws_targets_or_empty_list,
+                            oc_target=is_oc_target,
+                            nc=is_nc)
+
+NCTarget.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("nc") == other.get("nc") and \
+                  self.get("date") == other.get("date")
+
+#+END_SRC
+
+** Test NCTarget
+#+NAME: class_TestNCTarget
+#+BEGIN_SRC python
+class TestNCTarget(TestCase):
+    TESTING = True
+
+    def test_instantiate_nctarget(self):
+        print "test_instantiate_nctarget"
+
+        date_str = "2016-06-30"
+        date_format = "%Y-%m-%d"
+        date = datetime.datetime.strptime(date_str, date_format).date()
+        oc = OC(institute=Institute(name="IIITH", 
+                address="Hyderabad"), 
+                oc_targets=[], spokes=[])
+
+        nc = NC(institute=Institute(name="IIITH", address="Hyderabad"), 
+                hub=oc, nc_targets=[], workshops=[])
+
+        oc_target = OCTarget(usage=3000, date=date, oc=oc, nc_targets=[])
+
+        nc_target = NCTarget(usage=300, 
+                                 date=date, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+
+        self.assertEqual(is_nc_target(nc_target), True)
+        self.assertEqual(nc_target.get("usage"), 300)
+        self.assertRaises(TypeError, NCTarget, usage = "abc")
+ 
+    def test_equality_of_nctarget(self):
+        print "test_equality_of_nctarget"
+        date_str_1 = "2016-06-30"
+        date_str_2 = "2017-06-30"
+        date_format = "%Y-%m-%d"
+        date_1 = datetime.datetime.strptime(date_str_1, date_format).date()
+        date_2 = datetime.datetime.strptime(date_str_2, date_format).date()
+        oc = OC(institute=Institute(name="IIITH", 
+                address="Hyderabad"), 
+                oc_targets=[], spokes=[])
+
+        nc = NC(institute=Institute(name="IIITH", address="Hyderabad"), 
+                hub=oc, nc_targets=[], workshops=[])
+
+        oc_target = OCTarget(usage=3000, date=date_1, oc=oc, nc_targets=[])
+
+        nc_target_1 = NCTarget(usage=300, 
+                                 date=date_1, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+
+        nc_target_2 = NCTarget(usage=300, 
+                                 date=date_1, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+
+        nc_target_3 = NCTarget(usage=300, 
+                                 date=date_2, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+
+        self.assertEqual(nc_target_1 == nc_target_2, True)
+        self.assertEqual(nc_target_1 == nc_target_3, False)
+
+#+END_SRC
+
+
+* WSTarget
+#+NAME: class_WSTarget
+#+BEGIN_SRC python
+
+WSTarget.add_attributes(usage=is_int,
+                        participants=is_int, 
+                        experiments=is_int, 
+                        date=is_date, 
+                        nc_target=is_nc_target)
+
+WSTarget.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("date") == other.get("date")
+
+def add_workshop_to_ws_target(self, workshop):
+    if is_workshop(workshop):
+        self.set(workshop=workshop)
+
+WSTarget.add_workshop = add_workshop_to_ws_target
+
+#+END_SRC
+
+** Test WSTarget
+#+NAME: class_TestWSTarget
+#+BEGIN_SRC python
+class TestWSTarget(TestCase):
+    TESTING = True
+
+    def test_instantiate_wstarget(self):
+        print "test_instantiate_wstarget"
+
+        date_str_1 = "2016-06-30"
+        date_str_2 = "2017-06-30"
+        date_format = "%Y-%m-%d"
+        date_1 = datetime.datetime.strptime(date_str_1, date_format).date()
+        date_2 = datetime.datetime.strptime(date_str_2, date_format).date()
+
+        oc = OC(institute=Institute(name="IIITH", 
+                address="Hyderabad"), 
+                oc_targets=[], spokes=[])
+
+        nc = NC(institute=Institute(name="IIITH", address="Hyderabad"), 
+                hub=oc, nc_targets=[], workshops=[])
+
+        oc_target = OCTarget(usage=3000, date=date_1, oc=oc, nc_targets=[])
+
+        nc_target = NCTarget(usage=300, 
+                                 date=date_1, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+
+        status = Status(name="pending")
+
+        ws_target = WSTarget(usage=2000,
+                                 participants=200,
+                                 experiments=100,
+                                 date=date_1,
+                                 nc_target=nc_target)
+
+        self.assertEqual(is_ws_target(ws_target), True)
+        self.assertEqual(ws_target.get("participants"), 200)
+        self.assertRaises(TypeError, WSTarget, participants="123")
+
+    def test_equality_of_wstarget(self):
+        print "test_equality_of_wstarget"
+
+        date_str_1 = "2016-06-30"
+        date_str_2 = "2017-06-30"
+        date_format = "%Y-%m-%d"
+        date_1 = datetime.datetime.strptime(date_str_1, date_format).date()
+        date_2 = datetime.datetime.strptime(date_str_2, date_format).date()
+
+        oc = OC(institute=Institute(name="IIITH", 
+                address="Hyderabad"), 
+                oc_targets=[], spokes=[])
+
+        nc = NC(institute=Institute(name="IIITH", address="Hyderabad"), 
+                hub=oc, nc_targets=[], workshops=[])
+
+        oc_target = OCTarget(usage=3000, date=date_1, oc=oc, nc_targets=[])
+
+        nc_target = NCTarget(usage=300, 
+                                 date=date_1, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+
+        ws_target_1 = WSTarget(usage=2000,
+                                 participants=200,
+                                 experiments=100,
+                                 date=date_1,
+                                 nc_target=nc_target)
+
+        ws_target_2 = WSTarget(usage=2000,
+                                 participants=200,
+                                 experiments=100,
+                                 date=date_1,
+                                 nc_target=nc_target)
+
+        ws_target_3 = WSTarget(usage=2000,
+                                 participants=200,
+                                 experiments=100,
+                                 date=date_2,
+                                 nc_target=nc_target)
+
+        self.assertEqual(ws_target_1 == ws_target_2, True)
+        self.assertEqual(ws_target_1 == ws_target_3, False)
+
+#+END_SRC
+
+
+* Infra                                                         :boilerplate:
+  
+** sources
+*** Imports 
+#+name: imports_for_sources
+#+BEGIN_SRC python
+# -*- coding: utf-8 -*-
+from runtime.utils.type_utils import *
+from runtime.utils.class_templates import *
+from runtime.exceptions.exceptions import *
+
+#+end_src
+
+
+** Tests
+*** Imports 
+#+name: imports_for_tests
+#+BEGIN_SRC python
+# -*- coding: utf-8 -*-
+import unittest
+from unittest import TestCase
+from entities import *
+
+#+end_src
+
+*** Running tests
+#+NAME: run_test_cases
+#+BEGIN_SRC python
+if __name__ == '__main__':
+    unittest.main()
+
+#+END_SRC
+
+
+* Tangling                                                      :boilerplate:
+
+** sources
+#+BEGIN_SRC python :tangle entities.py :eval no :noweb yes
+<<imports_for_sources>>
+<<base_classes>>
+<<type_predicates>>
+<<class_Name>>
+<<class_Email>>
+<<class_Role>>
+<<class_User>>
+<<class_Session>>
+<<class_Institute>>
+<<class_OC>>
+<<class_NC>>
+<<class_Status>>
+<<class_Workshop>>
+<<class_FileType>>
+<<class_Artefact>>
+<<class_OCTarget>>
+<<class_NCTarget>>
+<<class_WSTarget>>
+#+end_src
+
+
+** tests
+#+BEGIN_SRC python :tangle test_entities.py :eval no :noweb yes
+<<imports_for_tests>>
+<<class_TestName>>
+<<class_TestEmail>>
+<<class_TestRole>>
+<<class_TestUser>>
+<<class_TestSession>>
+<<class_TestInstitute>>
+<<class_TestOC>>
+<<class_TestNC>>
+<<class_TestStatus>>
+<<class_TestWorkshop>>
+<<class_TestFileType>>
+<<class_TestArtefact>>
+<<class_TestOCTarget>>
+<<class_TestNCTarget>>
+<<class_TestWSTarget>>
+<<run_test_cases>>
+#+end_src

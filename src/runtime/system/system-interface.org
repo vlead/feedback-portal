@@ -1,0 +1,246 @@
+#+TITLE: System Interface implementation for OutReach Portal 3.0
+#+AUTHOR: VLEAD
+#+DATE: [2016-07-22 Tue]
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+** Structure of each operation class
+* The =SystemInterface= class
+** Constructor
+
+   The system interface constructor ensures that the system has the presence of at least one
+   user with role =admin=.
+
+#+NAME: class_system_interface
+#+begin_src python
+class SystemInterface ():
+    
+    def __init__(self):
+        raise Error('Can not instantiate system interface')
+
+    @staticmethod
+    def initialize_system_interface(cls):
+        System.initialize_system(cls)
+#+end_src
+*** Test Constructor
+#+NAME: test_class_system_interface
+#+BEGIN_SRC python
+class TestSystemConstructor(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        SystemInterface.initialize_system_interface(PersistenceDelegate)
+        self.persistent_delegate = PersistenceDelegate()
+        self.persistent_delegate.initialize_role_set()
+        self.persistent_delegate.initialize_user_set()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_system_interface_constructor(self):
+        print "test_system_interface_constructor"
+        self.assertEqual(User.get_by_id(1).get("name").get("name"),
+                         Config.admin_name)
+        self.assertEqual(User.get_by_id(1).get("email").get("email"),
+                         "app-admin@vlabs.ac.in")
+        self.assertEqual(User.get_by_id(1).get('roles')[0].get('name'),
+                         "admin")
+
+#+END_SRC
+
+** AddUser
+#+NAME: class_si_add_user
+#+begin_src python
+class AddUser():
+
+    def api_add_user(self, name_str, email_str, session_email, session_role):
+        name = Name(name=name_str)
+        name.save()
+        email = Email(email=email_str)
+        email.save()
+
+        email_obj = Email.query.filter_by(email=session_email).first()
+        admin_user = User.query.filter_by(email=email_obj).first()
+        admin_role = Role.query.filter_by(name=session_role).first()
+
+        session = Session(user=admin_user,role=admin_role)
+        System.session_set.append(session)
+
+        user = System.do("add_user", name=name, email=email ,session=session)
+        user_dict =  user.to_client()
+        return user_dict
+ 
+#+end_src
+
+** TestAddUser
+#+NAME: test_class_si_add_user
+#+BEGIN_SRC python
+class TestAddUser(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        SystemInterface.initialize_system_interface(PersistenceDelegate)
+        self.persistent_delegate = PersistenceDelegate()
+        self.persistent_delegate.initialize_role_set()
+        self.persistent_delegate.initialize_user_set()
+
+    def tearDown(self):
+        System.session_set = []
+        db.session.remove()
+        db.drop_all()
+
+    def test_api_add_user(self):
+        print "test_api_add_user"
+    
+        session_email="app-admin@vlabs.ac.in"
+        session_role="admin"
+
+        name1 = "madhavi"
+        email1 = "madhavi@vlabs.ac.in"
+
+        name2 = "sripathi"
+        email2 = "sripathi@vlabs.ac.in"
+        
+        add_user = AddUser()  
+
+        user_dict1 = add_user.api_add_user(name1, email1, session_email, session_role)
+        user_dict2 = add_user.api_add_user(name2, email2, session_email, session_role)
+
+
+        self.assertEqual("madhavi@vlabs.ac.in", user_dict1['email']['email'])
+        self.assertEqual("madhavi", user_dict1['name']['name'])
+
+        self.assertEqual("sripathi@vlabs.ac.in", user_dict2['email']['email'])
+        self.assertEqual("sripathi", user_dict2['name']['name'])
+
+
+#+END_SRC
+
+** DeleteUser
+#+NAME: class_si_delete_user
+#+begin_src python
+class DeleteUser():
+
+    def api_delete_user(self, user_id, session):
+        some_user = User.get_by_id(user_id)
+        user = System.do("delete_user", user=some_user,session=session)
+        return user
+#+end_src
+
+** TestDeleteUser
+#+NAME: test_class_si_delete_user
+#+BEGIN_SRC python
+class TestDeleteUser(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        SystemInterface.initialize_system_interface(PersistenceDelegate)
+        self.persistent_delegate = PersistenceDelegate()
+        self.persistent_delegate.initialize_role_set()
+        self.persistent_delegate.initialize_user_set()
+
+    def tearDown(self):
+        System.session_set = []
+        db.session.remove()
+        db.drop_all()
+
+    def test_api_delete_admin_user(self):
+        print "test_api_delete_admin_user"
+        admin_user=User.get_by_id(1)
+        session = Session(user=admin_user,role=Role.admin)
+        System.session_set.append(session)
+
+        name = "madhavi"
+        email = "madhavi@vlabs.ac.in"
+        
+        add_user = AddUser()  
+     
+        user_dict = add_user.api_add_user(name, email, session)
+
+        System.do("add_role", user = User.get_by_id(2),
+                    role = Role.get_by_id(1),
+                    session = session)
+
+        self.assertEqual("madhavi@vlabs.ac.in", user_dict['email']['email'])
+        self.assertEqual("madhavi", user_dict['name']['name'])
+
+
+        delete_user = DeleteUser()
+        user = delete_user.api_delete_user(2, session)
+
+        self.assertEqual(user.user_status,"inactive")
+
+#+END_SRC
+
+
+* Infra                                                         :boilerplate:
+  
+** sources
+*** Imports 
+#+name: imports_for_sources
+#+BEGIN_SRC python
+# -*- coding: utf-8 -*-
+from runtime.config.config import Config
+from runtime.system.persistent_system import *
+#+end_src
+
+
+** Tests
+*** Imports 
+#+name: imports_for_tests
+#+BEGIN_SRC python
+# -*- coding: utf-8 -*-
+import unittest
+from flask_testing import TestCase
+from runtime.rest.app import create_app
+from sqlalchemy.exc import IntegrityError
+
+
+from system_interface import *
+
+config = {
+         'SQLALCHEMY_DATABASE_URI': ''
+         }
+#+end_src
+
+*** Running tests
+#+NAME: run_test_cases
+#+BEGIN_SRC python
+if __name__ == '__main__':
+    unittest.main()
+
+#+END_SRC
+
+* Tangling                                                      :boilerplate:
+
+** sources
+#+BEGIN_SRC python :tangle system_interface.py :eval no :noweb yes
+<<imports_for_sources>>
+<<class_system_interface>>
+<<class_si_add_user>>
+#+end_src
+
+
+** tests
+#+BEGIN_SRC python :tangle test_system_interface.py :eval no :noweb yes
+<<imports_for_tests>>
+<<test_class_system_interface>>
+<<test_class_si_add_user>>
+<<run_test_cases>>
+#+end_src

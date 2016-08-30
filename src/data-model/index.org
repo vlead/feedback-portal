@@ -1,0 +1,975 @@
+#+TITLE: Outreach Portal 3.0 Data Model
+#+AUTHOR: VLEAD
+#+DATE: [2016-06-03 Tue]
+#+PROPERTY: results output
+#+PROPERTY: exports code
+#+SETUPFILE: ../org-templates/level-1.org
+#+options: ^:nil
+#+LATEX: Literal LaTeX code for export
+
+* Introduction
+  The application or the system is abstracted as the data model.  The model
+  captures: the entities that comprise the system; relations and constraints
+  between these entities; and operations that entail a change in the state of
+  the system.
+
+  The purpose of this document is to describe the expected behaviour of the new
+  outreach portal. It is a specification for the new requirements of this portal.
+
+
+* Notation
+  The system is defined as the data model.  There is a certain notation that is
+  used for defining the data model. 
+
+** Sets, cardinality and relations
+
+If =A= is a set, then
+    1. =A!= denotes exactly one element of =A=.
+    2. =A?= denotes at most one element of =A=.
+    3. =A+= denotes  one or more elements of =A=
+    4. =A*=  denotes at zero or more elements of =A=.  Often
+       abbreviated as =A=.
+
+    5. =A > B= denotes a relation /from/ =A= /to/ =B=.
+
+** Relations and their cardinality type
+
+A relation =r:A > B= could relate each element of =A= to
+zero, one or more elements of =B=.
+
+|--------------------------------+-----------|
+| Cardinality of B               | Notation  |
+|--------------------------------+-----------|
+| at least zero elements of =B=. | r: A > B  |
+|--------------------------------+-----------|
+| at most one element of =B=     | r: A > B? |
+|--------------------------------+-----------|
+| at least one element of =B=    | r: A > B+ |
+|--------------------------------+-----------|
+| exactly one element of =B=     | r: A > B! |
+|--------------------------------+-----------|
+   
+** Example of Entity Relationship notation
+    
+#+begin_example
+ [email, user] : User? > Email!
+#+end_example
+
+Encodes the following items of information:
+
+ - =email= is a relation /from/ the set =User= /to/ the set
+   =Email=.
+
+ - =User= is called the /domain/ of the relation =email=.
+
+ - =Email= is called the /codomain/ of the relation =email=.
+
+ - The relation =email= relates each element of =User= to
+   /exactly one/ element of =Email=.  This is written as 
+
+ #+begin_example
+ email: User > Email!
+ #+end_example
+
+ - =user= is a relation /from/ the set =Email= /to/ the set
+   =User=.
+
+ - =Email= is called the /domain/ of the relation =user=.
+
+ - =User= is called the /codomain/ of the relation =user=.
+
+ - The relation =user= relates each element of =Email= to
+   /at most one/ element of =User=.  This is written as 
+
+ #+begin_example
+ user: Email > User?
+ #+end_example
+
+
+* Abstract Entity Types
+  The following are the abstract data types in our system. 
+** User
+:PROPERTIES:
+:CUSTOM_ID: entity_user
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_user][User]]
+
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE User
+#+END_SRC
+
+** Name
+:PROPERTIES:
+:CUSTOM_ID: entity_name
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_user_name][Name]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE Name
+#+END_SRC
+** Email
+:PROPERTIES:
+:CUSTOM_ID: entity_email
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_user_identification][Email]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE Email
+#+END_SRC
+
+** Role
+:PROPERTIES:
+:CUSTOM_ID: entity_role
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_role][Role]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE Role (admin + reviewer + guest + OCC(OC) + NCC(NC) + NOC )
+#+END_SRC
+** NodalCentre
+:PROPERTIES:
+:CUSTOM_ID: entity_nodal_centre
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_nodal_centre][NodalCentre]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE NodalCentre (abbreviated: NC )
+#+END_SRC
+** OutreachCentre
+:PROPERTIES:
+:CUSTOM_ID: entity_outreach_centre
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_outreach_centre][OutreachCentre]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE OutreachCentre ( abbreviated: OC )
+#+END_SRC
+** Institute
+:PROPERTIES:
+:CUSTOM_ID: entity_institute
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_institute][Institute]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE Institute
+#+END_SRC
+** Session
+:PROPERTIES:
+:CUSTOM_ID: entity_session
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_session][Session]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE Session
+#+END_SRC
+** Workshop
+:PROPERTIES:
+:CUSTOM_ID: entity_workshop
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_workshop][workshop]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE Workshop
+#+END_SRC
+** Status
+:PROPERTIES:
+:CUSTOM_ID: entity_status
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_status][status]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE Status (pending + cancelled + completed + pending approval + approved + rejected)
+#+END_SRC
+** OCTarget
+:PROPERTIES:
+:CUSTOM_ID: entity_oc_target
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_oc_target][oc_target]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE OCTarget
+#+END_SRC
+** NCTarget
+:PROPERTIES:
+:CUSTOM_ID: entity_nc_target
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_nc_target][nc_target]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE NCTarget
+#+END_SRC
+** WSTarget
+:PROPERTIES:
+:CUSTOM_ID: entity_ws_target
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_ws_target][ws_target]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE WSTarget (Workshop is abbreviated to WS here)
+#+END_SRC
+** FileType
+:PROPERTIES:
+:CUSTOM_ID: entity_type
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_type][type]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE Type (This is an entity used to denote the type of artefact being uploaded)
+#+END_SRC
+** Artefact
+:PROPERTIES:
+:CUSTOM_ID: entity_artefact
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_artefact][artefact]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE Artefact 
+#+END_SRC
+** AuditEntry
+:PROPERTIES:
+:CUSTOM_ID: entity_audit_entry
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_audit_entry][audit_entry]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE AuditEntry
+#+END_SRC
+** COMMENT Operation
+:PROPERTIES:
+:CUSTOM_ID: entity_operation
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_operation][operation]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE Operation
+#+END_SRC
+** COMMENT UserStatus
+:PROPERTIES:
+:CUSTOM_ID: entity_user_status
+:END: 
+  Requirement satisfied: [[../requirements/index.org::#req_user_status][user_status]]
+#+BEGIN_SRC spec :tangle spec.txt
+;;; Entity Types
+TYPE UserStatus (active + inactive)
+#+END_SRC
+
+Note: Outreach Centre Coordinator is abrreviated as OCC
+      Nodal Centre Coordinator is abrreviated as NCC
+      National Outreach Coordinator is abrreviated as NOC
+       
+
+* Relations and cardinality constraints over entity types 
+  :PROPERTIES:
+  :CUSTOM_ID: cardinal_constraints
+  :END: 
+  The constraints are defined both in terms of formal notation and also in
+  diagrams for visual clarity. 
+
+** Formal Notation
+For each relation, we define its inverse next to it.
+#+BEGIN_SRC spec :tangle spec.txt
+
+;;; Relations with cardinality constraints
+
+[email, user]          : User ?      >    Email !
+[name, user]           : User        >    Name !
+[roles, users]         : User        >    Role +
+[host, oc]             : OC ?        >    Institute ! 
+[spokes, hub]          : OC !        >    NC
+[host, nc]             : NC ?        >    Institute !
+[octargets, oc]        : OC !        >    OCTarget
+[nctargets, nc]        : NC !        >    NCTarget
+[user, sessions]       : Session     >    User !
+[role, sessions]       : Session     >    Role !
+[location, workshops]  : Workshop    >    Institute !
+[wstarget, workshop]   : Workshop ?  >    WSTarget !
+[photos, workshop]     : Workshop ?  >    Artefact +
+[reports, workshop]    : Workshop ?  >    Artefact +
+[feedback, workshop]   : Workshop ?  >    Artefact +
+[attendance, workshop] : Workshop ?  >    Artefact +
+[status, workshops]    : Workshop    >    Status !         
+[owner, workshops]     : Workshop    >    Role !
+[artefact, type]       : Type !      >    Artefact
+[operation, audit]     : AuditEntry  >    Operation !
+
+Note: if s1.user = s2.user -> 
+         s1.role != s2.role, where s1 and s2 belong to session-set
+
+#+END_SRC
+
+
+** Diagrams
+   The following diagrams summarizes all the cardinality constraints across all
+   entities.
+*** Relationships of User
+    This diagrams depicts the relationships between User, Role, Session, Email
+    and Name entities
+#+BEGIN_HTML
+<img src="https://docs.google.com/drawings/d/1Yd7QJUEX5DlwZd0RpUtVM1zYwexTOBPJvWzGHeYXEhg/pub?w=960&h=720">
+<p align="center"> User Relations </p>
+
+#+END_HTML
+  To edit the user relations image click [[https://docs.google.com/drawings/d/1Yd7QJUEX5DlwZd0RpUtVM1zYwexTOBPJvWzGHeYXEhg/edit][here]]
+
+
+*** Relationships of Outreach and Nodal Centers
+p    This diagrams depicts the relationships between Nodal Center, Outreach
+    Center, their hosts and their targets. 
+
+#+BEGIN_HTML
+<img src="https://docs.google.com/drawings/d/1yTyZuVOcHjg7JACaoxGnGHcO_jc3YBULrSpziqSMBB4/pub?w=960&amp;h=720">
+<p align="center"> OC and NC Relations </p>
+#+END_HTML
+
+    To edit the user relations image click [[https://docs.google.com/drawings/d/1yTyZuVOcHjg7JACaoxGnGHcO_jc3YBULrSpziqSMBB4/edit][here]]
+
+
+*** Relationships of Workshops
+    This diagrams depicts the relationships between Workshop, its artefacts and
+    status.
+#+BEGIN_HTML
+<img src="https://docs.google.com/drawings/d/1O7VGdfUzBAu1gxf3cgPWmj1oL95dnKH-WfYed1ZKHZY/pub?w=960&amp;h=720">
+<p align="center"> Workshop and its relations </p>
+
+#+END_HTML
+
+
+  To edit the workshop relations image click [[https://docs.google.com/drawings/d/1O7VGdfUzBAu1gxf3cgPWmj1oL95dnKH-WfYed1ZKHZY/edit][here]].
+
+
+* Keys
+
+An entity =K= is called a /key for/ an entity =A= if there
+is a relation =r: A? > K!=.
+
+|-----+-----------+------------------------------|
+|  1. | Entity    | Key                          |
+|-----+-----------+------------------------------|
+|  2. | Name      | name string                  |
+|-----+-----------+------------------------------|
+|  3. | Email     | email string                 |
+|-----+-----------+------------------------------|
+|  4. | User      | Email                        |
+|-----+-----------+------------------------------|
+|  5. | Session   | User and Role                |
+|-----+-----------+------------------------------|
+|  6. | Institute | alphabetic string            |
+|-----+-----------+------------------------------|
+|  7. | OC        | Institute                    |
+|-----+-----------+------------------------------|
+|  8. | NC        | Institute                    |
+|-----+-----------+------------------------------|
+|  9. | OCTarget  | OC and Date                  |
+|-----+-----------+------------------------------|
+| 10. | NCTarget  | NC and Date                  |
+|-----+-----------+------------------------------|
+| 11. | Workshop  | NC, location(Institute),     |
+|     |           | name of workshop,            |
+|     |           | Date                         |
+|-----+-----------+------------------------------|
+| 12. | Status    | name of type string          |
+|-----+-----------+------------------------------|
+| 13. | WSTarget  | NCTarget, Date,              |
+|     |           | usage of type integer,       |
+|     |           | experiments of type integer, |
+|     |           | participants of type integer |
+|-----+-----------+------------------------------|
+| 14. | Type      | name of type string          |
+|-----+-----------+------------------------------|
+| 15. | Artefact  | file path                    |
+|-----+-----------+------------------------------|
+
+
+* Assumptions
+
+1) Artifact may be photos, reports, attendance or feedback.
+2) The Session Entity also contains a 'last-active' time, which may be used to
+   delete a user if he remains inactive past a specified time and hasn't logged
+   out.
+
+
+* System state
+  The system's state is captured by a set of /state variables/.
+
+** Primary Entity sets
+:PROPERTIES:
+:CUSTOM_ID: primary_entity_sets
+:END:    
+
+For the purpose of /the application/, we maintain eight primary
+state variables.  
+
+   user-set meets the requirement [[../requirements/index.org::#req_user_composition][user composition]] and session-set meets the
+   requirement [[../requirements/index.org::#req_session_login][mandatory login]]
+
+#+BEGIN_SRC spec :tangle spec.txt
+
+;;; Primary state variables
+
+Sets
+ user-set      : set[User]      ; set of users in the system
+ role-set      : set[Role]      ; set of roles in the system
+ session-set   : set[Session]   ; set of sessions in the system
+ oc-set        : set[OC]        ; set of outreach centres in the system
+ status-set    : set[Status]    ; set of all status that a wokshop can be
+ type-set      : set[Type]      ; set of all types that an artefact can be
+ operation-set : set[Operation] ; set of all operations that can happen on the system
+ audit-set     : set[Audit]     ; set of all audit entries
+
+ #+END_SRC
+
+** Derived Entity sets
+:PROPERTIES:
+:CUSTOM_ID: derived_entity_sets
+:END: 
+
+#+BEGIN_SRC spec :tangle spec.txt
+  name-set           : user-set.name       ; set of names in the system
+  email-set          : user-set.email      ; set of emails in the system
+  nc-set             : oc-set.spokes       ; set of nodal centers in the system
+  oc-institute-set   : oc-set.host         ; set of institutes in the system which are OCs
+  nc-institute-set   : nc-set.host         ; set of institutes in the system which are NCs
+  ws-institute-set   : nc-set.workshops.location ; set of institutes in the system where workshops are conducted. 
+  institute-set      : oc-institute-set U nc-institute-set U ws-institute-set ;; all institutes in the system.
+  workshop-set       : nc-set.workshops     ; set of all workshops 
+  oc-target-set      : oc-set.octargets  ; set of all targets for all outreach centers
+  nc-target-set      : nc-set.nctargets  ; set of all targets for all nodal centers
+  ws-target-set      : nc-set.workshops.wstarget  ; set of all targets for all workshops in the system
+  artefact-set       : nc-set.workshops.artefacts : set of all artefacts in the system
+  logged-in-user-set : session-set.user    ; set of logged in users
+  admin-user-set     : user-set.role==admin; set of admin users
+  active-user-set    : user-set.userStatus==active; set of active users
+  inactive-user-set  : user-set.userStatus==inactive ; set of inactive users
+
+#+END_SRC
+
+
+** Referential Integrity Constraints over entity-sets
+   
+*** Admin User
+:PROPERTIES:
+:CUSTOM_ID: admin_user
+:END:    
+
+    There is atleast one user whose role is =admin=.  This rule meets
+    requirement [[../requirements/index.org::#req_role_admin][user with admin role]].
+#+BEGIN_SRC spec :tangle spec.txt
+
+;;; The admin-user
+admin-user-set     : user-set.role==admin; set of admin users
+and admin-user-set != NULL
+    
+#+END_SRC
+
+
+*** Referential Integrity over primary and derived entity sets
+:PROPERTIES:
+:CUSTOM_ID: referential_constraints
+:END: 
+
+Meets requirements [[../requirements/index.org::#req_user_uniqueness][uniqueness of a user]], [[../requirements/index.org::#req_user_role][role of a user]] and [[../requirements/index.org::#req_session_constraints][session constraints]]
+#+BEGIN_SRC spec :tangle spec.txt
+
+;;; Relation variables with Referential Integrity
+[email, user]          :  user-set !      >   email-set !
+[name, user]           :  user-set +      >   name-set !    
+[roles, users]         :  user-set        >   role-set +   
+[sessions, user]       :  user-set !      >   session-set
+[host, oc]             :  oc-set ?        >   institute-set !
+[spokes, hub]          :  oc-set !        >   nc-set
+[host, nc]             :  nc-set ?        >   institute-set !
+[octargets, oc]        :  oc-set !        >   oc-target-set
+[nctargets, nc]        :  nc-set !        >   nc-target-set
+[role, sessions]       :  session-set     >   role-set !
+[location, workshops]  :  workshop-set    >   institute-set !
+[wstarget, workshop]   :  workshop-set ?  >   ws-target-set !
+[photos, workshop]     :  workshop-set ?  >   artefact-set +
+[reports, workshop]    :  workshop-set !  >   artefact-set +
+[feedback, workshop]   :  workshop-set !  >   artefact-set +
+[attendance, workshop] :  workshop-set !  >   artefact-set +
+[status, workshops]    :  workshop-set    >   status-set !
+[owner, workshops]     :  workshop-set    >   role-set !
+[type, artefact]       :  artefact-set    >   type-set !
+[operation, audit]     :  audit-set       >   operation-set !
+
+#+END_SRC
+
+
+* Operations 
+
+CRUD operations.  
+
+Each operation is performed on an entity instance or an
+entity-set.   The operation may take additional parameters.
+It also takes as a  parameter of the credentials of the
+actor performing the operation.
+
+ - C  create a user      
+ - R  read from a user   
+ - U  update a user      
+ - D  delete a user      
+
+** Actor
+   
+Operations are performed by Actors.  Our application has 
+the  actors:  =session=. 
+
+** Add User
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    u: User, s: Session
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt
+    s.role==admin or s.role==NOC or s.role==OCC(oc) where oc:oc-set
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt
+    s: session-set
+    u: ~user-set
+#+END_SRC   
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+    u = new user
+    active-user-set = active-user-set U {u}
+    roles(u)= {guest}
+
+#+END_SRC   
+
+** Add Role to a User
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    u: User, r: Role, s: Session
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt
+    s.role == admin or s.role == OCC(oc)
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt
+    s:session-set AND
+    u:active-user-set AND
+    r: ~ roles(u)     AND      
+    (s.role == admin and 
+     r: role-set)             OR
+    (s.role == OCC(oc) and 
+     r == NCC(nc)      and
+     nc: nc-set        and 
+     hub(nc) == oc)
+
+#+END_SRC   
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+    r is added to u.roles
+    roles(u) = roles(u) U {r}
+#+END_SRC   
+** Add institute
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    name: Name, address: String, s: Session
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt
+    s.role == admin or s.role == OCC(oc) or s.role == NCC(nc)
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt
+    s:session-set
+    i: ~institute-set
+#+END_SRC   
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+     i= newinstitute   
+     We also check that the created institute does not exist in the institute set.
+     institute-set = institute-set U {i}
+#+END_SRC   
+
+** Create OC
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    i:Institute, s:Session
+#+END_SRC   
+*** Actor Credentials
+#+BEGIN_SRC spec :tangle spec.txt
+    s.role==admin
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt
+    s:session-set
+    i:institute-set
+    i:~ oc-institute-set 
+    i:~ nc-institute-set
+#+END_SRC   
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+    role-set' =role-set U OCC(oc)
+#+END_SRC   
+** Create NC
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    i:Institute, oc:OC, s:Session
+#+END_SRC   
+*** Actor Credentials
+#+BEGIN_SRC spec :tangle spec.txt
+    s.role==admin or s.role==OCC(oc) and oc:oc-set
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt
+    s:session-set
+    i:institute-set  
+    i:~ nc-institute-set
+    if i : oc-institute-set
+        i.oc == oc      #Note : i.oc represtsents the oc associated with i
+#+END_SRC   
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+    role-set' =role-set U NCC(nc)
+#+END_SRC       
+
+** Edit OC
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    oc: OC, name: Name, s:Session
+#+END_SRC   
+*** Actor Credentials
+#+BEGIN_SRC spec :tangle spec.txt
+    s.role==admin
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt
+    s:session-set
+    oc:oc-set
+#+END_SRC   
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+    oc.name = name
+    role-set' =role-set U OCC(oc)
+#+END_SRC   
+** Edit NC
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    nc: NC, name: Name, s:Session
+#+END_SRC   
+*** Actor Credentials
+#+BEGIN_SRC spec :tangle spec.txt
+    s.role==admin or s.role==OCC(oc) where hub(nc)==oc
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt
+    s:session-set
+    nc:nc-set
+#+END_SRC   
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+    nc.name = name
+    role-set' =role-set U NCC(nc)
+#+END_SRC   
+** login
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    u: User, r:Role
+#+END_SRC   
+*** Actor Credentials
+#+BEGIN_SRC spec :tangle spec.txt
+#+END_SRC       
+*** Referential-Integrity
+#+BEGIN_SRC spec :tangle spec.txt
+    u:active-user-set
+    r:role-set
+    r:user.roles
+#+END_SRC      
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+    A session for that user is added to the session-set
+    s: newsession
+    session-set = session-set U {s}
+#+END_SRC   
+** logout 
+
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    s:Session
+#+END_SRC   
+*** Referential-Integrity
+#+BEGIN_SRC spec :tangle spec.txt
+    s:session-set
+#+END_SRC       
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+    s is removed from the session-set
+    session-set = session-set - {s}
+#+END_SRC           
+** create AuditEntry
+
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    o:Operation 
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt
+    
+#+END_SRC       
+*** Remarks
+#+BEGIN_SRC spec :tangle spec.txt
+    This function logs an Audit to the database. 
+    old-data is a string containing the values of the object before it is changed.
+    updating-entity-id contains the id of the object being changed
+    current-session-id contains the id of the session of the user who is changing the object
+
+    This function logs an AuditEntry to the database. 
+#+END_SRC          
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+    An AuditEntry record is created and saved in the database.
+#+END_SRC    
+** delete User
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    u: User, s:  Session
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt    
+    s.role==admin  or s.role==OCC(oc) where oc:oc-set 
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt    
+    u: active-user-set
+    s: session-set
+    u:~logged-in-user-set
+#+END_SRC       
+
+
+*** Remarks
+#+BEGIN_SRC spec :tangle spec.txt   
+   An admin can delete any user
+   A user with role OCC can delete a user with role NCC only if he belongs to
+   an NC that is a spoke of the OC. 
+ #+END_SRC
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+    active-user-set= active-user-set - {u}   
+    u.activeStatus=false
+    inactive-user-set = inactive-user-set U {u}
+#+END_SRC   
+** update User
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    n: Name,e:Email, u: User, s:  Session
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt    
+    s.role==admin or s.role==NOC or s.role==OCC(oc) where oc:oc-set
+    
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt    
+    u: active-user-set
+    s: session-set
+    u:~logged-in-user-set
+    e:~email-set
+#+END_SRC         
+*** Effect 
+#+BEGIN_SRC spec :tangle spec.txt
+    The user details are updated.
+#+END_SRC   
+*** Note
+#+BEGIN_SRC spec :tangle spec.txt
+    Not sure if user should be logged-in. 
+    If the constraint of user not being logged in is implemented, 
+    then there should be a way to include session time-outs.
+    
+#+END_SRC      
+*** Remarks
+#+BEGIN_SRC spec :tangle spec.txt   
+   An admin can update any user.
+   A user with role OCC(oc) can update a user with role NCC(nc) such that
+   hub of nc == oc (oc:oc-set and nc:nc-set) .
+   
+#+END_SRC   
+   
+
+
+** create workshop
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    i: Institute, t: WSTarget, s:  Session
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt    
+    s.role==NCC(nc) where nc:nc-set
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt    
+    s: session-set
+    i: institute-set
+#+END_SRC         
+*** Effect 
+#+BEGIN_SRC spec :tangle spec.txt
+    w = new workshop
+    workshop-set = (workshop-set) U {w}
+    A workshop with the given details is created and added to workshop-set
+#+END_SRC   
+*** Remarks
+#+BEGIN_SRC spec :tangle spec.txt   
+    Only a user with the role of NCC(nc) can create a workshop.   
+#+END_SRC   
+** edit workshop
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    w: Workshop, t: WSTarget, s:  Session
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt    
+    s.role==NCC(nc) where nc:nc-set
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt    
+    s: session-set
+    w: workshop-set
+#+END_SRC         
+*** Effect 
+#+BEGIN_SRC spec :tangle spec.txt
+    A workshop is updated with the given details.
+    w.target = t
+#+END_SRC   
+*** Remarks
+#+BEGIN_SRC spec :tangle spec.txt   
+
+    A user with the role of OCC(oc) or NCC(nc) can update a workshop.
+    A user need not pass all three parameters to update the details of a workshop.
+    We did not feel the necessity for a method to delete a workshop.
+#+END_SRC   
+
+** approve workshop
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    w: Workshop, s:  Session
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt    
+    s.role==OCC(oc) where oc:oc-set and oc == hub(nc), where nc: nc-set and nc is the nodal centre to which the workshop belongs.
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt    
+    s: session-set
+    w: workshop-set
+#+END_SRC         
+*** Effect 
+#+BEGIN_SRC spec :tangle spec.txt
+    w.status = approved
+#+END_SRC   
+*** Remarks
+#+BEGIN_SRC spec :tangle spec.txt   
+    Only a user with the role of OCC(oc) can approve a workshop.   
+#+END_SRC   
+** reject workshop
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    w: Workshop, s:  Session
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt    
+    s.role==OCC(oc) where oc:oc-set and oc == hub(nc), where nc: nc-set and nc is the nodal centre to which the workshop belongs.
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt    
+    s: session-set
+    w: workshop-set
+#+END_SRC         
+*** Effect 
+#+BEGIN_SRC spec :tangle spec.txt
+    w.status = rejected
+#+END_SRC   
+*** Remarks
+#+BEGIN_SRC spec :tangle spec.txt   
+    Only a user with the role of OCC(oc) can reject a workshop.   
+#+END_SRC   
+** reschedule workshop
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    w: Workshop, s:  Session, wt: WSTarget
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt    
+    s.role==NCC(nc) where nc: nc-set
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt    
+    s: session-set
+    w: workshop-set
+#+END_SRC         
+*** Effect 
+#+BEGIN_SRC spec :tangle spec.txt
+    w.target = wt
+#+END_SRC   
+*** Remarks
+#+BEGIN_SRC spec :tangle spec.txt   
+    The workshop target is changed to a new target.
+#+END_SRC   
+** add artefact
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    w: Workshop, a: Artefact, s:  Session
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt    
+    s.role==NCC(nc) where nc:nc-set
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt    
+    s: session-set
+    w: workshop-set
+#+END_SRC         
+*** Effect 
+#+BEGIN_SRC spec :tangle spec.txt
+    a is added to w.artefacts
+    a = new artefact
+    artefacts(w) =artefacts(w) U {a}
+    The artefact is added to the workshop's artefact set.
+#+END_SRC   
+*** Remarks
+#+BEGIN_SRC spec :tangle spec.txt   
+    Artefacts may consist of photos, report, attendance or feedback.
+#+END_SRC   
+
+
+** delete artefact
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    w: Workshop, a: Artefact, s:  Session
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt    
+    s.role==NCC(nc) where nc:nc-set
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt    
+    s: session-set
+    w: workshop-set
+    a: w.artefact-set
+#+END_SRC         
+*** Effect 
+#+BEGIN_SRC spec :tangle spec.txt
+    The artefact is deleted from the workshop's artefact set.
+    atefacts(w) = artefacts(w) - {a}
+#+END_SRC   
+*** Remarks
+#+BEGIN_SRC spec :tangle spec.txt   
+    Artefacts may consist of photos, report, attendance or feedback.
+#+END_SRC   
+
+
+
+
+
+
+* Workshop workflow diagram
+
+#+BEGIN_HTML
+<img src="https://docs.google.com/drawings/d/1av_XMueESqLkUdYRGZuJskeTzr9yl8_agsGq1JedMMg/pub?w=960&h=720">
+#+END_HTML
+
+   [[https://docs.google.com/drawings/d/1wz8_vM-U33oc8VuOgkMh5B7ZixISCFUWlSOUZftCebk/edit][edit image]]
+
+   

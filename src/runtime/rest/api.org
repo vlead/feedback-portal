@@ -1,0 +1,134 @@
+#+TITLE: The REST API
+#+AUTHOR: VLEAD
+#+DATE: [2016-07-26 Tue]
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+This document illustrates building of the REST API.
+* REST
+** Create a user
+   This is the REST API method for creating a user. 
+
+#+NAME: create_user
+#+BEGIN_SRC python
+@api.route('/users', methods=['POST'])
+def create_user():
+    ### Check if there is a session and act according to the specification
+    if not request.json or not 'name' in request.json or not 'email' in request.json:
+        abort(400)
+    else:
+        name = request.json['name']
+        email = request.json['email']
+        session_email = request.json['session_email']
+        session_role = request.json['session_role']
+        try:
+            print "inside try"
+            db.create_all()
+            SystemInterface.initialize_system_interface(PersistenceHandler)
+            add = AddUser()
+            user = add.api_add_user(name, email, session_email, session_role)
+            return jsonify(user)
+
+        except Exception, e:
+            current_app.logger.error("Error occured while inserting"
+                                     "user record: %s" % str(e))
+            abort(500, str(e))
+#+END_SRC
+
+** TestCreateUser
+#+NAME: test_create_user
+#+BEGIN_SRC python
+class TestCreateUser(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
+
+    def test_create_new_user(self):
+        print "test_create_new_user"
+
+        payload = {'email': 'ttt@kkk.com',
+                   'name': 'normal user',
+                   'session_email': 'app-admin@vlabs.ac.in',
+                   'session_role': 'admin'}
+
+        headers = {'content-type': 'application/json'}
+
+        #print payload
+        response = self.client.post("/users", data=json.dumps(payload), headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+
+#+END_SRC
+
+* Infra                                                         :boilerplate:
+
+** sources
+*** Imports 
+#+name: imports_for_sources
+#+BEGIN_SRC python
+# -*- coding: utf-8 -*-
+import os
+import requests
+from flask import session, render_template, Blueprint, request, jsonify, abort, current_app, redirect, url_for
+from flask import current_app
+
+from flask import Flask, redirect, url_for
+from werkzeug import secure_filename
+from runtime.config.config import Config
+
+from runtime.system.system_interface import *
+
+api = Blueprint('APIs', __name__)
+
+
+#+end_src
+
+
+** Tests
+*** Imports 
+#+name: imports_for_tests
+#+BEGIN_SRC python
+# -*- coding: utf-8 -*-
+import unittest
+from flask_testing import TestCase
+from runtime.utils.class_persistence_template import *
+from runtime.rest.app import create_app
+from sqlalchemy.exc import IntegrityError
+from runtime.persistence.entities import *
+import json
+from api import *
+
+config = {
+         'SQLALCHEMY_DATABASE_URI': ''
+         }
+#+end_src
+
+*** Running tests
+#+NAME: run_test_cases
+#+BEGIN_SRC python
+if __name__ == '__main__':
+    unittest.main()
+
+#+END_SRC
+
+* Tangle                          :boilerplate:
+** sources
+#+BEGIN_SRC python :tangle api.py :eval no :noweb yes
+<<imports_for_sources>>
+<<create_user>>
+#+END_SRC
+** tests
+#+BEGIN_SRC python :tangle test_api.py :eval no :noweb yes
+<<imports_for_tests>>
+<<test_create_user>>
+<<run_test_cases>>
+#+end_src

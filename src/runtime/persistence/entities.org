@@ -1,0 +1,1813 @@
+#+TITLE: Persistent Entities
+#+AUTHOR: VLEAD
+n#+DATE: [2016-06-07 Tue]
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+
+  Persistence is added to all the enttites defined in [[../objects/entities.org][=objects=]].
+
+
+* Name
+
+=Name= is a class with an attribute name of type =is_alphabetic_str=.
+
+#+NAME: class_Name
+#+begin_src python
+args = {"__tablename__": "name",
+        "id": db.Column(db.Integer, primary_key=True),
+        "name": db.Column(db.String(128), unique=True, nullable=False),
+        "users": db.relationship('User', backref='name')
+        }
+
+Name = ClassPersistenceTemplate.mk_persistent(Name, ['name'], **args)
+
+#+end_src
+
+*** Test Name
+#+NAME: class_TestName
+#+BEGIN_SRC python
+class TestPersistentName(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_create_name(self):
+        print "test_create_name"
+        name="Jimi Hendrix"
+        na = Name(name=name)
+        na.save()
+        na_from_db = Name.apply_filters(name=name)[0]
+        
+        self.assertEqual(is_name(na), True)
+        self.assertEqual(is_name(na_from_db), True)
+        new_name = Name.get_by_id(1)
+        self.assertEqual(new_name.get("name"), "Jimi Hendrix")
+        self.assertRaises(TypeError, Name, name="Jimi 123 Hendrix")
+
+    def test_update_name(self):
+        print "test update name"
+        name="Jimi Hendrix"
+        na = Name(name=name)
+        na.save()
+
+        self.assertEqual(Name.get_by_id(1).get("name"), "Jimi Hendrix")
+
+        na.set(name="Bo Didley")
+
+        self.assertEqual(Name.get_by_id(1).get("name"), "Bo Didley")
+
+        with self.assertRaises(NotFoundError):
+            na_from_db = Name.apply_filters(name=name)[0]
+
+    
+    def test_delete_name(self):
+        print "test delete name"
+        na = Name(name="Jimi Hendrix")
+        na.save()
+        self.assertEqual(len(Name.get_all()), 1)
+        na.delete()
+        self.assertEqual(len(Name.get_all()), 0)
+
+    def test_equality_on_name(self):
+        print "test equality on name"
+        na = Name(name="Jimi Hendrix")
+        na.save()
+        na = Name(name="Bo Didley")
+        na.save()
+        na_from_db = Name.apply_filters(name="Bo Didley")[0]
+        self.assertEqual(na_from_db.get("name"), "Bo Didley")
+
+#+END_SRC
+
+
+* Email
+  =Email= is a class an attribute email of type =is_email_str=.
+#+NAME: class_Email
+#+begin_src python
+args = {"__tablename__": "email",
+        "id": db.Column(db.Integer, primary_key=True),
+        "email": db.Column(db.String(128), unique=True, nullable=False),
+        "user": db.relationship('User', 
+                                    backref=db.backref('email', uselist=False))
+        }
+
+Email = ClassPersistenceTemplate.mk_persistent(Email, ['email'], **args)
+
+#+end_src
+
+** Test Email
+#+NAME: class_TestEmail
+#+BEGIN_SRC python
+class TestPersistenceEmail(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_create_email(self):
+        print "test_create_email"
+        email="jimi@gnu.org"
+        em = Email(email=email)
+        em.save()
+        em_from_db = Email.apply_filters(email=email)[0]
+        self.assertEqual(is_email(em_from_db), True)
+        em = Email.get_by_id(1)
+        self.assertEqual(em_from_db.get("email"), email)
+        self.assertEqual(em.get("email"), email)
+        self.assertRaises(TypeError, Email, email="jimi@@gnu.org")
+
+    def test_update_email(self):
+        print "test update email"
+
+        email="jimi@gnu.org"
+        em = Email(email=email)
+        em.save()
+
+        em.set(email="didley@gnu.org")
+
+        with self.assertRaises(NotFoundError):
+            em_from_db = Email.apply_filters(email=email)[0]
+
+        em = Email.get_by_id(1)
+        em_from_db = Email.apply_filters(email="didley@gnu.org")[0]
+
+        self.assertEqual(em_from_db.get("email"), "didley@gnu.org")
+        self.assertEqual(em.get("email"), "didley@gnu.org")
+
+    def test_delete_email(self):
+        print "test delete email"
+        em = Email(email="jimi@gnu.org")
+        em.save()
+        self.assertEqual(len(Email.get_all()), 1)
+        em.delete()
+        self.assertEqual(len(Email.get_all()), 0)
+
+    def test_duplicate_email(self):
+        print "test_duplicate_email"
+        em1 = Email(email="jimi@gnu.org")
+        em1.save()
+        with self.assertRaises(IntegrityError):
+            em2 = Email(email="jimi@gnu.org")
+            em2.save()
+
+    def test_equality_on_email(self):
+        print "test_equality_on_email"
+        em1 = Email(email="jimi@gnu.org")
+        em1.save()
+
+        em2 = Email(email="didley@gnu.org")
+        em2.save()
+
+        self.assertEqual(len(Email.apply_filters(email="jimi@gnu.org")), 1)
+        
+
+#+END_SRC
+
+
+* Role
+  =Role= is an entity that has an attribute =name= which is an alphabetic string
+
+#+NAME: class_Role
+#+BEGIN_SRC python
+args = {"__tablename__": "role",
+        "id": db.Column(db.Integer, primary_key=True),
+        "name": db.Column(db.String(128), nullable=False),
+        "centre_oc_id": db.Column(db.Integer, 
+                                      db.ForeignKey('oc.id'), 
+                                      unique=True, nullable=True),
+        "centre_nc_id": db.Column(db.Integer, 
+                                      db.ForeignKey('nc.id'), 
+                                      unique=True, nullable=True)
+      }
+
+Role = ClassPersistenceTemplate.mk_persistent(Role, 
+                                   ['name', 'centre_oc', 'centre_nc'], **args)
+
+#+END_SRC
+
+** Test Role
+#+NAME: class_TestRole
+#+BEGIN_SRC python
+class TestPersistenceRole(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_create_admin_role(self):
+        print "test_create_role"
+        ro = Role(name="admin", centre_oc=None, centre_nc=None)
+        ro.save()
+        ro_from_db = Role.apply_filters(name="admin")[0]
+        self.assertEqual(is_role(ro_from_db), True)
+        ro = Role.get_by_id(1)
+        self.assertEqual(ro.get("name"), "admin")
+        self.assertEqual(ro_from_db.get("name"), "admin")
+
+    def test_create_oc_role(self):
+        print "test_create_oc_role"
+
+        inst = Institute(name="IIT", address="Hyderabad")
+        inst.save()
+
+        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
+        oc.save()
+
+        ro = Role(name="OCC", centre_oc=OC.get_by_id(1), centre_nc=None)
+        ro.save()
+
+        role = Role.get_by_id(1)
+        role_from_db = Role.apply_filters(name="OCC")[0]
+
+        self.assertEqual(is_role(role), True)
+        self.assertEqual(is_role(role_from_db), True)
+
+        self.assertEqual(role == role_from_db, True)
+        self.assertEqual(role.get("name"), "OCC")
+        self.assertEqual(role.get("centre_oc").get("institute").get("name"), 
+                            "IIT")
+
+    def test_create_nc_role(self):
+        print "test_create_nc_role"
+
+        inst1 = Institute(name="IIT",address="Hyderabad")
+        inst1.save()
+
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+
+        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
+        oc.save()
+
+        nc = NC(institute=Institute.get_by_id(2), hub=oc, nc_targets=[], 
+                workshops=[])
+        nc.save()
+
+        ro = Role(name="NCC", centre_nc=NC.get_by_id(1), centre_oc=None)
+        ro.save()
+
+        role = Role.get_by_id(1)
+        role_from_db = Role.apply_filters(name="NCC")[0]
+
+        self.assertEqual(is_role(role), True)
+        self.assertEqual(is_role(role_from_db), True)
+
+        self.assertEqual(role == role_from_db, True)
+        self.assertEqual(role.get("name"), "NCC")
+        self.assertEqual(role.get("centre_nc").get("institute").get("name"), 
+                            "IIIT")
+
+    def test_equality_on_role(self):
+        print "test_equality_on_role"
+
+        inst1 = Institute(name="IIT",address="Hyderabad")
+        inst1.save()
+
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+
+        inst3 = Institute(name="HCU",address="Hyderabad")
+        inst3.save()
+
+        oc = OC(institute=inst1, spokes=[], oc_targets=[])
+        oc.save()
+
+        nc1 = NC(institute=inst2, hub=oc, nc_targets=[], workshops=[])
+        nc1.save()
+
+        nc2 = NC(institute=inst3, hub=oc, nc_targets=[], workshops=[])
+        nc2.save()
+
+        ro1 = Role(name="OCC", centre_nc=None, centre_oc=oc)
+        ro1.save()
+
+        ro2 = Role(name="NCC", centre_nc=nc1, centre_oc=None)
+        ro2.save()
+
+        ro3 = Role(name="NCC", centre_nc=nc2, centre_oc=None)
+        ro3.save()
+        
+        self.assertEqual(Role.apply_filters(centre_oc=oc)[0].get("name"), 
+                             "OCC")
+        role_from_db = Role.apply_filters(centre_oc=oc)[0]
+        inst = role_from_db.get("centre_oc").get("institute")
+        self.assertEqual(inst.get("name"), "IIT")
+
+#+END_SRC
+
+
+* User
+  A =User= entity has fields =name= of type =Name=, =email= of type =Email= and
+  role of type =Role=.
+
+#+NAME: class_association_Table
+#+BEGIN_SRC python
+users_roles = db.Table('users_roles',
+		      db.Column('user_id',db.Integer, db.ForeignKey('user.id')),
+		      db.Column('role_id',db.Integer,db.ForeignKey('role.id')))
+
+#+END_SRC
+
+#+NAME: class_User
+#+BEGIN_SRC python
+args = {"__tablename__": "user",
+        "id": db.Column(db.Integer, primary_key=True),
+        "name_id": db.Column(db.Integer, db.ForeignKey('name.id'), 
+                                 nullable=False, unique=False),
+        "email_id": db.Column(db.Integer, db.ForeignKey('email.id'), 
+                                 unique=True),
+        "roles": db.relationship('Role',
+                                     secondary=users_roles, backref='users') 
+        }
+
+User = ClassPersistenceTemplate.mk_persistent(User, ['email'], **args)
+
+#+END_SRC
+
+** Test User
+#+NAME: class_TestUser
+#+BEGIN_SRC python
+class TestPersistenceUser(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_create_user(self):
+        print "test_create_user"
+
+        inst1 = Institute(name="IIT",address="Hyderabad")
+        inst1.save()
+
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+
+        na = Name(name="Jimi Hendrix")
+        na.save()
+
+        em = Email(email="jimi@gnu.org")
+        em.save()
+
+        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
+        oc.save()
+
+        nc = NC(institute=Institute.get_by_id(2), hub=oc, nc_targets=[], 
+                workshops=[])
+        nc.save()
+
+        ro1 = Role(name="user", centre_oc=None, centre_nc=None)
+        ro1.save()
+
+        ro2 = Role(name="guest", centre_oc=None, centre_nc=None)
+        ro2.save()
+
+        ro3 = Role(name="OCC", centre_oc=OC.get_by_id(1), centre_nc=None)
+        ro3.save()
+
+        ro4 = Role(name="NCC", centre_nc=NC.get_by_id(1), centre_oc=None)
+        ro4.save()
+
+        roles = [ro1, ro2] 
+        usr = User(name=na, email=em, roles=roles)
+        usr.save()
+
+        user = User.get_by_id(1)
+        user_from_db = User.apply_filters(email=em)[0]
+        self.assertEqual(is_user(user), True)
+        self.assertEqual(is_user(user_from_db), True)
+
+        self.assertEqual(user.get("email").get('email'), "jimi@gnu.org")
+        self.assertEqual(user_from_db.get("name").get('name'), 
+                             "Jimi Hendrix")
+
+    def test_update_user(self):
+        print "test_update_user"
+
+        inst1 = Institute(name="IIT",address="Hyderabad")
+        inst1.save()
+
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+
+        na = Name(name="Jimi Hendrix")
+        na.save()
+
+        em = Email(email="jimi@gnu.org")
+        em.save()
+
+        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
+        oc.save()
+
+        nc = NC(institute=Institute.get_by_id(2), hub=oc, nc_targets=[], 
+                workshops=[])
+        nc.save()
+
+        ro1 = Role(name="user", centre_oc=None, centre_nc=None)
+        ro1.save()
+
+        ro2 = Role(name="guest", centre_oc=None, centre_nc=None)
+        ro2.save()
+
+        ro3 = Role(name="OCC", centre_oc=OC.get_by_id(1), centre_nc=None)
+        ro3.save()
+
+        ro4 = Role(name="NCC", centre_nc=NC.get_by_id(1), centre_oc=None)
+        ro4.save()
+
+        roles = [ro1, ro2] 
+        usr = User(name=na, email=em, roles=roles)
+        usr.save()
+
+        user = User.get_by_id(1)
+        user_from_db = User.apply_filters(email=em)[0]
+        self.assertEqual(is_user(user), True)
+        self.assertEqual(is_user(user_from_db), True)
+
+        roles = [ro3, ro4]
+        user_from_db.set(roles=roles)
+        user_from_db = User.apply_filters(email=em)[0]
+
+        self.assertEqual(user.get("roles")[0].get('name'), "OCC")
+
+    def test_delete_user(self):
+        print "test_delete_user"
+
+        inst1 = Institute(name="IIT",address="Hyderabad")
+        inst1.save()
+
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+
+        na = Name(name="Jimi Hendrix")
+        na.save()
+
+        em = Email(email="jimi@gnu.org")
+        em.save()
+
+        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
+        oc.save()
+
+        nc = NC(institute=Institute.get_by_id(2), hub=oc, nc_targets=[], 
+                workshops=[])
+        nc.save()
+
+        ro1 = Role(name="user", centre_oc=None, centre_nc=None)
+        ro1.save()
+
+        ro2 = Role(name="guest", centre_oc=None, centre_nc=None)
+        ro2.save()
+
+        ro3 = Role(name="OCC", centre_oc=OC.get_by_id(1), centre_nc=None)
+        ro3.save()
+
+        ro4 = Role(name="NCC", centre_nc=NC.get_by_id(1), centre_oc=None)
+        ro4.save()
+
+        roles = [ro1, ro2] 
+        usr = User(name=na, email=em, roles=roles)
+        usr.save()
+
+        self.assertEqual(len(User.get_all()), 1)
+        usr.delete()
+        self.assertEqual(len(User.get_all()), 0)
+ 
+#+END_SRC
+
+
+* Institute
+  =Institute= is an entity that has an attribute =name= which is an alphabetic
+  string and =address= which is a string.
+
+#+NAME: class_Institute
+#+BEGIN_SRC python
+args = {"__tablename__": "institutes",
+        "id": db.Column(db.Integer, primary_key=True),
+        "name": db.Column(db.String(128), unique=True, nullable=False),
+        "address": db.Column(db.String(128), nullable=False),
+        "ocs": db.relationship('OC', backref='institute'),
+        "ncs": db.relationship('NC', backref='institute'),
+        "workshops": db.relationship('Workshop', backref='institute')
+        }
+
+Institute = ClassPersistenceTemplate.mk_persistent(Institute, ['name'], **args)
+#+END_SRC
+
+** Test Institute
+#+NAME: class_TestInstitute
+#+BEGIN_SRC python
+class TestPersistenceInstitute(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_create_institue(self):
+        print "test_create_institute"
+        inst = Institute(name="IIIT",address="Hyderabad")
+        inst.save()
+        self.assertEqual(is_institute(inst), True)
+        inst = Institute.get_by_id(1)
+        inst_from_db = Institute.apply_filters(name="IIIT")[0]
+        self.assertEqual(is_institute(inst_from_db), True)
+        self.assertEqual(inst.get("name"), "IIIT")
+        self.assertEqual(inst_from_db.get("name"), "IIIT")
+        self.assertRaises(TypeError, Institute, name="IIIT123")
+
+#+END_SRC
+
+
+* OC
+  =OC= is an entity that has an attribute =institute= of type =Institute= and
+  =spokes= of type =list of nc's= where =nc= is of type =NC=.
+
+#+NAME: class_OC
+#+BEGIN_SRC python
+args = {"__tablename__": "oc",
+	"id": db.Column(db.Integer, primary_key=True),
+        "institute_id": db.Column(db.Integer, db.ForeignKey('institutes.id'), 
+                        unique=True, nullable=True),
+        "spokes": db.relationship('NC', backref='hub'),
+        "oc_targets": db.relationship('OCTarget', backref='oc'),
+        "role": db.relationship('Role', backref='centre_oc', uselist=False)
+	}
+
+OC = ClassPersistenceTemplate.mk_persistent(OC, ['institute'], **args)
+
+#+END_SRC
+
+** Test OC
+#+NAME: class_TestOC
+#+BEGIN_SRC python
+class TestPersistenceOC(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_create_oc(self):
+        print "test_create_oc"
+       
+        inst = Institute(name="IIIT",address="Hyderabad")
+        inst.save()
+        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
+        oc.save()
+
+        oc = OC.get_by_id(1)
+        self.assertEqual(is_oc(oc), True)
+        oc_from_db = OC.apply_filters(institute=inst)[0]
+        self.assertEqual(is_oc(oc_from_db), True)
+        self.assertEqual(oc.get("institute").get("name"), "IIIT")
+
+    def test_get_spokes_of_oc(self):
+        print "test_get_spokes_of_oc"
+        
+        inst1 = Institute(name="IIIT",address="Hyderabad")
+        inst1.save()
+        inst2 = Institute(name="NIT",address="Suratkal")
+        inst2.save()
+        inst3 = Institute(name="IIT",address="Hyderabad")
+        inst3.save()
+        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
+        oc.save()
+        oc = OC.get_by_id(1)
+        oc_from_db = OC.apply_filters(institute=inst1)[0]
+        self.assertEqual(is_oc(oc), True)
+
+        nc1 = NC(institute=Institute.get_by_id(2), hub=OC.get_by_id(1), 
+                     nc_targets=[], workshops=[])
+        nc1.save()
+
+        nc2 = NC(institute=Institute.get_by_id(3), hub=OC.get_by_id(1), 
+                     nc_targets=[], workshops=[])
+        nc2.save()
+        
+        oc=OC.get_by_id(1)
+        list=oc.spokes
+        
+        self.assertEqual(list[0].get("institute").get("name"), "NIT")
+        self.assertEqual(list[1].get("institute").get("name"), "IIT")
+
+        oc_from_db = OC.apply_filters(institute=inst1)[0]
+        list=oc.spokes
+        
+        self.assertEqual(list[0].get("institute").get("name"), "NIT")
+        self.assertEqual(list[1].get("institute").get("name"), "IIT")
+
+    def test_update_oc(self):
+        print "test_update_oc"
+        
+        inst1 = Institute(name="IIIT",address="Hyderabad")
+        inst1.save()
+        inst2 = Institute(name="NIT",address="Suratkal")
+        inst2.save()
+        
+        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
+        oc.save()
+        self.assertEqual(oc.get("institute").get("name"), "IIIT")
+
+        oc.set(institute=inst2)
+        oc = OC.apply_filters(institute=inst2)[0]
+        self.assertEqual(oc.get("institute").get("name"), "NIT")
+
+    def test_delete_oc(self):
+        print "test_delete_oc"
+        
+        inst1 = Institute(name="IIIT",address="Hyderabad")
+        inst1.save()
+
+        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
+        oc.save()
+
+        self.assertEqual(len(OC.get_all()), 1)
+        oc.delete()
+        self.assertEqual(len(OC.get_all()), 0)
+        
+#+END_SRC
+
+
+* NC
+  =NC= is an entity that has an attribute =institute= of type =Institute= and =hub= of type =OC=.
+
+#+NAME: class_NC
+#+BEGIN_SRC python
+args = {"__tablename__": "nc",
+	"id": db.Column(db.Integer, primary_key=True),
+        "institute_id": db.Column(db.Integer, db.ForeignKey('institutes.id'), 
+                        unique=True, nullable=False),
+        "hub_id": db.Column(db.Integer, db.ForeignKey('oc.id'), 
+                                nullable=False),
+        "nc_targets": db.relationship('NCTarget', backref='nc'),
+        "workshops": db.relationship('Workshop', backref='nc'),
+        "role": db.relationship('Role', backref='centre_nc', uselist=False)
+        }
+
+NC = ClassPersistenceTemplate.mk_persistent(NC, ['institute'], **args)
+
+#+END_SRC
+
+** Test NC
+#+NAME: class_TestNC
+#+BEGIN_SRC python
+class TestPersistenceNC(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_create_nc(self):
+        print "test_create_nc"
+
+        inst1 = Institute(name="NIT",address="Suratkal")
+        inst1.save()
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+        
+        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
+        oc.save()
+        nc = NC(institute=Institute.get_by_id(2), hub=OC.get_by_id(1), 
+                    nc_targets=[], workshops=[])
+        nc.save()
+
+        nc = NC.get_by_id(1)
+        nc_from_db = NC.apply_filters(institute=inst2)[0]
+
+        self.assertEqual(is_nc(nc), True)
+        self.assertEqual(is_nc(nc_from_db), True)
+        self.assertEqual(nc.get("institute").get("name"), "IIIT")
+        self.assertEqual(nc_from_db.get("institute").get("name"), "IIIT")
+
+    def test_update_nc(self):
+        print "test_update_nc"
+
+        inst1 = Institute(name="NIT",address="Suratkal")
+        inst1.save()
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+        inst3 = Institute(name="HCU",address="Hyderabad")
+        inst3.save()
+        
+        oc1 = OC(institute=inst1, spokes=[], oc_targets=[])
+        oc1.save()
+        oc2 = OC(institute=inst2, spokes=[], oc_targets=[])
+        oc2.save()
+
+        nc = NC(institute=inst3, hub=oc1,
+                    nc_targets=[], workshops=[])
+        nc.save()
+
+        nc = NC.get_by_id(1)
+        nc_from_db = NC.apply_filters(institute=inst3)[0]
+
+        self.assertEqual(is_nc(nc), True)
+        self.assertEqual(is_nc(nc_from_db), True)
+        self.assertEqual(nc.get("institute").get("name"), "HCU")
+        self.assertEqual(nc_from_db.get("institute").get("name"), "HCU")
+
+        nc.set(hub=oc2)
+        nc = NC.get_by_id(1)
+        nc_from_db = NC.apply_filters(hub=oc2)[0]
+
+        self.assertEqual(is_nc(nc), True)
+        self.assertEqual(is_nc(nc_from_db), True)
+        self.assertEqual(nc.get("hub").get("institute").get("name"), "IIIT")
+        self.assertEqual(nc_from_db.get('hub').get("institute").get("name"), 
+                             "IIIT")
+
+    def test_delete_nc(self):
+        print "test_update_nc"
+
+        inst1 = Institute(name="NIT",address="Suratkal")
+        inst1.save()
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+        
+        oc = OC(institute=inst1, spokes=[], oc_targets=[])
+        oc.save()
+
+        nc = NC(institute=inst2, hub=oc,
+                    nc_targets=[], workshops=[])
+        nc.save()
+        self.assertEqual(len(NC.get_all()), 1)
+        nc.delete()
+        self.assertEqual(len(NC.get_all()), 0)
+
+#+END_SRC
+
+
+* Status   
+#+NAME: class_Status
+#+BEGIN_SRC python
+args = {"__tablename__": "status",
+        "id": db.Column(db.Integer, primary_key = True),
+        "name": db.Column(db.String, unique=True, nullable=False),
+	"workshops": db.relationship('Workshop', backref='status')
+        }
+
+Status = ClassPersistenceTemplate.mk_persistent(Status, ['name'], **args)
+
+#+END_SRC
+
+** Test Status
+#+NAME: class_TestStatus
+#+BEGIN_SRC python
+class TestStatus(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_instantiate_status(self):
+        print "test_instantiate_status"
+        status = Status(name="pending")
+        status.save()
+        status = Status.get_by_id(1)
+        status_from_db = Status.apply_filters(name="pending")[0]
+        self.assertEqual(is_status(status), True)
+        self.assertEqual(is_status(status_from_db), True)
+
+        self.assertEqual(status.get("name"), "pending")
+        self.assertEqual(status_from_db.get("name"), "pending")
+        self.assertRaises(TypeError, Status, name = 123)
+
+    def test_update_status(self):
+        print "test_update_status"
+        status = Status(name="pending")
+        status.save()
+        status = Status.get_by_id(1)
+        status_from_db = Status.apply_filters(name="pending")[0]
+
+        self.assertEqual(is_status(status), True)
+        self.assertEqual(is_status(status_from_db), True)
+        self.assertEqual(status.get("name"), "pending")
+        self.assertEqual(status_from_db.get("name"), "pending")
+
+        status.set(name="approved")
+
+        status = Status.get_by_id(1)
+        status_from_db = Status.apply_filters(name="approved")[0]
+        self.assertEqual(is_status(status), True)
+        self.assertEqual(is_status(status_from_db), True)
+        self.assertEqual(status.get("name"), "approved")
+        self.assertEqual(status_from_db.get("name"), "approved")
+
+#+END_SRC
+
+
+* Workshop
+  A workshop is an entity that takes two arguments Institute, and Target.
+
+#+NAME: class_Workshop
+#+BEGIN_SRC python
+args = {"__tablename__": "workshop",
+        "id": db.Column(db.Integer, primary_key = True),
+        "name": db.Column(db.String(128), nullable=False),
+        "institute_id": db.Column(db.Integer, db.ForeignKey('institutes.id'), 
+                        nullable=False),
+        "artefacts": db.relationship('Artefact', backref = 'workshop'),
+        "status_id": db.Column(db.Integer, db.ForeignKey('status.id'), 
+                     nullable=False),
+        "nc_id": db.Column(db.Integer, db.ForeignKey('nc.id'), nullable=False),
+        "ws_target_id": db.Column(db.Integer, db.ForeignKey('ws_target.id'), 
+                                      nullable=False),
+        "date": db.Column(db.Date, nullable=False),
+        "usage": db.Column(db.Integer, nullable=False),
+        "participants": db.Column(db.Integer, nullable=False),
+        "experiments": db.Column(db.Integer, nullable=False)
+        }
+
+Workshop = ClassPersistenceTemplate.mk_persistent(Workshop, 
+             ['name', 'institute', 'nc', 'date'], **args)
+
+#+END_SRC
+
+** Test Workshop
+
+   Test cases to test workshop entity
+
+#+NAME: class_TestWorkshop
+#+BEGIN_SRC python
+class TestWorkshop(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_instatiate_workshop(self):
+        print "test_instantiate_workshop"
+
+        status = Status(name="pending")
+        status.save()
+        inst1 = Institute(name="NIT",address="Suratkal")
+        inst1.save()
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+        inst3 = Institute(name="HCU",address="Hyderabad")
+        inst3.save()
+        
+        oc = OC(institute=inst1, spokes=[], oc_targets=[])
+        oc.save()
+        
+        nc = NC(institute=inst2, hub=oc,
+                    nc_targets=[], workshops=[])
+        nc.save()
+
+        date = datetime.datetime.strptime("2016-12-23", "%Y-%m-%d").date()
+
+        oc_target = OCTarget(usage=400, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+        nc_target = NCTarget(usage=400, date=date, nc=nc, 
+                             oc_target=oc_target, ws_targets=[])
+        nc_target.save()
+        ws_target = WSTarget(usage=4000, participants=200, experiments=20,
+                                 date=date, nc_target=nc_target)
+        ws_target.save()
+
+        workshop = Workshop(name="Test workshop",
+                            institute=inst3,
+                            status=status, 
+                            artefacts=[], 
+                            nc=nc,
+                            ws_target=ws_target,
+                            date=date,
+                            participants=0,
+                            experiments=0,
+                            usage=0)
+        workshop.save()
+        workshop = Workshop.get_by_id(1)
+        workshop_from_db = Workshop.apply_filters(nc=nc, institute=inst3)[0]
+        self.assertEqual(is_workshop(workshop), True)
+        self.assertEqual(is_workshop(workshop_from_db), True)
+        self.assertEqual(workshop.get("name"), "Test workshop")
+        self.assertEqual(workshop_from_db.get("name"), "Test workshop")
+
+    def test_update_workshop(self):
+        print "test_update_workshop"
+
+        status = Status(name = "pending")
+        status.save()
+        inst1 = Institute(name="NIT",address="Suratkal")
+        inst1.save()
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+        inst3 = Institute(name="HCU",address="Hyderabad")
+        inst3.save()
+        
+        oc = OC(institute=inst1, spokes=[], oc_targets=[])
+        oc.save()
+        
+        nc = NC(institute=inst2, hub=oc,
+                    nc_targets=[], workshops=[])
+        nc.save()
+
+        date = datetime.datetime.strptime("2016-12-23", "%Y-%m-%d").date()
+
+        oc_target = OCTarget(usage=400, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+        nc_target = NCTarget(usage=400, date=date, nc=nc, 
+                             oc_target=oc_target, ws_targets=[])
+        nc_target.save()
+        ws_target = WSTarget(usage=4000, participants=200, experiments=20,
+                                 date=date, nc_target=nc_target)
+        ws_target.save()
+
+        workshop = Workshop(name="Test workshop",
+                            institute=inst3,
+                            status=status, 
+                            artefacts=[], 
+                            nc=nc,
+                            ws_target=ws_target,
+                            date=date,
+                            participants=0,
+                            experiments=0,
+                            usage=0)
+        workshop.save()
+        workshop.set(participants=100, experiments=200, usage=20)
+        workshop = Workshop.get_by_id(1)
+        workshop_from_db = Workshop.apply_filters(nc=nc, institute=inst3)[0]
+        self.assertEqual(is_workshop(workshop), True)
+        self.assertEqual(is_workshop(workshop_from_db), True)
+        self.assertEqual(workshop.get("participants"), 100)
+        self.assertEqual(workshop.get("experiments"), 200)
+        self.assertEqual(workshop.get("usage"), 20)
+        self.assertEqual(workshop_from_db.get("participants"), 100)
+        self.assertEqual(workshop_from_db.get("experiments"), 200)
+        self.assertEqual(workshop_from_db.get("usage"), 20)
+
+
+    def test_delete_workshop(self):
+        print "test_delete_workshop"
+
+        status = Status(name = "pending")
+        status.save()
+        inst1 = Institute(name="NIT",address="Suratkal")
+        inst1.save()
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+        inst3 = Institute(name="HCU",address="Hyderabad")
+        inst3.save()
+        
+        oc = OC(institute=inst1, spokes=[], oc_targets=[])
+        oc.save()
+        
+        nc = NC(institute=inst2, hub=oc,
+                    nc_targets=[], workshops=[])
+        nc.save()
+
+        date = datetime.datetime.strptime("2016-12-23", "%Y-%m-%d").date()
+  
+        oc_target = OCTarget(usage=400, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+        nc_target = NCTarget(usage=400, date=date, nc=nc, 
+                             oc_target=oc_target, ws_targets=[])
+        nc_target.save()
+        ws_target = WSTarget(usage=4000, participants=200, experiments=20,
+                                 date=date, nc_target=nc_target)
+        ws_target.save()
+
+        workshop = Workshop(name="Test workshop",
+                            institute=inst3,
+                            status=status, 
+                            artefacts=[], 
+                            nc=nc,
+                            ws_target=ws_target,
+                            date=date,
+                            participants=0,
+                            experiments=0,
+                            usage=0)
+        workshop.save()
+        self.assertEqual(len(Workshop.get_all()), 1)
+        workshop.delete()
+        self.assertEqual(len(Workshop.get_all()), 0)
+
+#+END_SRC
+
+
+* File Type   
+#+NAME: class_FileType
+#+BEGIN_SRC python
+args = {"__tablename__": "file_type",
+        "id": db.Column(db.Integer, primary_key = True),
+        "name": db.Column(db.String, nullable=False),
+        "artefacts": db.relationship('Artefact', backref='file_type')
+        }
+
+FileType = ClassPersistenceTemplate.mk_persistent(FileType, ['name'], **args)
+
+#+END_SRC
+
+** Test Type
+#+NAME: class_TestFileType
+#+BEGIN_SRC python
+class TestType(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_instantiate_type(self):
+        print "test_instantiate_type"
+        file_type = FileType(name="photo")
+        file_type.save()
+        file_type = FileType.get_by_id(1)
+        file_type_from_db = FileType.apply_filters(name="photo")[0]
+        self.assertEqual(is_file_type(file_type), True)
+        self.assertEqual(is_file_type(file_type_from_db), True)
+        self.assertEqual(file_type.get("name"), "photo")
+        self.assertEqual(file_type_from_db.get("name"), "photo")
+
+    def test_update_type(self):
+        print "test_instantiate_type"
+        file_type = FileType(name="photo")
+        file_type.save()
+        file_type.set(name="workshop")
+        file_type = FileType.get_by_id(1)
+        file_type_from_db = FileType.apply_filters(name="workshop")[0]
+        self.assertEqual(is_file_type(file_type), True)
+        self.assertEqual(is_file_type(file_type_from_db), True)
+        self.assertEqual(file_type.get("name"), "workshop")
+        self.assertEqual(file_type_from_db.get("name"), "workshop")
+
+    def test_delete_type(self):
+        print "test_delete_type"
+        file_type = FileType(name="photo")
+        file_type.save()
+        self.assertEqual(len(FileType.get_all()), 1)
+        file_type.delete()
+        self.assertEqual(len(FileType.get_all()), 0)
+
+#+END_SRC
+
+
+* Artefact   
+#+NAME: class_Artefact
+#+BEGIN_SRC python
+args = {"__tablename__": "artefact",
+        "id": db.Column(db.Integer, primary_key = True),
+        "name": db.Column(db.String, nullable=False),
+        "path": db.Column(db.String, nullable=False, unique=True),
+        "workshop_id": db.Column(db.Integer, db.ForeignKey('workshop.id'),
+                       nullable=False),
+        "file_type_id": db.Column(db.Integer, db.ForeignKey('file_type.id'),
+                        nullable=False)
+        }
+
+Artefact = ClassPersistenceTemplate.mk_persistent(Artefact, ['path'], **args)
+
+#+END_SRC
+
+** Test Artefact
+#+NAME: class_TestArtefact
+#+BEGIN_SRC python
+class TestArtefact(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_instantiate_artefact(self):
+        print "test_instantiate_artefact"
+
+        status = Status(name="pending")
+        status.save()
+        inst1 = Institute(name="NIT",address="Suratkal")
+        inst1.save()
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+        inst3 = Institute(name="HCU",address="Hyderabad")
+        inst3.save()
+        
+        oc = OC(institute=inst1, spokes=[], oc_targets=[])
+        oc.save()
+        
+        nc = NC(institute=inst2, hub=oc,
+                    nc_targets=[], workshops=[])
+        nc.save()
+
+        date = datetime.datetime.strptime("2016-12-23", "%Y-%m-%d").date()
+
+        oc_target = OCTarget(usage=400, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+
+        nc_target = NCTarget(usage=400, date=date, nc=nc, 
+                             oc_target=oc_target, ws_targets=[])
+        nc_target.save()
+
+        ws_target = WSTarget(usage=4000, participants=200, experiments=20,
+                                 date=date, nc_target=nc_target)
+        ws_target.save()
+
+        workshop = Workshop(name="Test workshop",
+                            institute=inst3,
+                            status=status, 
+                            artefacts=[], 
+                            nc=nc,
+                            ws_target=ws_target,
+                            date=date,
+                            participants=0,
+                            experiments=0,
+                            usage=0)
+        workshop.save()
+
+        file_type=FileType(name="attendance")
+        file_type.save()
+        artefact = Artefact(name="attendance", 
+                     path="/home/file.txt", 
+                     file_type=file_type,
+                     workshop=workshop)
+        
+        artefact.save()
+        artefact = Artefact.get_by_id(1)
+        artefact_from_db = Artefact.apply_filters(path="/home/file.txt")[0]
+        self.assertEqual(is_artefact(artefact), True)
+        self.assertEqual(is_artefact(artefact_from_db), True)
+        self.assertEqual(artefact.get("file_type").get("name"), "attendance")
+        self.assertEqual(artefact_from_db.get("file_type").get("name"), 
+                             "attendance")
+
+    def test_update_artefact(self):
+        print "test_update_artefact"
+
+        status = Status(name="pending")
+        status.save()
+        inst1 = Institute(name="NIT",address="Suratkal")
+        inst1.save()
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+        inst3 = Institute(name="HCU",address="Hyderabad")
+        inst3.save()
+        
+        oc = OC(institute=inst1, spokes=[], oc_targets=[])
+        oc.save()
+        
+        nc = NC(institute=inst2, hub=oc,
+                    nc_targets=[], workshops=[])
+        nc.save()
+
+        date = datetime.datetime.strptime("2016-12-23", "%Y-%m-%d").date()
+
+        oc_target = OCTarget(usage=400, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+
+        nc_target = NCTarget(usage=400, date=date, nc=nc, 
+                             oc_target=oc_target, ws_targets=[])
+        nc_target.save()
+
+        ws_target = WSTarget(usage=4000, participants=200, experiments=20,
+                                 date=date, nc_target=nc_target)
+        ws_target.save()
+
+        workshop = Workshop(name="Test workshop",
+                            institute=inst3,
+                            status=status, 
+                            artefacts=[], 
+                            nc=nc,
+                            ws_target=ws_target,
+                            date=date,
+                            participants=0,
+                            experiments=0,
+                            usage=0)
+        workshop.save()
+
+        file_type1 = FileType(name="attendance")
+        file_type1.save()
+
+        file_type2 = FileType(name="usage")
+        file_type2.save()
+
+        artefact = Artefact(name="attendance", 
+                     path="/home/file.txt", 
+                     file_type=file_type1,
+                     workshop=workshop)
+        
+        artefact.save()
+        artefact.set(file_type=file_type2)
+        artefact = Artefact.get_by_id(1)
+        artefact_from_db = Artefact.apply_filters(file_type=file_type2)[0]
+        self.assertEqual(is_artefact(artefact), True)
+        self.assertEqual(is_artefact(artefact_from_db), True)
+        self.assertEqual(artefact.get("file_type").get("name"), "usage")
+        self.assertEqual(artefact_from_db.get("file_type").get("name"), 
+                             "usage")
+
+    def test_delete_artefact(self):
+        print "test_delete_artefact"
+
+        status = Status(name="pending")
+        status.save()
+        inst1 = Institute(name="NIT",address="Suratkal")
+        inst1.save()
+        inst2 = Institute(name="IIIT",address="Hyderabad")
+        inst2.save()
+        inst3 = Institute(name="HCU",address="Hyderabad")
+        inst3.save()
+        
+        oc = OC(institute=inst1, spokes=[], oc_targets=[])
+        oc.save()
+        
+        nc = NC(institute=inst2, hub=oc,
+                    nc_targets=[], workshops=[])
+        nc.save()
+
+        date = datetime.datetime.strptime("2016-12-23", "%Y-%m-%d").date()
+
+        oc_target = OCTarget(usage=400, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+
+        nc_target = NCTarget(usage=400, date=date, nc=nc, 
+                             oc_target=oc_target, ws_targets=[])
+        nc_target.save()
+
+        ws_target = WSTarget(usage=4000, participants=200, experiments=20,
+                                 date=date, nc_target=nc_target)
+        ws_target.save()
+
+        workshop = Workshop(name="Test workshop",
+                            institute=inst3,
+                            status=status, 
+                            artefacts=[], 
+                            nc=nc,
+                            ws_target=ws_target,
+                            date=date,
+                            participants=0,
+                            experiments=0,
+                            usage=0)
+        workshop.save()
+
+        file_type=FileType(name="attendance")
+        file_type.save()
+        artefact = Artefact(name="attendance", 
+                     path="/home/file.txt", 
+                     file_type=file_type,
+                     workshop=workshop)
+        
+        artefact.save()
+        self.assertEqual(len(Artefact.get_all()), 1)
+        artefact.delete()
+        self.assertEqual(len(Artefact.get_all()), 0)
+
+#+END_SRC
+
+
+* OCTarget   
+#+NAME: class_OCTarget
+#+BEGIN_SRC python
+args = {"__tablename__": "oc_target",
+        "id": db.Column(db.Integer, primary_key = True),
+        "oc_id": db.Column(db.Integer, db.ForeignKey('oc.id'),
+                       nullable=False),
+        "usage": db.Column(db.Integer, nullable=False),
+        "date": db.Column(db.Date, nullable=False),
+        "nc_targets": db.relationship('NCTarget', backref='oc_target')
+        }
+
+OCTarget = ClassPersistenceTemplate.mk_persistent(OCTarget, 
+                                                      ['date', 'oc'], **args)
+
+#+END_SRC
+
+** Test OCTarget
+#+NAME: class_TestOCTarget
+#+BEGIN_SRC python
+class TestOCTarget(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_instantiate_octarget(self):
+        print "test_instantiate_octarget"
+
+        inst=Institute(name="IIITH", address="Hyderabad")
+        inst.save()
+        date_format = "%Y-%m-%d"
+        t_date = datetime.date.today()
+        date = datetime.datetime.strptime(str(t_date), date_format).date()
+        oc = OC(institute=inst, oc_targets=[], spokes=[])
+        oc.save()
+        oc_target = OCTarget(usage=300, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+        oc_target = OCTarget.get_by_id(1)
+        oc_target_from_db = OCTarget.apply_filters(oc=oc)[0]
+        self.assertEqual(is_oc_target(oc_target), True)
+        self.assertEqual(oc_target.get("usage"), 300)
+        self.assertEqual(is_oc_target(oc_target_from_db), True)
+        self.assertEqual(oc_target_from_db.get("usage"), 300)
+
+    def test_update_octarget(self):
+        print "test_update_octarget"
+
+        inst=Institute(name="IIITH", address="Hyderabad")
+        inst.save()
+        date_format = "%Y-%m-%d"
+        t_date = datetime.date.today()
+        date = datetime.datetime.strptime(str(t_date), date_format).date()
+        oc = OC(institute=inst, oc_targets=[], spokes=[])
+        oc.save()
+        oc_target = OCTarget(usage=300, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+        oc_target.set(usage=400)
+        oc_target = OCTarget.get_by_id(1)
+        oc_target_from_db = OCTarget.apply_filters(oc=oc)[0]
+        self.assertEqual(is_oc_target(oc_target), True)
+        self.assertEqual(oc_target.get("usage"), 400)
+        self.assertEqual(is_oc_target(oc_target_from_db), True)
+        self.assertEqual(oc_target_from_db.get("usage"), 400)
+
+    def test_delete_octarget(self):
+        print "test_delete_octarget"
+
+        inst=Institute(name="IIITH", address="Hyderabad")
+        inst.save()
+        date_format = "%Y-%m-%d"
+        t_date = datetime.date.today()
+        date = datetime.datetime.strptime(str(t_date), date_format).date()
+        oc = OC(institute=inst, oc_targets=[], spokes=[])
+        oc.save()
+        oc_target = OCTarget(usage=300, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+        self.assertEqual(len(OCTarget.get_all()), 1)
+        oc_target.delete()
+        self.assertEqual(len(OCTarget.get_all()), 0)
+
+#+END_SRC
+
+
+* NCTarget   
+#+NAME: class_NCTarget
+#+BEGIN_SRC python
+args = {"__tablename__": "nc_target",
+        "id": db.Column(db.Integer, primary_key = True),
+        "nc_id": db.Column(db.Integer, db.ForeignKey('nc.id'),
+                        nullable=False),
+        "oc_target_id": db.Column(db.Integer, db.ForeignKey('oc_target.id'),
+                        nullable=False),
+        "usage": db.Column(db.Integer, nullable=False),
+        "date": db.Column(db.Date, nullable=False),
+ 
+        "ws_targets": db.relationship('WSTarget', backref='nc_target')
+        }
+
+NCTarget = ClassPersistenceTemplate.mk_persistent(NCTarget, 
+                                                      ['nc', 'date'], **args)
+
+#+END_SRC
+
+** Test NCTarget
+#+NAME: class_TestNCTarget
+#+BEGIN_SRC python
+class TestNCTarget(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_instantiate_nctarget(self):
+        print "test_instantiate_nctarget"
+
+        date_str = "2016-06-30"
+        date_format = "%Y-%m-%d"
+        inst1 = Institute(name="IIITH", address="Hyderabad")
+        inst1.save()
+        inst2 = Institute(name="HCU", address="Hyderabad")
+        inst2.save()
+
+        date = datetime.datetime.strptime(date_str, date_format).date()
+        oc = OC(institute=inst1, oc_targets=[], spokes=[])
+        oc.save()
+        nc = NC(institute=inst2, hub=oc, nc_targets=[], workshops=[])
+        nc.save()
+        oc_target = OCTarget(usage=3000, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+        nc_target = NCTarget(usage=300, 
+                                 date=date, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+        nc_target.save()
+        nc_target = NCTarget.get_by_id(1)
+        nc_target_from_db = NCTarget.apply_filters(nc=nc)[0]
+        self.assertEqual(is_nc_target(nc_target), True)
+        self.assertEqual(is_nc_target(nc_target_from_db), True)
+        self.assertEqual(nc_target.get("usage"), 300)
+        self.assertEqual(nc_target_from_db.get("usage"), 300)
+
+    def test_update_nctarget(self):
+        print "test_update_nctarget"
+
+        date_str = "2016-06-30"
+        date_format = "%Y-%m-%d"
+        inst1 = Institute(name="IIITH", address="Hyderabad")
+        inst1.save()
+        inst2 = Institute(name="HCU", address="Hyderabad")
+        inst2.save()
+
+        date = datetime.datetime.strptime(date_str, date_format).date()
+        oc = OC(institute=inst1, oc_targets=[], spokes=[])
+        oc.save()
+        nc = NC(institute=inst2, hub=oc, nc_targets=[], workshops=[])
+        nc.save()
+        oc_target = OCTarget(usage=3000, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+        nc_target = NCTarget(usage=300, 
+                                 date=date, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+        nc_target.save()
+
+        nc_target.set(usage=400)
+        nc_target = NCTarget.get_by_id(1)
+        nc_target_from_db = NCTarget.apply_filters(nc=nc)[0]
+        self.assertEqual(is_nc_target(nc_target), True)
+        self.assertEqual(is_nc_target(nc_target_from_db), True)
+        self.assertEqual(nc_target.get("usage"), 400)
+        self.assertEqual(nc_target_from_db.get("usage"), 400)
+
+    def test_delete_nc_target(self):
+        print "test_delete_nc_target"
+
+        date_str = "2016-06-30"
+        date_format = "%Y-%m-%d"
+        inst1 = Institute(name="IIITH", address="Hyderabad")
+        inst1.save()
+        inst2 = Institute(name="HCU", address="Hyderabad")
+        inst2.save()
+
+        date = datetime.datetime.strptime(date_str, date_format).date()
+        oc = OC(institute=inst1, oc_targets=[], spokes=[])
+        oc.save()
+        nc = NC(institute=inst2, hub=oc, nc_targets=[], workshops=[])
+        nc.save()
+        oc_target = OCTarget(usage=3000, date=date, oc=oc, nc_targets=[])
+        oc_target.save()
+        nc_target = NCTarget(usage=300, 
+                                 date=date, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+        nc_target.save()
+        self.assertEqual(len(NCTarget.get_all()), 1)
+        nc_target.delete()
+        self.assertEqual(len(NCTarget.get_all()), 0)
+
+#+END_SRC
+
+
+* WSTarget   
+#+NAME: class_WSTarget
+#+BEGIN_SRC python
+args = {"__tablename__": "ws_target",
+        "id": db.Column(db.Integer, primary_key = True),
+        "nc_target_id": db.Column(db.Integer, db.ForeignKey('nc_target.id'), 
+                        nullable=False),
+        "workshop": db.relationship('Workshop', 
+                                        backref=db.backref('ws_target', 
+                                        uselist=False)),
+        "usage": db.Column(db.Integer, nullable=False),
+        "date": db.Column(db.Date, nullable=False),
+        "participants": db.Column(db.Integer, nullable=False),
+        "experiments": db.Column(db.Integer, nullable=False),
+        }
+
+WSTarget = ClassPersistenceTemplate.mk_persistent(WSTarget, 
+                                    ['date'], **args)
+
+#+END_SRC
+
+** Test WSTarget
+#+NAME: class_TestWSTarget
+#+BEGIN_SRC python
+class TestWSTarget(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_instantiate_wstarget(self):
+        print "test_instantiate_wstarget"
+
+
+        date_str_1 = "2016-06-30"
+        date_str_2 = "2017-06-30"
+        date_format = "%Y-%m-%d"
+        date_1 = datetime.datetime.strptime(date_str_1, date_format).date()
+        date_2 = datetime.datetime.strptime(date_str_2, date_format).date()
+
+        inst1 = Institute(name="IIITH", address="Hyderabad")
+        inst2 = Institute(name="HCU", address="Hyderabad")
+        inst1.save()
+        inst2.save()
+
+        oc = OC(institute=inst1, oc_targets=[], spokes=[])
+        oc.save()
+
+        nc = NC(institute=inst2, hub=oc, nc_targets=[], workshops=[])
+        nc.save()
+
+        oc_target = OCTarget(usage=3000, date=date_1, oc=oc, nc_targets=[])
+        oc_target.save()
+        nc_target = NCTarget(usage=300, 
+                                 date=date_1, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+        nc_target.save()
+
+        ws_target = WSTarget(usage=2000,
+                                 participants=200,
+                                 experiments=100,
+                                 date=date_1,
+                                 nc_target=nc_target)
+        ws_target.save()
+
+        ws_target = WSTarget.get_by_id(1)
+        ws_target_from_db = WSTarget.apply_filters(nc_target=nc_target)[0]
+        self.assertEqual(is_ws_target(ws_target), True)
+        self.assertEqual(is_ws_target(ws_target_from_db), True)
+        self.assertEqual(ws_target.get("participants"), 200)
+        self.assertEqual(ws_target_from_db.get("participants"), 200)
+
+    def test_update_wstarget(self):
+        print "test_update_wstarget"
+
+
+        date_str_1 = "2016-06-30"
+        date_str_2 = "2017-06-30"
+        date_format = "%Y-%m-%d"
+        date_1 = datetime.datetime.strptime(date_str_1, date_format).date()
+        date_2 = datetime.datetime.strptime(date_str_2, date_format).date()
+
+        inst1 = Institute(name="IIITH", address="Hyderabad")
+        inst2 = Institute(name="HCU", address="Hyderabad")
+        inst1.save()
+        inst2.save()
+
+        oc = OC(institute=inst1, oc_targets=[], spokes=[])
+        oc.save()
+
+        nc = NC(institute=inst2, hub=oc, nc_targets=[], workshops=[])
+        nc.save()
+
+        oc_target = OCTarget(usage=3000, date=date_1, oc=oc, nc_targets=[])
+        oc_target.save()
+        nc_target = NCTarget(usage=300, 
+                                 date=date_1, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+        nc_target.save()
+
+        ws_target = WSTarget(usage=2000,
+                                 participants=200,
+                                 experiments=100,
+                                 date=date_1,
+                                 nc_target=nc_target)
+        ws_target.save()
+
+        ws_target.set(participants=300)
+
+        ws_target = WSTarget.get_by_id(1)
+        ws_target_from_db = WSTarget.apply_filters(nc_target=nc_target)[0]
+        self.assertEqual(is_ws_target(ws_target), True)
+        self.assertEqual(is_ws_target(ws_target_from_db), True)
+        self.assertEqual(ws_target.get("participants"), 300)
+        self.assertEqual(ws_target_from_db.get("participants"), 300)
+
+
+    def test_delete_wstarget(self):
+        print "test_delete_wstarget"
+
+        date_str_1 = "2016-06-30"
+        date_str_2 = "2017-06-30"
+        date_format = "%Y-%m-%d"
+        date_1 = datetime.datetime.strptime(date_str_1, date_format).date()
+        date_2 = datetime.datetime.strptime(date_str_2, date_format).date()
+
+        inst1 = Institute(name="IIITH", address="Hyderabad")
+        inst2 = Institute(name="HCU", address="Hyderabad")
+        inst1.save()
+        inst2.save()
+
+        oc = OC(institute=inst1, oc_targets=[], spokes=[])
+        oc.save()
+
+        nc = NC(institute=inst2, hub=oc, nc_targets=[], workshops=[])
+        nc.save()
+
+        oc_target = OCTarget(usage=3000, date=date_1, oc=oc, nc_targets=[])
+        oc_target.save()
+        nc_target = NCTarget(usage=300, 
+                                 date=date_1, 
+                                 nc=nc, 
+                                 oc_target=oc_target,
+                                 ws_targets=[])
+        nc_target.save()
+
+        ws_target = WSTarget(usage=2000,
+                                 participants=200,
+                                 experiments=100,
+                                 date=date_1,
+                                 nc_target=nc_target)
+        ws_target.save()
+        self.assertEqual(len(WSTarget.get_all()), 1)
+        ws_target.delete()
+        self.assertEqual(len(WSTarget.get_all()), 0)
+
+#+END_SRC
+
+
+* Infra                                                         :boilerplate:
+** sources
+*** Imports 
+#+name: imports_for_sources
+#+BEGIN_SRC python
+# -*- coding: utf-8 -*-
+from runtime.objects.entities import *
+from runtime.utils.class_persistence_template import *
+import datetime
+
+#+end_src
+
+
+** Tests
+*** Imports for tests 
+#+name: imports_for_tests
+#+BEGIN_SRC python
+# -*- coding: utf-8 -*-
+import unittest
+from flask_testing import TestCase
+from sqlalchemy.exc import IntegrityError
+from runtime.persistence.entities import *
+from runtime.rest.app import create_app
+
+config = {
+    'SQLALCHEMY_DATABASE_URI': ''
+}
+
+#+end_src
+
+*** Running tests
+#+NAME: run_test_cases
+#+BEGIN_SRC python
+if __name__ == '__main__':
+    unittest.main()
+#+END_SRC
+
+
+* Tangling                                                      :boilerplate:
+** sources
+#+BEGIN_SRC python :tangle entities.py :eval no :noweb yes
+<<imports_for_sources>>
+<<class_Name>>
+<<class_Email>>
+<<class_Role>>
+<<class_association_Table>>
+<<class_User>>
+<<class_Institute>>
+<<class_OC>>
+<<class_NC>>
+<<class_Status>>
+<<class_Workshop>>
+<<class_FileType>>
+<<class_Artefact>>
+<<class_OCTarget>>
+<<class_NCTarget>>
+<<class_WSTarget>>
+#+end_src
+
+
+** tests
+#+BEGIN_SRC python :tangle test_entities.py :eval no :noweb yes
+<<imports_for_tests>>
+<<class_TestName>>
+<<class_TestEmail>>
+<<class_TestRole>>
+<<class_TestUser>>
+<<class_TestInstitute>>
+<<class_TestOC>>
+<<class_TestNC>>
+<<class_TestStatus>>
+<<class_TestWorkshop>>
+<<class_TestFileType>>
+<<class_TestArtefact>>
+<<class_TestOCTarget>>
+<<class_TestNCTarget>>
+<<class_TestWSTarget>>
+<<run_test_cases>>
+#+end_src
