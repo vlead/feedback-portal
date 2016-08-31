@@ -1,4 +1,4 @@
-#+TITLE: Requirements for Outreach Portal 3.0
+#+TITLE: Requirements for Feedback Portal 3.0
 #+AUTHOR: VLEAD
 #+DATE: [2016-06-15 Wed]
 #+PROPERTY: results output
@@ -7,316 +7,61 @@
 #+options: ^:nil
 #+LATEX: Literal LaTeX code for export
 
-Requirements of a Portal whose objective is to help advance the outreach of
-Virtual Labs are captured here. 
+Requirements of a Feedback Portal to capture the Virtual Labs Feedback are listed here. 
 
-* User
-:PROPERTIES:
-:CUSTOM_ID: req_user
-:END: 
 
-  User is an entity in the system.  There are several user(s) in the system
-  whose type is =User=.  The interaction of a user with the system is defined
-  by the requirements below.
+* Requriements for the Feedback Service 
 
-  Realized in data model as [[../data-model/index.org::#entity_user][User]]
-** Composition
-:PROPERTIES:
-:CUSTOM_ID: req_user_composition
-:END: 
-   The system has users.
-   Realized in data model as
-   [[../data-model/index.org::#primary_entity_sets][primary entity sets]]
+1) Feedback service should be a micro service and not a part of data service.
 
-   
-* Role
-:PROPERTIES:
-:CUSTOM_ID: req_role
-:END: 
+2) Feedback service gets the data from labs which are running on Open edX. 
+   Open edX should provide the following data fields to feedback service:
 
-  Different privileges for accessing the system is maintained by roles.  A role
-  whose type is =Role= defines a set of privileges i.e. what is accessible and
-  what is not accessible in the system.
+   - Discipline name/id
+   - Lab name/id
+   - Experiment name/id
+   - Gateway ip
+   - User id
+   - Date
 
-  Realized in data model as [[../data-model/index.org::#entity_role][Role]]
+3) This service can be queried using different fields (lab name , date, gateway
+   ip address, experiment) to get feedback data.
 
-** Types of Roles
-:PROPERTIES:
-:CUSTOM_ID: req_role_types
-:END: 
+4) Authentication for feedback service needs to be implemented. (Also to which
+   user feedback data should be exposed - TBD).
 
-   There are 6 kinds of roles: =admin=, =guest=, =reviewer=, =noc= =occ(oc)=,
-   =ncc(nc)=.  Each role determines what data access privileges are available
-   to the user.
+5) Dashboard should be implemented to fetch/get the feedback data from the feedback
+   service. 
 
-   =noc= - National Outreach Coordinator
-   =oc= - Outreach Center
-   =occ= - Outreach Center Coordinator
-   =nc= - Nodal Center
-   =ncc= - Nodal Center Coordinator
 
-** Role Mapping to a User
-:PROPERTIES:
-:CUSTOM_ID: req_role_mapping_to_user
-:END: 
+* Requirements for the Outreach portal to consume the feedback service
 
-   Each user is mapped to at least one role meaning a user can have one or more
-   roles.  In any given session, a user is mapped to a single role.
-
-   Realized in data model as [[../data-model/index.org::#cardinal_constraints][cardinalility]] and [[../data-model/index.org::#referential_constraints][referential]] constraints on [[../data-model/index.org::#entity_role][Role]] and
-   [[../data-model/index.org::#entity_user][User]] entities.
-
-** Role Privileges
-:PROPERTIES:
-:CUSTOM_ID: req_role_privileges
-:END:    
+1) In Outreach portal, NCC (Nodal Centre Coordinator) should fill the gateway
+   IP, date of the workshop to get the actual usage for the completed
+   workshop. Data will be served by feedback service.
 
    
-   1. A user with role admin has the ability to:
+*  Requirements for the UI form
 
-      1. Create a new user, Read and Update information of all users, and
-         Delete all other users.
+Feedback form should be very concise and user friendly. It should not take much
+time for user to fill the feedback. 
 
-   2. A user with role guest has the ability to:
+1) Feedback form should be pre-populated with Lab name and experiment name.
 
-      1. View certain information of the Outreach Portal. (to be defined)
-      
-   3. A user with role =reviewer= has the ability to:
+2) The IP (field key is ip) of the user is detected automatically at the
+   back-end and is not part of the questionnaire.
 
-      1. View all the information of the Outreach Portal.
+3) The feedback form will be available in three different levels(places)
 
-      2. Should the reviewer have the ability to leave his review notes on the portal?
+a) Genric Feedback Form
 
-   4. A user with role =noc= has the ability to:
+ Questionnaire to be decided and answers should be in form of radio button.
 
-      1. Create Outreach Centers (=oc= s)
+b) Experiment Specific Feedback Form:
 
-      2. Create users
+ Questionnaire to be decided and answers should be in form of radio button.
 
-      3. Assign role occ(oc) to users
+c) Lab Specific Feedback Form:
 
-      4. Set targets to Outreach Centers
-
-   5. A user with the role =occ(oc)= has the ability to:
-
-      1. Manage the outreach center =oc=.
-
-      2. Create, Read, Update and delete nodal centers.
-
-      3. Create users
-
-      4. Assign role =ncc(nc)= to users where =nc= is nodal center belonging to
-         the outreach center =oc=.
-
-   6. A user with the role =ncc(nc)= has the ability to:
-
-      1. Manage the nodal center =nc=.
-
-** User with =admin= role
-:PROPERTIES:
-:CUSTOM_ID: req_role_admin
-:END:    
-
-   There is atleast one user with role =admin= in the system.
-
-   Realized in data model as an [[../data-model/index.org::#admin_user][admin user]]
-
-   
-* Outreach Center
-:PROPERTIES:
-:CUSTOM_ID: req_outreach_centre
-:END:      
-
-  Coordination and delegation of outreach activity is carried by the Outreach
-  Centers.  Each outreach center is a hub for outreach activity. 
-  
-** Host of Outreach Center
-   An outreach center (=OC=) is hosted in an institute. 
-** Target of an Outreach Center
-   The target usage for an =OC= is set by user while donning the role =admin=
-** Spokes of an Outreach Center
-   =OC= monitors and coordinates outreach activity that is designated to it.
-   This is achieved by creating one or more nodal centers that are associated
-   with an =OC= to carry out outreach activity to meet the targets for an =OC=.
-** Coordinators of an Outreach Center
-   Each =OC= has zero or more coordinators (Outreach Center Coordinator =OCC=)
-   associated with it.
-** Activity Approval
-   =OCC= of an =OC= reviews activities of all the nodal centers associated with
-   it and upon review, either approves or rejects the activities.
-** Creation of an Outreach Center
-   An =OC= is created by user while donning the role =admin=
-
-   
-* Nodal Centre
-:PROPERTIES:
-:CUSTOM_ID: req_nodal_centre
-:END:      
-  
-  A nodal centre is one of the spokes of an outreach center (hub) that carries
-  out the activity related to the outreach of Virtual Labs.
-** Host of a Nodal Center
-   An nodal center (=NC=) is hosted in an institute.
-** Hub of a Nodal Center
-   Each =NC= is associated with a unique outreach center.
-** Target of a Nodal Center
-   The target for a =NC= is set by the Outreach Center Coordinator (=OCC=) of
-   the =OC= with which this =NC= is associated with.
-** Coordinators of an Outreach Center
-   Each =NC= has zero or more coordinators (Nodal Center Coordinator =NCC=)
-   associated with it.
-** Perform Activities
-   A Nodal Center Coordinator (=NCC=) conducts activities to meet the target of
-   =NC=.
-** Upload Artifacts
-   A =NCC= submits all the artifacts associated with an activity for approval
-   by an =OCC=.
-
-   
-* Activities
-:PROPERTIES:
-:CUSTOM_ID: req_activities
-:END: 
-
-  Activities define the ways of how outreach of Virtual Labs is carried out.
-** A type of Activity - Workshop
-   A Workshop is an activity and a workshop is conducted at an Institute.
-** Participants of a Workshop
-   A workshop has participants - students and a nodal center coordinator. 
-** Usage of a Workshop
-   Each workshop has a target and actual usage of Virtual Labs measured in
-   terms of experiments performed by the participants. 
-** Types of Artifacts
-   There are different types of artifacts associated with each workshop -
-   attendance sheet, photos, feedback and report. 
-
-
-* Institute
-:PROPERTIES:
-:CUSTOM_ID: req_institute
-:END: 
-  An institute is the host of either an outreach center or a nodal center or an
-  outreach activity.
-** Composition
-   The system has institutes.
-** Host of an Outreach Center
-   Each outreach center is associated to exactly one institute
-
-** Host of a Nodal Center
-   Each nodal center is associated to exactly one institute
-** Host of both an Outreach Center and a Nodal Center
-   The hosting institute of an outreach center and a nodal center can be the
-   same.
-** Host of a Workshop
-   A workshop is conducted at an institute
-
-
-* Sessions
-:PROPERTIES:
-:CUSTOM_ID: req_session
-:END: 
-
-  A session defines the set of actions that a user is allowed to perform. 
-  Realized in datamodel as [[../data-model/index.org::#entity_session][Session]]
-** Login is Mandatory
-:PROPERTIES:
-:CUSTOM_ID: req_session_login
-:END: 
-
-   Users are required to login into the system.
-
-   Realized in data model as [[../data-model/index.org::#primary_entity_sets][session-set]]
-** A logged user and a session
-:PROPERTIES:
-:CUSTOM_ID: req_session_association
-:END: 
-
-   Each user once logged in is associated with a session.
-
-   Realized in data model as [[../data-model/index.org::#cardinal_constraints][cardinality]] and [[../data-model/index.org::#referential_constraints][referential]] constraints on
-   [[../data-model/index.org::#entity_session][Session]] entity.
-
-** Privileges
-:PROPERTIES:
-:CUSTOM_ID: req_session_privileges
-:END: 
-
-   Operations are permitted only if the user is logged into the system.
-
-** Constraints
-:PROPERTIES:
-:CUSTOM_ID: req_session_constraints
-:END: 
-
-   Users can have more than one session at a given time but no two sessions of
-   a user can have the same role.
-
-   Realized in data model as [[../data-model/index.org::#cardinal_constraints][cardinality]] and [[../data-model/index.org::#referential_constraints][referential]] constraints on [[../data-model/index.org::#entity_session][Session]] entity.
-
-
-* Audit Trail
-:PROPERTIES:
-:CUSTOM_ID: req_audit_trail
-:END: 
-
-  Every action that changes the state of the system is captured to enable an
-  audit of the system. 
-
-** Log each action
-   All actions that change the state of the system are logged in such a way
-   that by playing these recorded logs, the system can be constructed to any of
-   the states it had been before.
-
-** Commit Messages
-   When an action - creation, updation or deletion - is performed, the user
-   also provides a commit message, a reason for performing an action.
-
-
-* Usage   
-:PROPERTIES:
-:CUSTOM_ID: req_usage
-:END: 
-
-  Usage of Virtual Labs is defined as the number of experiments performed. 
-  
-** Capture the usage for each nodal center
-   The exact usage of Virtual Labs generated by the outreach activity at a
-   nodal center is captured. 
-
-** Usage from online forms
-   Usage of Virtual Labs is also calculated from the online feedback forms
-   submitted as part of a workshop. 
-   
-** Number of Attendees
-   Number of attendees of a workshop is provided by the portal.
-
-** Usage from Cloud
-   Virtual Labs usage generated by users performing experiments as not part of
-   workshops is also made available by the portal. 
-
-
-* COMMENT Views
-** Admin
-   
-
-* Questions/Scenarios
-  1. What is the information that a user when logged in with role =guest= is
-     presented with?
-     
-     The information could be related to the total usage, upcoming workshops
-     etc.
-
-  2. When a user is logged in with role =reviewer=, most of the information
-     available with the portal should be presented.  The information is targets
-     and actual usage, outreach centers, nodal centers, workshops conducted,
-     workshops planned.
-
-  3. Should the reviewer have the ability to leave his review notes on the
-     portal?
-
-  4. There is only soft delete, meaning, an entity is not deleted permanently
-     from the database, instead when deleted, that entity is marked as
-     inactive.
-
-
+ Questionnaire to be decided and answers should be in form of radio button.
 
