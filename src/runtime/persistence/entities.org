@@ -48,12 +48,12 @@ class TestPersistentQuestion(TestCase):
 
     def test_create_question(self):
         print "test_create_question"
-        name="how is the lab?"
+        name="how are labs?"
         question1 = Question(name=name)
         question1.save()
 
         new_question = Question.get_by_id(1)
-        self.assertEqual(new_question.get("name"), "how is the lab?")
+        self.assertEqual(new_question.get("name"), "how are labs?")
 
 #+END_SRC
 
@@ -110,10 +110,10 @@ class TestPersistenceAnswer(TestCase):
 args = {"__tablename__": "response",
         "id": db.Column(db.Integer, primary_key=True),
         "question_id": db.Column(db.Integer, 
-                                      db.ForeignKey('oc.id'), 
+                                      db.ForeignKey('question.id'), 
                                       unique=True, nullable=True),
         "answer_id": db.Column(db.Integer, 
-                                      db.ForeignKey('nc.id'), 
+                                      db.ForeignKey('answer.id'), 
                                       unique=True, nullable=True)
       }
 
@@ -122,10 +122,10 @@ Response = ClassPersistenceTemplate.mk_persistent(Response,
 
 #+END_SRC
 
-** Test Role
-#+NAME: class_TestRole
+** Test Response
+#+NAME: class_TestResponse
 #+BEGIN_SRC python
-class TestPersistenceRole(TestCase):
+class TestPersistenceResponse(TestCase):
     TESTING = True
 
     def create_app(self):
@@ -139,104 +139,27 @@ class TestPersistenceRole(TestCase):
         db.session.remove()
         db.drop_all()
 
-    def test_create_admin_role(self):
-        print "test_create_role"
-        ro = Role(name="admin", centre_oc=None, centre_nc=None)
-        ro.save()
-        ro_from_db = Role.apply_filters(name="admin")[0]
-        self.assertEqual(is_role(ro_from_db), True)
-        ro = Role.get_by_id(1)
-        self.assertEqual(ro.get("name"), "admin")
-        self.assertEqual(ro_from_db.get("name"), "admin")
+    def test_create_response(self):
+        print "test_create_response"
 
-    def test_create_oc_role(self):
-        print "test_create_oc_role"
+        name="how are labs?"
+        question1 = Question(name=name)
+        question1.save()
 
-        inst = Institute(name="IIT", address="Hyderabad")
-        inst.save()
+        ans = "excellent labs"
+        answer1 = Answer(name=ans)
+        answer1.save()
 
-        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
-        oc.save()
+        res = Response(question=question1, answer=answer1)
+        res.save()
 
-        ro = Role(name="OCC", centre_oc=OC.get_by_id(1), centre_nc=None)
-        ro.save()
+        response = Response.get_by_id(1)
 
-        role = Role.get_by_id(1)
-        role_from_db = Role.apply_filters(name="OCC")[0]
+        self.assertEqual(response.get("question").get("name"),\
+                         question1.get("name"))
 
-        self.assertEqual(is_role(role), True)
-        self.assertEqual(is_role(role_from_db), True)
-
-        self.assertEqual(role == role_from_db, True)
-        self.assertEqual(role.get("name"), "OCC")
-        self.assertEqual(role.get("centre_oc").get("institute").get("name"), 
-                            "IIT")
-
-    def test_create_nc_role(self):
-        print "test_create_nc_role"
-
-        inst1 = Institute(name="IIT",address="Hyderabad")
-        inst1.save()
-
-        inst2 = Institute(name="IIIT",address="Hyderabad")
-        inst2.save()
-
-        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
-        oc.save()
-
-        nc = NC(institute=Institute.get_by_id(2), hub=oc, nc_targets=[], 
-                workshops=[])
-        nc.save()
-
-        ro = Role(name="NCC", centre_nc=NC.get_by_id(1), centre_oc=None)
-        ro.save()
-
-        role = Role.get_by_id(1)
-        role_from_db = Role.apply_filters(name="NCC")[0]
-
-        self.assertEqual(is_role(role), True)
-        self.assertEqual(is_role(role_from_db), True)
-
-        self.assertEqual(role == role_from_db, True)
-        self.assertEqual(role.get("name"), "NCC")
-        self.assertEqual(role.get("centre_nc").get("institute").get("name"), 
-                            "IIIT")
-
-    def test_equality_on_role(self):
-        print "test_equality_on_role"
-
-        inst1 = Institute(name="IIT",address="Hyderabad")
-        inst1.save()
-
-        inst2 = Institute(name="IIIT",address="Hyderabad")
-        inst2.save()
-
-        inst3 = Institute(name="HCU",address="Hyderabad")
-        inst3.save()
-
-        oc = OC(institute=inst1, spokes=[], oc_targets=[])
-        oc.save()
-
-        nc1 = NC(institute=inst2, hub=oc, nc_targets=[], workshops=[])
-        nc1.save()
-
-        nc2 = NC(institute=inst3, hub=oc, nc_targets=[], workshops=[])
-        nc2.save()
-
-        ro1 = Role(name="OCC", centre_nc=None, centre_oc=oc)
-        ro1.save()
-
-        ro2 = Role(name="NCC", centre_nc=nc1, centre_oc=None)
-        ro2.save()
-
-        ro3 = Role(name="NCC", centre_nc=nc2, centre_oc=None)
-        ro3.save()
-        
-        self.assertEqual(Role.apply_filters(centre_oc=oc)[0].get("name"), 
-                             "OCC")
-        role_from_db = Role.apply_filters(centre_oc=oc)[0]
-        inst = role_from_db.get("centre_oc").get("institute")
-        self.assertEqual(inst.get("name"), "IIT")
+        self.assertEqual(response.get("answer").get("name"),\
+                         answer1.get("name"))
 
 #+END_SRC
 
@@ -423,7 +346,7 @@ class TestPersistenceUser(TestCase):
 #+name: imports_for_sources
 #+BEGIN_SRC python
 # -*- coding: utf-8 -*-
-from runtime.objects.entities import Question, Answer
+from runtime.objects.entities import Question, Answer, Response
 from runtime.utils.class_persistence_template import *
 import datetime
 
@@ -461,7 +384,7 @@ if __name__ == '__main__':
 <<imports_for_sources>>
 <<class_Question>>
 <<class_Answer>>
-#<<class_Response>>
+<<class_Response>>
 #<<class_Feedback>>
 #+end_src
 
@@ -471,7 +394,7 @@ if __name__ == '__main__':
 <<imports_for_tests>>
 <<class_TestQuestion>>
 <<class_TestAnswer>>
-#<<class_TestResponse>>
+<<class_TestResponse>>
 #<<class_TestFeedback>>
 <<run_test_cases>>
 #+end_src
