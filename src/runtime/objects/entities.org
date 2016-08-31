@@ -35,21 +35,7 @@ requirements of the application.
 * Base Classes
 #+NAME: base_classes
 #+BEGIN_SRC python
-Name = ClassTemplate.mk_class("Name")
-Email = ClassTemplate.mk_class("Email")
-Role = ClassTemplate.mk_class("Role")
-User = ClassTemplate.mk_class("User")
-Session = ClassTemplate.mk_class("Session")
-Institute = ClassTemplate.mk_class("Institute")
-OC = ClassTemplate.mk_class("OC")
-NC = ClassTemplate.mk_class("NC")
-Workshop = ClassTemplate.mk_class("Workshop")
-Status = ClassTemplate.mk_class("Status")
-FileType = ClassTemplate.mk_class("FileType")
-Artefact = ClassTemplate.mk_class("Artefact")
-OCTarget = ClassTemplate.mk_class("OCTarget")
-NCTarget = ClassTemplate.mk_class("NCTarget")
-WSTarget = ClassTemplate.mk_class("WSTarget")
+Question = ClassTemplate.mk_class("Question")
 
 #+END_SRC
 
@@ -57,199 +43,31 @@ WSTarget = ClassTemplate.mk_class("WSTarget")
 * Type Predicates
 #+NAME: type_predicates
 #+BEGIN_SRC python
-is_name = is_inst(Name)
-check_name = check_pred(is_name)
-
-is_email = is_inst(Email)
-check_email = check_pred(is_email)
-
-is_role = is_inst(Role)
-check_role = check_pred(is_role)
-
-is_user = is_inst(User)
-check_user = check_pred(is_user)
-
-is_session = is_inst(Session)
-check_session = check_pred(is_session)
-
-is_institute = is_inst(Institute)
-check_institute = check_pred(is_institute)
-
-is_oc = is_inst(OC)
-check_oc = check_pred(is_oc)
-
-is_nc = is_inst(NC)
-check_nc = check_pred(is_nc)
-
-is_workshop = is_inst(Workshop)
-check_workshop = check_pred(is_workshop)
-
-is_status = is_inst(Status)
-check_status = check_pred(is_status)
-
-is_file_type = is_inst(FileType)
-check_file_type = check_pred(is_file_type)
-
-is_artefact = is_inst(Artefact)
-check_artefact = check_pred(is_artefact)
-
-is_oc_target = is_inst(OCTarget)
-check_oc_target = check_pred(is_oc_target)
-
-is_nc_target = is_inst(NCTarget)
-check_nc_target = check_pred(is_nc_target)
-
-is_ws_target = is_inst(WSTarget)
-check_ws_target = check_pred(is_ws_target)
-
-def are_roles_or_empty_list(rls):
-    ret_val = True
-
-    if is_list(rls):
-        for rl in rls:
-            if not is_role(rl):
-                ret_val = False
-    else:
-        ret_val = False
-
-    return ret_val
-
-def is_oc_or_none(value):
-    if value == None or is_oc(value):
-        return True
-    else:
-        return False
-
-def is_nc_or_none(value):
-    if value == None or is_nc(value):
-        return True
-    else:
-        return False
-
-def are_spokes_or_empty_list(spo):
-    ret_val = True
-    if is_list(spo):
-        for nc in spo:
-            if not is_nc(nc):
-                ret_val = False
-    else:
-        ret_val = False
-
-    return ret_val
-
-def is_user_status(s):
-    ret_val = True
-
-    if is_str(s) and (s=="active" or s=="inactive"):
-        ret_val = True
-    else:        
-        ret_val = False
-
-    return ret_val
-
-def is_workshop_or_none(value):
-    if value == None or is_workshop(value):
-        return True
-    else:
-        return False
-
-def are_workshops_or_empty_list(wkshps):
-    ret_val = True
-    if is_list(wkshps):
-        for w in wkshps:
-            if not is_workshop(w):
-                ret_val = False
-    else:
-        ret_val = False
-
-    return ret_val
-
-def are_artefacts_or_empty_list(artefacts):
-    ret_val = True
-    if is_list(artefacts):
-        for a in artefacts:
-            if not is_artefact(a):
-                ret_val = False
-    else:
-        ret_val = False
-
-    return ret_val
-
-def is_oc_target_or_none(value):
-    if value == None or is_oct(value):
-        return True
-    else:
-        return False
-
-def are_oc_targets_or_empty_list(oc_targets):
-    ret_val = True
-    if is_list(oc_targets):
-        for oct in oc_targets:
-            if not is_oc_target(oct):
-                ret_val = False
-    else:
-        ret_val = False
-
-    return ret_val
-
-
-def is_nc_target_or_none(value):
-    if value == None or is_nc_target(value):
-        return True
-    else:
-        return False
-
-def are_nc_targets_or_empty_list(nc_targets):
-    ret_val = True
-    if is_list(nc_targets):
-        for nct in nc_targets:
-            if not is_nc_target(nct):
-                ret_val = False
-    else:
-        ret_val = False
-
-    return ret_val
-
-def is_ws_target_or_none(value):
-    if value == None or is_ws_target(value):
-        return True
-    else:
-        return False
-
-def are_ws_targets_or_empty_list(ws_targets):
-    ret_val = True
-    if is_list(ws_targets):
-        for wst in ws_targets:
-            if not is_ws_target(wst):
-                ret_val = False
-    else:
-        ret_val = False
-
-    return ret_val
+is_question = is_inst(Question)
+check_question = check_pred(is_question)
 
 #+END_SRC
 
 
-* Name
-=Name= is a value class with type =is_alphabetic_str=.
-
-#+NAME: class_Name
+* Question
+   =Question= is an entity that has a field =name= which is a string
+#+NAME: class_Question
 #+begin_src python
-Name.add_attributes(name=is_alphabetic_str)
-Name.__eq__ = lambda self, other: \
+Question.add_attributes(name=is_str)
+Question.__eq__ = lambda self, other: \
                   isinstance(other, self.__class__) and \
                   self.get("name") == other.get("name")
 
 #+end_src
 
-*** Test Name
-#+NAME: class_TestName
+*** Test Question
+#+NAME: class_TestQuestion
 #+BEGIN_SRC python
 class TestName(TestCase):
     TESTING = True
 
-    def test_instantiate_name(self):
-        print "test_instantiate_name"
+    def test_instantiate_question(self):
+        print "test_instantiate_question"
         self.assertEqual(is_name(Name(name="Jimi Hendrix")), True)
         self.assertEqual(Name(name="Jimi Hendrix").get("name"), "Jimi Hendrix")
         self.assertRaises(TypeError, Name, name="Jimi 123 Hendrix")
@@ -1364,42 +1182,28 @@ if __name__ == '__main__':
 #+BEGIN_SRC python :tangle entities.py :eval no :noweb yes
 <<imports_for_sources>>
 <<base_classes>>
-<<type_predicates>>
-<<class_Name>>
-<<class_Email>>
-<<class_Role>>
-<<class_User>>
-<<class_Session>>
-<<class_Institute>>
-<<class_OC>>
-<<class_NC>>
-<<class_Status>>
-<<class_Workshop>>
-<<class_FileType>>
-<<class_Artefact>>
-<<class_OCTarget>>
-<<class_NCTarget>>
-<<class_WSTarget>>
+#<<type_predicates>>
+<<class_Question>>
 #+end_src
 
 
 ** tests
 #+BEGIN_SRC python :tangle test_entities.py :eval no :noweb yes
-<<imports_for_tests>>
-<<class_TestName>>
-<<class_TestEmail>>
-<<class_TestRole>>
-<<class_TestUser>>
-<<class_TestSession>>
-<<class_TestInstitute>>
-<<class_TestOC>>
-<<class_TestNC>>
-<<class_TestStatus>>
-<<class_TestWorkshop>>
-<<class_TestFileType>>
-<<class_TestArtefact>>
-<<class_TestOCTarget>>
-<<class_TestNCTarget>>
-<<class_TestWSTarget>>
-<<run_test_cases>>
+#<<imports_for_tests>>
+#<<class_TestName>>
+#<<class_TestEmail>>
+#<<class_TestRole>>
+#<<class_TestUser>>
+#<<class_TestSession>>
+#<<class_TestInstitute>>
+#<<class_TestOC>>
+#<<class_TestNC>>
+#<<class_TestStatus>>
+#<<class_TestWorkshop>>
+#<<class_TestFileType>>
+#<<class_TestArtefact>>
+#<<class_TestOCTarget>>
+#<<class_TestNCTarget>>
+#<<class_TestWSTarget>>
+#<<run_test_cases>>
 #+end_src

@@ -231,16 +231,16 @@ if __name__ == '__main__':
 
 ** sources
 #+BEGIN_SRC python :tangle system_interface.py :eval no :noweb yes
-<<imports_for_sources>>
-<<class_system_interface>>
-<<class_si_add_user>>
+#<<imports_for_sources>>
+#<<class_system_interface>>
+#<<class_si_add_user>>
 #+end_src
 
 
 ** tests
 #+BEGIN_SRC python :tangle test_system_interface.py :eval no :noweb yes
-<<imports_for_tests>>
-<<test_class_system_interface>>
-<<test_class_si_add_user>>
-<<run_test_cases>>
+#<<imports_for_tests>>
+#<<test_class_system_interface>>
+#<<test_class_si_add_user>>
+#<<run_test_cases>>
 #+end_src

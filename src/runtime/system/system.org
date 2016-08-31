@@ -1023,29 +1023,29 @@ from runtime.objects.entities import is_user, is_session, is_role, is_email, \
 
 ** sources
 #+BEGIN_SRC python :tangle system.py :eval no :noweb yes
-<<imports_for_sources>>
-<<class_system>>
-<<arity_type_checks>>
-<<do_function>>
-<<class_adduser>>
-<<class_login>>
-<<class_logout>>
-<<class_updateuser>>
-<<class_deleteuser>>
-<<class_AddInstitute>>
-<<class_AddOC>>
-<<class_AddRole>>
-<<class_AddNC>>
-<<class_UpdateInstitute>>
-<<class_CreateWorkshop>>
-<<class_CancelWorkshop>>
-<<class_RescheduleWorkshop>>
-<<class_ConductWorkshop>>
-<<class_UploadArtefact>>
-<<class_ApproveWorkshop>>
-<<class_RejectWorkshop>>
-<<class_DeleteArtefact>>
-<<ops_table>>
+#<<imports_for_sources>>
+#<<class_system>>
+#<<arity_type_checks>>
+#<<do_function>>
+#<<class_adduser>>
+#<<class_login>>
+#<<class_logout>>
+#<<class_updateuser>>
+#<<class_deleteuser>>
+#<<class_AddInstitute>>
+#<<class_AddOC>>
+#<<class_AddRole>>
+#<<class_AddNC>>
+#<<class_UpdateInstitute>>
+#<<class_CreateWorkshop>>
+#<<class_CancelWorkshop>>
+#<<class_RescheduleWorkshop>>
+#<<class_ConductWorkshop>>
+#<<class_UploadArtefact>>
+#<<class_ApproveWorkshop>>
+#<<class_RejectWorkshop>>
+#<<class_DeleteArtefact>>
+#<<ops_table>>
 
 #+end_src
 

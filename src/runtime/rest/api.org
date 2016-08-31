@@ -123,12 +123,12 @@ if __name__ == '__main__':
 * Tangle                          :boilerplate:
 ** sources
 #+BEGIN_SRC python :tangle api.py :eval no :noweb yes
-<<imports_for_sources>>
-<<create_user>>
+#<<imports_for_sources>>
+#<<create_user>>
 #+END_SRC
 ** tests
 #+BEGIN_SRC python :tangle test_api.py :eval no :noweb yes
-<<imports_for_tests>>
-<<test_create_user>>
-<<run_test_cases>>
+#<<imports_for_tests>>
+#<<test_create_user>>
+#<<run_test_cases>>
 #+end_src
