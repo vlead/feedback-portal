@@ -1,6 +1,6 @@
 #+TITLE: Persistent Entities
 #+AUTHOR: VLEAD
-n#+DATE: [2016-08-31 Tue]
+#+DATE: [2016-08-31 Wed]
 #+SETUPFILE: ../../org-templates/level-2.org
 #+TAGS: boilerplate(b)
 #+EXCLUDE_TAGS: boilerplate
@@ -65,18 +65,18 @@ class TestPersistentQuestion(TestCase):
 args = {"__tablename__": "answer",
         "id": db.Column(db.Integer, primary_key=True),
         "name": db.Column(db.String(255), unique=True, nullable=False),
-        "response": db.relationship('Response', backref=db.backref('answer',\
-                                                            uselist=False))
+#        "response": db.relationship('Response', backref=db.backref('answer',\
+#                                                            uselist=False))
         }
 
 Answer = ClassPersistenceTemplate.mk_persistent(Answer, ['name'], **args)
 
 #+end_src
 
-** Test Email
-#+NAME: class_TestEmail
+** Test Answer
+#+NAME: class_TestAnswer
 #+BEGIN_SRC python
-class TestPersistenceEmail(TestCase):
+class TestPersistenceAnswer(TestCase):
     TESTING = True
 
     def create_app(self):
@@ -90,62 +90,13 @@ class TestPersistenceEmail(TestCase):
         db.session.remove()
         db.drop_all()
 
-    def test_create_email(self):
-        print "test_create_email"
-        email="jimi@gnu.org"
-        em = Email(email=email)
-        em.save()
-        em_from_db = Email.apply_filters(email=email)[0]
-        self.assertEqual(is_email(em_from_db), True)
-        em = Email.get_by_id(1)
-        self.assertEqual(em_from_db.get("email"), email)
-        self.assertEqual(em.get("email"), email)
-        self.assertRaises(TypeError, Email, email="jimi@@gnu.org")
-
-    def test_update_email(self):
-        print "test update email"
-
-        email="jimi@gnu.org"
-        em = Email(email=email)
-        em.save()
-
-        em.set(email="didley@gnu.org")
-
-        with self.assertRaises(NotFoundError):
-            em_from_db = Email.apply_filters(email=email)[0]
-
-        em = Email.get_by_id(1)
-        em_from_db = Email.apply_filters(email="didley@gnu.org")[0]
-
-        self.assertEqual(em_from_db.get("email"), "didley@gnu.org")
-        self.assertEqual(em.get("email"), "didley@gnu.org")
-
-    def test_delete_email(self):
-        print "test delete email"
-        em = Email(email="jimi@gnu.org")
-        em.save()
-        self.assertEqual(len(Email.get_all()), 1)
-        em.delete()
-        self.assertEqual(len(Email.get_all()), 0)
-
-    def test_duplicate_email(self):
-        print "test_duplicate_email"
-        em1 = Email(email="jimi@gnu.org")
-        em1.save()
-        with self.assertRaises(IntegrityError):
-            em2 = Email(email="jimi@gnu.org")
-            em2.save()
-
-    def test_equality_on_email(self):
-        print "test_equality_on_email"
-        em1 = Email(email="jimi@gnu.org")
-        em1.save()
-
-        em2 = Email(email="didley@gnu.org")
-        em2.save()
-
-        self.assertEqual(len(Email.apply_filters(email="jimi@gnu.org")), 1)
-        
+    def test_create_answer(self):
+        print "test_create_answer"
+        ans = "excellent labs"
+        answer = Answer(name=ans)
+        answer.save()
+        answer = Answer.get_by_id(1)
+        self.assertEqual(answer.get("name"), ans)
 
 #+END_SRC
 
@@ -472,7 +423,7 @@ class TestPersistenceUser(TestCase):
 #+name: imports_for_sources
 #+BEGIN_SRC python
 # -*- coding: utf-8 -*-
-from runtime.objects.entities import Question
+from runtime.objects.entities import Question, Answer
 from runtime.utils.class_persistence_template import *
 import datetime
 
@@ -509,7 +460,7 @@ if __name__ == '__main__':
 #+BEGIN_SRC python :tangle entities.py :eval no :noweb yes
 <<imports_for_sources>>
 <<class_Question>>
-#<<class_Answer>>
+<<class_Answer>>
 #<<class_Response>>
 #<<class_Feedback>>
 #+end_src
@@ -519,7 +470,7 @@ if __name__ == '__main__':
 #+BEGIN_SRC python :tangle test_entities.py :eval no :noweb yes
 <<imports_for_tests>>
 <<class_TestQuestion>>
-#<<class_TestAnswer>>
+<<class_TestAnswer>>
 #<<class_TestResponse>>
 #<<class_TestFeedback>>
 <<run_test_cases>>

@@ -1,6 +1,6 @@
 #+TITLE: Entities
 #+AUTHOR: VLEAD
-#+DATE: [2016-06-07 Tue]
+#+DATE: [2016-08-31 Wed]
 #+SETUPFILE: ../../org-templates/level-2.org
 #+TAGS: boilerplate(b)
 #+EXCLUDE_TAGS: boilerplate
@@ -36,6 +36,7 @@ requirements of the application.
 #+NAME: base_classes
 #+BEGIN_SRC python
 Question = ClassTemplate.mk_class("Question")
+Answer = ClassTemplate.mk_class("Answer")
 
 #+END_SRC
 
@@ -62,6 +63,42 @@ Question.__eq__ = lambda self, other: \
 
 *** Test Question
 #+NAME: class_TestQuestion
+#+BEGIN_SRC python
+class TestName(TestCase):
+    TESTING = True
+
+    def test_instantiate_question(self):
+        print "test_instantiate_question"
+        self.assertEqual(is_name(Name(name="Jimi Hendrix")), True)
+        self.assertEqual(Name(name="Jimi Hendrix").get("name"), "Jimi Hendrix")
+        self.assertRaises(TypeError, Name, name="Jimi 123 Hendrix")
+
+    def test_name_equality(self):
+        print "test_name_equality"
+        self.assertEqual(Name(name="Jimi Hendrix") == 
+                         Name(name="Jimi Hendrix"), 
+                         True)
+
+        self.assertEqual(Name(name="Jimi Hendrix") == 
+                         Name(name="Bo Didley"), 
+                         False)
+
+#+END_SRC
+
+
+* Answer
+   =Answer= is an entity that has a field =name= which is a string
+#+NAME: class_Answer
+#+begin_src python
+Answer.add_attributes(name=is_str)
+Answer.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("name") == other.get("name")
+
+#+end_src
+
+*** Test Answer
+#+NAME: class_TestAnswer
 #+BEGIN_SRC python
 class TestName(TestCase):
     TESTING = True
@@ -1184,6 +1221,7 @@ if __name__ == '__main__':
 <<base_classes>>
 #<<type_predicates>>
 <<class_Question>>
+<<class_Answer>>
 #+end_src
 
 
