@@ -90,7 +90,7 @@ class TestQuestion(TestCase):
         name="how are labs?"
         question = Question(name=name)
     
-        self.assertEqual(question.get("name"), "how are labs?")
+        self.assertEqual(question.get("name"), name)
 
 #+END_SRC
 
@@ -175,56 +175,28 @@ Response.__eq__ = lambda self, other: \
 
 #+END_SRC
 
-** Test User
-#+Name: class_TestUser
+** Test Response
+#+Name: class_TestResponse
 #+BEGIN_SRC python
-class TestUser(TestCase):
+class TestResponse(TestCase):
     TESTING = True
 
-    def test_instantiate_user(self):
-        print "test_instantiate_user"
-        user = User(name=Name(name="Jimi Hendrix"),
-                    email=Email(email="jimi@gnu.org"),
-                    roles=[])
+    def test_object_response(self):
+        print "test_object_response"
 
-        self.assertEqual(is_user(user), True)
+        name="how are labs?"
+        question1 = Question(name=name)
 
-    def test_sets_on_user(self):
-        print "test_sets_on_user"
-        user = User(name=Name(name="Jimi Hendrix"),
-                    email=Email(email="jimi@gnu.org"),
-                    roles=[Role(name="guest", centre_oc=None, centre_nc=None)]
-                    )
+        ans = "excellent labs"
+        answer1 = Answer(name=ans)
 
-        self.assertEqual(user.get("name").get("name"), "Jimi Hendrix")
-        self.assertEqual(user.get("email").get("email"), "jimi@gnu.org")
-        self.assertEqual(user.get("roles")[0].get("name"), "guest")
+        res = Response(question=question1, answer=answer1)
 
-    def test_equality_on_user(self):
-        print "test_equality_on_user"
-        user1 = User(name=Name(name="Jimi Hendrix"),
-                     email=Email(email="jimi@gnu.org"),
-                     roles=[])
+        self.assertEqual(res.get("question").get("name"),\
+                         question1.get("name"))
 
-        user2 = User(name=Name(name="Jimi Hendrix"),
-                     email=Email(email="jimi@gnu.org"),
-                     roles=[]) 
-
-        user3 = User(name=Name(name="John Roy"),
-                     email=Email(email="roy@gnu.org"),
-                     roles=[])
-
-        self.assertEqual(user1 == user2, True)
-        self.assertEqual(user1 == user3, False)
-        
-    def test_append_role(self):
-        print "test_append_role"
-        user = User(name=Name(name="Jimi Hendrix"),
-                     email=Email(email="jimi@gnu.org"),
-                     roles=[])
-
-        user.append_role(Role(name="guest", centre_oc=None, centre_nc=None))
-        self.assertTrue(len(user.get('roles')) == 1)
+        self.assertEqual(res.get("answer").get("name"),\
+                         answer1.get("name"))
 
 #+END_SRC
 
@@ -284,5 +256,6 @@ if __name__ == '__main__':
 <<class_TestQuestion>>
 <<class_TestAnswer>>
 <<class_TestFeedback>>
+<<class_TestResponse>>
 <<run_test_cases>>
 #+end_src
