@@ -20,9 +20,9 @@
 args = {"__tablename__": "question",
         "id": db.Column(db.Integer, primary_key=True),
         "name": db.Column(db.String(255), unique=True, nullable=False),
-#        "response": db.relationship('Response', 
-#                                    backref=db.backref('question',\
-#                                                        uselist=False))
+        "response": db.relationship('Response', 
+                                    backref=db.backref('question',\
+                                                        uselist=False))
         }
 
 Question = ClassPersistenceTemplate.mk_persistent(Question, ['name'], **args)
@@ -65,8 +65,8 @@ class TestPersistentQuestion(TestCase):
 args = {"__tablename__": "answer",
         "id": db.Column(db.Integer, primary_key=True),
         "name": db.Column(db.String(255), unique=True, nullable=False),
-#        "response": db.relationship('Response', backref=db.backref('answer',\
-#                                                            uselist=False))
+        "response": db.relationship('Response', backref=db.backref('answer',\
+                                                            uselist=False))
         }
 
 Answer = ClassPersistenceTemplate.mk_persistent(Answer, ['name'], **args)
@@ -101,6 +101,63 @@ class TestPersistenceAnswer(TestCase):
 #+END_SRC
 
 
+* Feedback
+  A =Feedback= entity has fields =response= of type =Response=.
+
+#+NAME: class_Feedback
+#+BEGIN_SRC python
+args = {"__tablename__": "feedback",
+        "id": db.Column(db.Integer, primary_key=True),
+        "gateway_ip" : db.Column(db.String(255), nullable=False),
+        "lab_id" : db.Column(db.String(255), nullable=False),
+        "exp_id" : db.Column(db.String(255), nullable=False),
+        "date": db.Column(db.Date, nullable=False),
+        "responses": db.relationship('Response', backref='feedback')
+        }
+
+Feedback = ClassPersistenceTemplate.mk_persistent(Feedback, [], **args)
+
+#+END_SRC
+
+** Test Feedback
+#+NAME: class_TestFeedback
+#+BEGIN_SRC python
+class TestPersistenceFeedback(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_create_feedback(self):
+        print "test_create_feedback"
+
+        gateway_ip = "10.100.40.2"
+        lab_id = "cse01"
+        exp_id = "data01"
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        fb = Feedback(gateway_ip=gateway_ip,
+                      lab_id=lab_id,
+                      exp_id=exp_id,
+                      date=date,
+                      responses=[])
+        fb.save()
+
+        self.assertEqual(fb.get("gateway_ip"), gateway_ip)
+        self.assertEqual(fb.get("lab_id"), lab_id)
+        self.assertEqual(fb.get("exp_id"), exp_id)
+        self.assertEqual(fb.get("responses"), [])
+
+ #+END_SRC
+
+
 * Response
   =Response= is an entity that has fields =question= of type =Question=
   and =answer= of type =Answer=.
@@ -114,11 +171,14 @@ args = {"__tablename__": "response",
                                       unique=True, nullable=True),
         "answer_id": db.Column(db.Integer, 
                                       db.ForeignKey('answer.id'), 
-                                      unique=True, nullable=True)
+                                      unique=True, nullable=True),
+
+        "feedback_id": db.Column(db.Integer, db.ForeignKey('feedback.id'),
+                       nullable=False)
       }
 
 Response = ClassPersistenceTemplate.mk_persistent(Response, 
-                                   ['question'], **args)
+                                   [], **args)
 
 #+END_SRC
 
@@ -150,7 +210,19 @@ class TestPersistenceResponse(TestCase):
         answer1 = Answer(name=ans)
         answer1.save()
 
-        res = Response(question=question1, answer=answer1)
+        gateway_ip = "10.100.40.2"
+        lab_id = "cse01"
+        exp_id = "data01"
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+        fb = Feedback(gateway_ip=gateway_ip,
+                      lab_id=lab_id,
+                      exp_id=exp_id,
+                      date=date,
+                      responses=[])
+        fb.save()
+
+        res = Response(question=question1, answer=answer1, feedback=fb)
         res.save()
 
         response = Response.get_by_id(1)
@@ -164,181 +236,6 @@ class TestPersistenceResponse(TestCase):
 #+END_SRC
 
 
-* Feedback
-  A =Feedback= entity has fields =response= of type =Response=.
-
-#+NAME: class_Feedback
-#+BEGIN_SRC python
-args = {"__tablename__": "feedback",
-        "id": db.Column(db.Integer, primary_key=True),
-        "response_id": db.Column(db.Integer, db.ForeignKey('response.id'), 
-                                 nullable=False, unique=False)
-
-        }
-
-Feedback = ClassPersistenceTemplate.mk_persistent(Feedback, ['response'],
-                                                    ,**args)
-
-#+END_SRC
-
-** Test User
-#+NAME: class_TestUser
-#+BEGIN_SRC python
-class TestPersistenceUser(TestCase):
-    TESTING = True
-
-    def create_app(self):
-        app = create_app(config)
-        return app
-
-    def setUp(self):
-        db.create_all()
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-
-    def test_create_user(self):
-        print "test_create_user"
-
-        inst1 = Institute(name="IIT",address="Hyderabad")
-        inst1.save()
-
-        inst2 = Institute(name="IIIT",address="Hyderabad")
-        inst2.save()
-
-        na = Name(name="Jimi Hendrix")
-        na.save()
-
-        em = Email(email="jimi@gnu.org")
-        em.save()
-
-        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
-        oc.save()
-
-        nc = NC(institute=Institute.get_by_id(2), hub=oc, nc_targets=[], 
-                workshops=[])
-        nc.save()
-
-        ro1 = Role(name="user", centre_oc=None, centre_nc=None)
-        ro1.save()
-
-        ro2 = Role(name="guest", centre_oc=None, centre_nc=None)
-        ro2.save()
-
-        ro3 = Role(name="OCC", centre_oc=OC.get_by_id(1), centre_nc=None)
-        ro3.save()
-
-        ro4 = Role(name="NCC", centre_nc=NC.get_by_id(1), centre_oc=None)
-        ro4.save()
-
-        roles = [ro1, ro2] 
-        usr = User(name=na, email=em, roles=roles)
-        usr.save()
-
-        user = User.get_by_id(1)
-        user_from_db = User.apply_filters(email=em)[0]
-        self.assertEqual(is_user(user), True)
-        self.assertEqual(is_user(user_from_db), True)
-
-        self.assertEqual(user.get("email").get('email'), "jimi@gnu.org")
-        self.assertEqual(user_from_db.get("name").get('name'), 
-                             "Jimi Hendrix")
-
-    def test_update_user(self):
-        print "test_update_user"
-
-        inst1 = Institute(name="IIT",address="Hyderabad")
-        inst1.save()
-
-        inst2 = Institute(name="IIIT",address="Hyderabad")
-        inst2.save()
-
-        na = Name(name="Jimi Hendrix")
-        na.save()
-
-        em = Email(email="jimi@gnu.org")
-        em.save()
-
-        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
-        oc.save()
-
-        nc = NC(institute=Institute.get_by_id(2), hub=oc, nc_targets=[], 
-                workshops=[])
-        nc.save()
-
-        ro1 = Role(name="user", centre_oc=None, centre_nc=None)
-        ro1.save()
-
-        ro2 = Role(name="guest", centre_oc=None, centre_nc=None)
-        ro2.save()
-
-        ro3 = Role(name="OCC", centre_oc=OC.get_by_id(1), centre_nc=None)
-        ro3.save()
-
-        ro4 = Role(name="NCC", centre_nc=NC.get_by_id(1), centre_oc=None)
-        ro4.save()
-
-        roles = [ro1, ro2] 
-        usr = User(name=na, email=em, roles=roles)
-        usr.save()
-
-        user = User.get_by_id(1)
-        user_from_db = User.apply_filters(email=em)[0]
-        self.assertEqual(is_user(user), True)
-        self.assertEqual(is_user(user_from_db), True)
-
-        roles = [ro3, ro4]
-        user_from_db.set(roles=roles)
-        user_from_db = User.apply_filters(email=em)[0]
-
-        self.assertEqual(user.get("roles")[0].get('name'), "OCC")
-
-    def test_delete_user(self):
-        print "test_delete_user"
-
-        inst1 = Institute(name="IIT",address="Hyderabad")
-        inst1.save()
-
-        inst2 = Institute(name="IIIT",address="Hyderabad")
-        inst2.save()
-
-        na = Name(name="Jimi Hendrix")
-        na.save()
-
-        em = Email(email="jimi@gnu.org")
-        em.save()
-
-        oc = OC(institute=Institute.get_by_id(1), spokes=[], oc_targets=[])
-        oc.save()
-
-        nc = NC(institute=Institute.get_by_id(2), hub=oc, nc_targets=[], 
-                workshops=[])
-        nc.save()
-
-        ro1 = Role(name="user", centre_oc=None, centre_nc=None)
-        ro1.save()
-
-        ro2 = Role(name="guest", centre_oc=None, centre_nc=None)
-        ro2.save()
-
-        ro3 = Role(name="OCC", centre_oc=OC.get_by_id(1), centre_nc=None)
-        ro3.save()
-
-        ro4 = Role(name="NCC", centre_nc=NC.get_by_id(1), centre_oc=None)
-        ro4.save()
-
-        roles = [ro1, ro2] 
-        usr = User(name=na, email=em, roles=roles)
-        usr.save()
-
-        self.assertEqual(len(User.get_all()), 1)
-        usr.delete()
-        self.assertEqual(len(User.get_all()), 0)
- 
-#+END_SRC
-
-
 
 * Infra                                                         :boilerplate:
 ** sources
@@ -346,7 +243,7 @@ class TestPersistenceUser(TestCase):
 #+name: imports_for_sources
 #+BEGIN_SRC python
 # -*- coding: utf-8 -*-
-from runtime.objects.entities import Question, Answer, Response
+from runtime.objects.entities import *
 from runtime.utils.class_persistence_template import *
 import datetime
 
@@ -384,8 +281,9 @@ if __name__ == '__main__':
 <<imports_for_sources>>
 <<class_Question>>
 <<class_Answer>>
+<<class_Feedback>>
 <<class_Response>>
-#<<class_Feedback>>
+
 #+end_src
 
 
@@ -394,7 +292,7 @@ if __name__ == '__main__':
 <<imports_for_tests>>
 <<class_TestQuestion>>
 <<class_TestAnswer>>
+<<class_TestFeedback>>
 <<class_TestResponse>>
-#<<class_TestFeedback>>
 <<run_test_cases>>
 #+end_src

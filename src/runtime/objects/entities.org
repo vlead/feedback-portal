@@ -130,6 +130,7 @@ class TestAnswer(TestCase):
 Feedback.add_attributes(gateway_ip=is_str,
                         lab_id=is_str,
                         exp_id=is_str,
+                        date=is_date,
                         responses=are_responses_or_empty_list)
 
 #Feedback.__eq__ = lambda self, other: \
@@ -149,14 +150,17 @@ class TestFeedback(TestCase):
         gateway_ip = "10.100.40.2"
         lab_id = "cse01"
         exp_id = "data01"
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
         fb = Feedback(gateway_ip=gateway_ip,
                       lab_id=lab_id,
                       exp_id=exp_id,
+                      date=date,
                       responses=[])
 
         self.assertEqual(fb.get("gateway_ip"), gateway_ip)
         self.assertEqual(fb.get("lab_id"), lab_id)
         self.assertEqual(fb.get("exp_id"), exp_id)
+        self.assertEqual(fb.get("date"), date)
         self.assertEqual(fb.get("responses"), [])
 #+END_SRC
 
@@ -167,7 +171,8 @@ class TestFeedback(TestCase):
 #+NAME: class_Response
 #+BEGIN_SRC python
 Response.add_attributes(question=is_question, 
-                        answer=is_answer)
+                        answer=is_answer, 
+                        feedback=is_feedback)
 
 Response.__eq__ = lambda self, other: \
                   isinstance(other, self.__class__) and \
@@ -190,13 +195,28 @@ class TestResponse(TestCase):
         ans = "excellent labs"
         answer1 = Answer(name=ans)
 
-        res = Response(question=question1, answer=answer1)
+        gateway_ip = "10.100.40.2"
+        lab_id = "cse01"
+        exp_id = "data01"
+
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        fb = Feedback(gateway_ip=gateway_ip,
+                      lab_id=lab_id,
+                      exp_id=exp_id,
+                      date=date,
+                      responses=[])
+
+        res = Response(question=question1, answer=answer1, feedback=fb)
+
 
         self.assertEqual(res.get("question").get("name"),\
                          question1.get("name"))
 
         self.assertEqual(res.get("answer").get("name"),\
                          answer1.get("name"))
+
+        self.assertEqual(res.get("feedback").get("gateway_ip"),\
+                         gateway_ip)
 
 #+END_SRC
 
