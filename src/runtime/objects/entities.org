@@ -73,7 +73,7 @@ def are_responses_or_empty_list(responses):
    =Question= is an entity that has a field =name= which is a string
 #+NAME: class_Question
 #+begin_src python
-Question.add_attributes(name=is_str)
+Question.add_attributes(name=is_str, question_type=is_str)
 Question.__eq__ = lambda self, other: \
                   isinstance(other, self.__class__) and \
                   self.get("name") == other.get("name")
@@ -88,7 +88,8 @@ class TestQuestion(TestCase):
     def test_object_question(self):
         print "test_object_question"
         name="how are labs?"
-        question = Question(name=name)
+        radio="radio"
+        question = Question(name=name, question_type=radio)
     
         self.assertEqual(question.get("name"), name)
 

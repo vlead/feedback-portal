@@ -203,7 +203,7 @@ class System ():
 #+NAME: class_addquestion
 #+begin_src python
 class AddQuestion():
-    arg_types = {"question": is_question, "key": is_str}
+    arg_types = {"question": is_question, "question_type" : is_str, "key": is_str}
     arity_and_type_checks_needed = True
 
     @staticmethod
