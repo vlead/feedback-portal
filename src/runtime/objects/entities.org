@@ -198,7 +198,6 @@ class TestResponse(TestCase):
         gateway_ip = "10.100.40.2"
         lab_id = "cse01"
         exp_id = "data01"
-
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
         fb = Feedback(gateway_ip=gateway_ip,
                       lab_id=lab_id,

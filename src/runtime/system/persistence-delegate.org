@@ -72,56 +72,60 @@ class TestPersistentDelegate(TestCase):
 
    Other functions that help =System= perform the operations. 
    
-***  Check if =user= already exists
+***  Check if =question= already exists
     This function checks if a user is already in the user-set of the =System=.
-#+NAME: persistent_user_exists
+#+NAME: persistent_question_exists
 #+BEGIN_SRC python
-    def user_exists(self, user):
-        if self.email_exists(user.get("email")):
-            return user == self.get_user(email=user.get("email"))
+    def question_exists(self, question):
+        question_name = question.get("name")
+        if question_name:
+            return question == self.get_question(name=question_name)
         else:
             return False
 
 #+END_SRC
 
 **** Tests
-#+NAME: test_persistent_user_exists
+#+NAME: test_persistent_question_exists
 #+BEGIN_SRC python
-    def test_user_exists(self):
-        print "test_user_exists"
-        name = Name(name="some user")
-        email = Email(email="tt@kk.com")
-        role = Role(name="guest", centre_nc=None, centre_oc=None)
-        role.save()
-        guest_role = Role.get_by_id(1)
-        user = User(name=name, email=email,
-                        roles=[guest_role])
+    def test_question_exists(self):
+        print "test_question_exists"
+        name1="how are labs?"
+        question1 = Question(name=name1)
+        question = self.persistent_delegate.add_question(question1)
 
-        user = self.persistent_delegate.add_user(user)
-        self.assertEqual(self.persistent_delegate.user_exists(user), True)
+        name2="how are experiments?"
+        question2 = Question(name=name2)
         
+        self.assertEqual(self.persistent_delegate.question_exists(question),
+                            True)
+        self.assertEqual(self.persistent_delegate.question_exists(question2),
+                            False)
+
 #+END_SRC
 
 
-***  Check if =name= already exists
-    This function checks if a name is already in the database of the =System=.
-#+NAME: persistent_name_exists
+***  Check if =key= already exists
+    This function checks if a key matches with the configuration key.
+#+NAME: persistent_key_exists
 #+BEGIN_SRC python
-    def name_exists(self, name):
-        return name == self.get_name(name=name.get("name"))
+    def key_exists(self, key):
+        if key == Config.key:
+            return True
+        else:
+            return False
 
 #+END_SRC
 
 **** Tests
-#+NAME: test_persistent_name_exists
+#+NAME: test_persistent_key_exists
 #+BEGIN_SRC python
-    def test_name_exists(self):
-        print "test_name_exists"
-        name = Name(name="some user")
-        name.save()
-        self.assertEqual(self.persistent_delegate.name_exists(name), True)
-        name = Name(name="Temp user")
-        self.assertEqual(self.persistent_delegate.name_exists(name), False)
+    def test_key_exists(self):
+        print "test_key_exists"
+        key = "some alphanumeric string" 
+        self.assertEqual(self.persistent_delegate.key_exists(key), True)
+        key1 = "some other string"
+        self.assertEqual(self.persistent_delegate.key_exists(key1), False)
 
 #+END_SRC
 
@@ -149,6 +153,30 @@ class TestPersistentDelegate(TestCase):
 #+END_SRC
 
 
+***  Add question to the system
+    This function adds question to the system.
+#+NAME: persistent_add_question
+#+BEGIN_SRC python
+    def add_question(self, question):
+        question.save()
+        return question
+
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistent_add_question
+#+BEGIN_SRC python
+    def test_add_question(self):
+         print "test_add_question"
+         name="how are labs?"
+         question = Question(name=name)
+         question1 = self.persistent_delegate.add_question(question)
+         self.assertEqual(self.persistent_delegate.question_exists(question1),
+                          True)
+
+#+END_SRC
+
+
 ***  Add a user to the system
     This function adds a user to the user-set maintained by the system.
 #+NAME: persistent_add_user
@@ -156,6 +184,7 @@ class TestPersistentDelegate(TestCase):
     def add_user(self, user):
         name = user.get("name")
         email = user.get("email")
+
         try:
             if not self.name_exists(name):
                 name.save()
@@ -1387,27 +1416,30 @@ class TestPersistentDelegate(TestCase):
 #+END_SRC
 
 
-***  Get Institute
-    This function returns an institute if present in the database.  If the institute is
+***  Get Question
+    This function returns an question if present in the database.  If the question is
     not present, =None= type is returned.
-#+NAME: persistent_get_institute
+#+NAME: persistent_get_question
 #+BEGIN_SRC python
-    def get_institute(self, **kwargs):
-        return self.get_object(Institute, **kwargs)
+    def get_question(self, **kwargs):
+        return self.get_object(Question, **kwargs)
 
 #+END_SRC
 
 **** Tests
-#+NAME: test_persistent_get_institute
+#+NAME: test_persistent_get_question
 #+BEGIN_SRC python
-    def test_get_institute(self):
-         print "test_get_institute"
-         institute = Institute(name="IIIT", address="Hyderabad")
-         institute.save()
-         institute_obj = self.persistent_delegate.get_institute(name=
-                                                institute.get("name"))
-         self.assertEqual(institute_obj.get("name"),
-                              institute.get("name"))
+    def test_get_question(self):
+         print "test_get_question"
+
+         name="how are labs?"
+         question = Question(name=name)
+         question.save()
+
+         question_obj = self.persistent_delegate.get_question(name=
+                                                question.get("name"))
+         self.assertEqual(question_obj.get("name"),
+                              question.get("name"))
 
 #+END_SRC
 
@@ -1653,10 +1685,15 @@ if __name__ == '__main__':
 * Tangling                                                      :boilerplate:
   
 ** sources
-
+   
 #+BEGIN_SRC python :tangle persistent_delegates.py :eval no :noweb yes
 <<imports_for_persistent_delegates>>
 <<class_persistence_delegate>>
+<<persistent_key_exists>>
+<<persistent_get_question>>
+<<persistent_question_exists>>
+<<persistent_add_question>>
+
 <<persistent_get_object>>
 <<persistent_get_role_set>>
 <<persistent_get_user_set>>
@@ -1710,9 +1747,13 @@ if __name__ == '__main__':
 
 ** tests
 #+BEGIN_SRC python :tangle test_persistent_delegates.py :eval no :noweb yes
-#<<imports_for_tests_persistence>>
-#<<test_class_persistent_delegate>>
-#<<test_persistent_user_exists>>
+<<imports_for_tests_persistence>>
+<<test_class_persistent_delegate>>
+<<test_persistent_key_exists>>
+<<tes_persistent_get_question>>
+<<test_persistent_question_exists>>
+<<test_persistent_add_question>>
+
 #<<test_persistent_email_exists>>
 #<<test_persistent_name_exists>>
 #<<test_persistent_get_name>>
@@ -1756,7 +1797,7 @@ if __name__ == '__main__':
 #<<test_persistent_get_artefacts>>
 #<<test_persistent_get_artefacts_of_a_workshop>>
 #<<test_persistent_get_active_users>>
-#<<run_test_cases>>
+<<run_test_cases>>
 
 #+end_src
 

@@ -187,10 +187,10 @@ class TestSystemArityAndType(TestCase):
 
 #+END_SRC
 
-* Test AddUser
-#+NAME: test_add_user
+* Test AddQuestion
+#+NAME: test_add_question
 #+BEGIN_SRC python
-class TestAddUser(TestCase):
+class TestAddQuestion(TestCase):
     TESTING = True
     persistent_delegate = None
 
@@ -202,121 +202,20 @@ class TestAddUser(TestCase):
         db.create_all()
         System.initialize_system(PersistenceDelegate)
         self.persistent_delegate = PersistenceDelegate()
-        populate_db()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
         self.persistent_delegate = None
 
-    def test_add_user_by_admin(self):
-        print "test_add_user_by_admin"
-        admin_user = User.get_by_id(1)
-        admin_role = Role.get_by_id(1)
-        session = Session(user=admin_user, role=admin_role)
-        System.session_set.append(session)
-        name = Name(name="me")
-        email = Email(email="abc@gmail.com")
-        guest_role = Role.get_by_id(2)
-        user = User(name=name, email=email,
-                        roles= [guest_role],
-                        )
-
-        user = System.do("add_user", user=user, session=session)
-
-        user = User.get_by_id(2)
-        self.assertEqual(user.get("name").get("name"), "me")
-
-    def test_add_user_noc_by_admin(self):
-        print "test_add_user_by_noc"
-        admin_user = User.get_by_id(1)
-        admin_role = Role.get_by_id(1)
-        session = Session(user=admin_user, role=admin_role)
-        System.session_set.append(session)
-
-        name = Name(name="nocuser")
-        name.save()
-        email = Email(email="abc@gmail.com")
-        email.save()
-        noc_role = Role.get_by_id(4)
-        noc_user = User(name=name, email=email, \
-                        roles=[noc_role])
-
-        noc_user=System.do("add_user", user=noc_user, session=session)
-        session_noc = Session(user=noc_user, role=noc_role)
-        System.session_set.append(session_noc)
-
-        user = User.get_by_id(2)
-        self.assertEqual(user.get("name").get("name"),"nocuser")
-    
-    def test_add_user_raises_arity_error(self):
-        print "test_add_user_raises_arity_error"
-
-        admin_user=User.get_by_id(1)
-        session = Session(user=admin_user,role=Role.admin)
-        System.session_set.append(session)
-
-        name = Name(name="nocuser")
-        email = Email(email="abc@gmail.com")
-
-        guest_role = Role.get_by_id(2)
-        user = User(name=name, email=email, roles= [guest_role])
-
-        with self.assertRaises(ArityError):
-            System.do("add_user", user=user)
-
-
-    def test_add_user_raises_type_check_error(self):
-        print "test_add_user_raises_type_check_error"
-        admin_user = User.get_by_id(1)
-
-        admin_role = Role.get_by_id(1)
-        session = Session(user=admin_user, role=admin_role)
-        System.session_set.append(session)
-
-        name = Name(name="nocuser")
-        email = Email(email="abc@gmail.com")
-
-        guest_role = Role.get_by_id(2)
-        user = User(name=name, email=email, roles=[guest_role])
-
-        with self.assertRaises(TypeError):
-            System.do("add_user", user=session, session=session)
-
-    def test_add_user_raises_state_error_with_no_session(self):
-        print "test_add_user_raises_state_error_with_no_session"
-
-        admin_user = User.get_by_id(1)
-        admin_role = Role.get_by_id(1)
-        admin_session = Session(user=admin_user, role=admin_role)
-
-        name = Name(name="nocuser")
-        email = Email(email="abc@gmail.com")
-        guest_role = Role.get_by_id(2)
-        user = User(name=name, email=email, roles=[guest_role])
-
-        with self.assertRaises(StateError):
-            System.do("add_user", user=user, session=admin_session)
-
-    def test_add_user_raises_state_error_with_existing_user(self):
-        print "test_add_user_raises_state_error_with_existing_user"
-
-        admin_user = User.get_by_id(1)
-
-        admin_role = Role.get_by_id(1)
-        admin_session = Session(user=admin_user, role=admin_role)
-        System.session_set.append(admin_session)
-
-        name = Name(name="nocuser")
-        name.save()
-        email = Email(email="abc@gmail.com")
-        email.save()
-        guest_role = Role.get_by_id(2)
-        user = User(name=name, email=email, roles=[guest_role])
-        user.save()
-
-        with self.assertRaises(StateError):
-            System.do("add_user", user=user, session=admin_session)
+    def test_add_question(self):
+        print "test_add_question_in_system_persistence"
+        name="how are labs?"
+        question = Question(name=name)
+        key = Config.key
+        question = System.do("add_question", question=question, key=key)
+        question1 = Question.get_by_id(1)
+        self.assertEqual(question1.get("name"), name)
             
 #+END_SRC
 
@@ -3727,6 +3626,7 @@ if __name__ == '__main__':
 #+BEGIN_SRC python :tangle test_persistent_system.py :eval no :noweb yes
 <<imports_for_tests>>
 <<populate_db>>
+<<test_add_question>>
 #<<test_persistent_system_constructor>>
 #<<test_arity_and_types>>
 #<<test_add_user>>
@@ -3748,5 +3648,5 @@ if __name__ == '__main__':
 #<<test_ApproveWorkshop>>
 #<<test_RejectWorkshop>>
 #<<test_DeleteArtefact>>
-#<<run_test_cases>>
+<<run_test_cases>>
 #+end_src

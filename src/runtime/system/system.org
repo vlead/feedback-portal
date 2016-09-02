@@ -1,4 +1,4 @@
-#+TITLE: System implementation for OutReach Portal 3.0
+#+TITLE: System implementation for Feedback Poratal 3.0
 #+AUTHOR: VLEAD
 #+DATE: [2016-07-28 Thu]
 #+SETUPFILE: ../../org-templates/level-2.org
@@ -15,12 +15,6 @@ the external world (through command line function calls)
 and also manages the entity objects in such a way that the
 system invariants are maintained. 
 
-
-The system holds two state variables:
-
- - =user_set= :: The set of users in the system
- - =session_set= :: The set of sessions in the system
-
 The system's inputs are in terms of /operations/.  Each
 operation consists of an operation name and a sequence of
 arguments.  
@@ -29,7 +23,7 @@ In this implementation, an operation is identified by a
 class.  The dictionary =ops_table= maps operation names to
 their corresponding classes.
 
-Each operation is divided into five checks.  A /check/ is a
+Each operation is divided into four checks.  A /check/ is a
 predicate that either returns true or throws an exception.
 
 The following checks are performed:
@@ -205,37 +199,31 @@ class System ():
 
   Once these checks are satisfied, either the system state is modified or retrieved.
 
-** =AddUser=
-#+NAME: class_adduser
+** =AddQuestion=
+#+NAME: class_addquestion
 #+begin_src python
-class AddUser():
-    arg_types = {"user": is_user, "session": is_session}
+class AddQuestion():
+    arg_types = {"question": is_question, "key": is_str}
     arity_and_type_checks_needed = True
 
     @staticmethod
     def auth_check(args):
-        session = args['session']
-        if not (System.is_session_admin(session) or \
-                    System.is_session_OCC(session) or \
-                    System.is_session_noc(session)):
-            raise AuthError("Role not Authorized to perform this action")
+        key = args['key']
+        if not key:
+            raise AuthError("Not Authorized to perform this action")
 
     @staticmethod
     def state_check(args):
-        session = args["session"]
-        user = args["user"]
-        if not System.session_exists(session):
-            raise StateError("session %s does not exist in System"
-                                % session.to_client())
-        elif System.delegate.user_exists(user):
-            raise StateError("user %s already exists in System"
-                                % user.to_client())
+        key = args["key"]
+        if not System.delegate.key_exists(key):
+            raise StateError("key %s does not exist in System"
+                                % key)
 
     @staticmethod
     def action(args):
-        user = args["user"]
-        System.delegate.add_user(user)
-        return user
+        question = args["question"]
+        question = System.delegate.add_question(question)
+        return question
 
 #+end_src
 ** =DeleteUser=
@@ -974,25 +962,7 @@ class DeleteArtefact():
 
  #+NAME: ops_table
  #+BEGIN_SRC python                                                                          
-ops_table = {'add_user' : AddUser, 
-             'login': login, 
-             'logout': logout,
-             'add_institute': AddInstitute, 
-             'delete_user': DeleteUser,
-             'add_oc': AddOC, 
-             'add_nc': AddNC, 
-             'update_user': UpdateUser, 
-             'update_institute': UpdateInstitute, 
-             'add_role': AddRole,
-             'create_workshop' : CreateWorkshop,
-             'cancel_workshop' : CancelWorkshop,
-             'reschedule_workshop' : RescheduleWorkshop, 
-             'conduct_workshop' : ConductWorkshop,
-             'upload_artefact' : UploadArtefact,
-             'approve_workshop' : ApproveWorkshop,
-             'reject_workshop' : RejectWorkshop,
-             'delete_artefact' : DeleteArtefact
-}
+ops_table = {'add_question' : AddQuestion }
 
  #+END_SRC   
 
@@ -1007,14 +977,7 @@ ops_table = {'add_user' : AddUser,
 
 from runtime.exceptions.custom_exceptions import *
 from runtime.exceptions.exceptions import *
-from runtime.objects.entities import is_user, is_session, is_role, is_email, \
-    is_name, is_alphabetic_str, is_str, are_spokes_or_empty_list,\
-    is_institute, is_oc_target, is_status, is_nc,\
-    is_oc, is_nc_target, are_workshops_or_empty_list, is_ws_target,\
-    are_artefacts_or_empty_list,  is_workshop_or_none, is_ws_target, \
-    is_artefact, are_oc_targets_or_empty_list, is_date, \
-    are_nc_targets_or_empty_list, are_artefacts_or_empty_list, Session
-
+from runtime.objects.entities import is_str, is_question
 
 #+end_src
 
@@ -1023,10 +986,11 @@ from runtime.objects.entities import is_user, is_session, is_role, is_email, \
 
 ** sources
 #+BEGIN_SRC python :tangle system.py :eval no :noweb yes
-#<<imports_for_sources>>
-#<<class_system>>
-#<<arity_type_checks>>
-#<<do_function>>
+<<imports_for_sources>>
+<<class_system>>
+<<arity_type_checks>>
+<<do_function>>
+<<class_addquestion>>
 #<<class_adduser>>
 #<<class_login>>
 #<<class_logout>>
@@ -1045,7 +1009,7 @@ from runtime.objects.entities import is_user, is_session, is_role, is_email, \
 #<<class_ApproveWorkshop>>
 #<<class_RejectWorkshop>>
 #<<class_DeleteArtefact>>
-#<<ops_table>>
+<<ops_table>>
 
 #+end_src
 
