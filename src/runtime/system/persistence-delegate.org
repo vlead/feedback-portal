@@ -104,7 +104,6 @@ class TestPersistentDelegate(TestCase):
 
 #+END_SRC
 
-
 ***  Check if =key= already exists
     This function checks if a key matches with the configuration key.
 #+NAME: persistent_key_exists
