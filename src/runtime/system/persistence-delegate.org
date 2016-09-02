@@ -104,6 +104,7 @@ class TestPersistentDelegate(TestCase):
 
 #+END_SRC
 
+
 ***  Check if =key= already exists
     This function checks if a key matches with the configuration key.
 #+NAME: persistent_key_exists
@@ -151,6 +152,7 @@ class TestPersistentDelegate(TestCase):
 
 #+END_SRC
 
+
 ***  Add question to the system
     This function adds question to the system.
 #+NAME: persistent_add_question
@@ -174,6 +176,41 @@ class TestPersistentDelegate(TestCase):
 
 #+END_SRC
 
+
+***  Add feedback to the system
+    This function adds a feedback to the system.
+#+NAME: persistent_add_feedback
+#+BEGIN_SRC python
+    def add_feedback(self, feedback):
+        feedback.save()
+        return feedback
+
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistent_add_feedback
+#+BEGIN_SRC python
+    def test_add_feedback(self):
+         print "test_add_feedback"
+         gateway_ip = "10.100.40.2"
+         lab_id = "cse01"
+         exp_id = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_id=lab_id,
+                        exp_id=exp_id,
+                        date=date,
+                        responses=[])
+
+         fb1 = self.persistent_delegate.add_feedback(fb)
+         feedback = Feedback.get_by_id(1)
+
+         self.assertEqual(feedback.get("gateway_ip"), gateway_ip)
+         self.assertEqual(feedback.get("lab_id"), lab_id)
+         self.assertEqual(feedback.get("exp_id"), exp_id)
+         self.assertEqual(feedback.get("responses"), [])
+
+#+END_SRC
 
 ***  Add answer to the system
     This function adds question to the system.
@@ -1716,6 +1753,7 @@ if __name__ == '__main__':
 <<persistent_question_exists>>
 <<persistent_add_question>>
 <<persistent_add_answer>>
+<<persistent_add_feedback>>
 
 <<persistent_get_object>>
 <<persistent_get_role_set>>
@@ -1777,6 +1815,7 @@ if __name__ == '__main__':
 <<test_persistent_question_exists>>
 <<test_persistent_add_question>>
 <<test_persistent_add_answer>>
+<<test_persistent_add_feedback>>
 #<<test_persistent_email_exists>>
 #<<test_persistent_name_exists>>
 #<<test_persistent_get_name>>
