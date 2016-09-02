@@ -91,7 +91,8 @@ class TestPersistentDelegate(TestCase):
     def test_question_exists(self):
         print "test_question_exists"
         name1="how are labs?"
-        question1 = Question(name=name1)
+        radio="radio"
+        question1 = Question(name=name1, question_type=radio)
         question = self.persistent_delegate.add_question(question1)
 
         name2="how are experiments?"
@@ -169,7 +170,8 @@ class TestPersistentDelegate(TestCase):
     def test_add_question(self):
          print "test_add_question"
          name="how are labs?"
-         question = Question(name=name)
+         radio="radio"
+         question = Question(name=name, question_type=radio)
          question1 = self.persistent_delegate.add_question(question)
          self.assertEqual(self.persistent_delegate.question_exists(question1),
                           True)
@@ -211,6 +213,7 @@ class TestPersistentDelegate(TestCase):
          self.assertEqual(feedback.get("responses"), [])
 
 #+END_SRC
+
 
 ***  Add answer to the system
     This function adds question to the system.

@@ -211,7 +211,8 @@ class TestAddQuestion(TestCase):
     def test_add_question(self):
         print "test_add_question_in_system_persistence"
         name="how are labs?"
-        question = Question(name=name)
+        radio="radio"
+        question = Question(name=name, question_type=radio)
         key = Config.key
         question = System.do("add_question", question=question, key=key)
         question1 = Question.get_by_id(1)

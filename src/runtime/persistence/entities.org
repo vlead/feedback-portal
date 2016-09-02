@@ -20,6 +20,7 @@
 args = {"__tablename__": "question",
         "id": db.Column(db.Integer, primary_key=True),
         "name": db.Column(db.String(255), unique=True, nullable=False),
+        "question_type": db.Column(db.String(255), unique=False, nullable=False),
         "response": db.relationship('Response', 
                                         backref=db.backref('question',\
                                                         uselist=False))
@@ -49,8 +50,8 @@ class TestPersistentQuestion(TestCase):
     def test_create_question(self):
         print "test_create_question"
         name="how are labs?"
-
-        question1 = Question(name=name)
+        radio="radio"
+        question1 = Question(name=name, question_type=radio)
         question1.save()
 
         new_question = Question.get_by_id(1)
