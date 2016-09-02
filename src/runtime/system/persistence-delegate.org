@@ -215,6 +215,54 @@ class TestPersistentDelegate(TestCase):
 #+END_SRC
 
 
+***  Add response to the system
+    This function adds a response to the system.
+#+NAME: persistent_add_response
+#+BEGIN_SRC python
+    def add_response(self, response):
+        response.save()
+        return response
+
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistent_add_response
+#+BEGIN_SRC python
+    def test_add_response(self):
+         print "test_add_response"
+
+         name = "how are labs?"
+         q_type = "radio"
+         question1 = Question(name=name, question_type=q_type)
+         question1.save()
+         ans = "excellent labs"
+         answer1 = Answer(name=ans)
+         answer1.save()
+         gateway_ip = "10.100.40.2"
+         lab_id = "cse01"
+         exp_id = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_id=lab_id,
+                        exp_id=exp_id,
+                        date=date,
+                        responses=[])
+         fb.save()
+         res = Response(question=question1, answer=answer1, feedback=fb)
+         res1 = self.persistent_delegate.add_response(res)
+
+         response = Response.get_by_id(1)
+
+         self.assertEqual(response.get("question").get("name"),\
+                            question1.get("name"))
+
+         self.assertEqual(response.get("answer").get("name"),\
+                            answer1.get("name"))
+
+#+END_SRC
+
+
 ***  Get an object
     A generic function to find an object of type =cls= matching a given a criteria
 
@@ -315,6 +363,7 @@ if __name__ == '__main__':
 <<persistent_add_question>>
 <<persistent_add_answer>>
 <<persistent_add_feedback>>
+<<persistent_add_response>>
 #+end_src
 
 ** tests
@@ -327,6 +376,7 @@ if __name__ == '__main__':
 <<test_persistent_add_question>>
 <<test_persistent_add_answer>>
 <<test_persistent_add_feedback>>
+<<test_persistent_add_response>>
 <<run_test_cases>>
 
 #+end_src
