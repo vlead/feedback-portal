@@ -284,6 +284,33 @@ class AddFeedback():
         return feedback
 
 #+end_src
+** =AddResponse=
+#+NAME: class_addresponse
+#+begin_src python
+class AddResponse():
+    arg_types = {"response": is_response, "key": is_str}
+    arity_and_type_checks_needed = True
+
+    @staticmethod
+    def auth_check(args):
+        key = args['key']
+        if not key:
+            raise AuthError("Not Authorized to perform this action")
+
+    @staticmethod
+    def state_check(args):
+        key = args["key"]
+        if not System.delegate.key_exists(key):
+            raise StateError("key %s does not exist in System"
+                                % key)
+
+    @staticmethod
+    def action(args):
+        response = args["response"]
+        response = System.delegate.add_response(response)
+        return response
+
+#+end_src
 ** Operations Table
     Each operation has a corresponding implementation defined as a class. 
 
@@ -291,7 +318,8 @@ class AddFeedback():
  #+BEGIN_SRC python                                                                          
 ops_table = {'add_question' : AddQuestion,
              'add_answer' : AddAnswer,
-             'add_feedback': AddFeedback
+             'add_feedback': AddFeedback,
+             'add_response': AddResponse
             }
 
  #+END_SRC   
@@ -308,7 +336,7 @@ ops_table = {'add_question' : AddQuestion,
 from runtime.exceptions.custom_exceptions import *
 from runtime.exceptions.exceptions import *
 from runtime.objects.entities import is_str, is_question, is_answer, \
-     is_feedback, is_date
+     is_feedback, is_date, is_response
 
 #+end_src
 
@@ -324,6 +352,7 @@ from runtime.objects.entities import is_str, is_question, is_answer, \
 <<class_addquestion>>
 <<class_addanswer>>
 <<class_addfeedback>>
+<<class_addresponse>>
 <<ops_table>>
 
 #+end_src

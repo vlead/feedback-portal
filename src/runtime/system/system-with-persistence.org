@@ -292,28 +292,63 @@ class TestAddFeedback(TestCase):
             
 #+END_SRC
 
-* ops_table
-#+NAME: ops_table
+* Test AddResponse
+#+NAME: test_add_response
 #+BEGIN_SRC python
-ops_table = {'add_user' : AddUser, 
-             'login': login, 
-             'logout': logout,
-             'add_institute': AddInstitute, 
-             'delete_user': DeleteUser,
-             'add_oc': AddOC, 
-             'add_nc': AddNC, 
-             'update_user': UpdateUser, 
-             'update_institute': UpdateInstitute, 
-             'add_role': AddRole,
-             'create_workshop' : CreateWorkshop,
-             'cancel_workshop' : CancelWorkshop,
-             'reschedule_workshop' : RescheduleWorkshop, 
-             'conduct_workshop' : ConductWorkshop,
-             'upload_artefact' : UploadArtefact,
-             'approve_workshop' : ApproveWorkshop,
-             'reject_workshop' : RejectWorkshop,
-             'delete_artefact' : DeleteArtefact
-}
+class TestAddResponse(TestCase):
+    TESTING = True
+    persistent_delegate = None
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        System.initialize_system(PersistenceDelegate)
+        self.persistent_delegate = PersistenceDelegate()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.persistent_delegate = None
+
+    def test_add_response(self):
+        print "test_add_response_in_system_persistence"
+        name = "how are labs?"
+        q_type = "radio"
+        question1 = Question(name=name, question_type=q_type)
+        question1.save()
+
+        ans = "excellent labs"
+        answer1 = Answer(name=ans)
+        answer1.save()
+
+        gateway_ip = "10.100.40.2"
+        lab_id = "cse01"
+        exp_id = "data01"
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+        fb = Feedback(gateway_ip=gateway_ip,
+                      lab_id=lab_id,
+                      exp_id=exp_id,
+                      date=date,
+                      responses=[])
+        fb.save()
+
+        res = Response(question=question1, answer=answer1, feedback=fb)
+        key = Config.key
+        response1 = System.do("add_response", response=res,
+                                  key=key)
+
+        response = Response.get_by_id(1)
+
+        self.assertEqual(response.get("question").get("name"),\
+                         question1.get("name"))
+
+        self.assertEqual(response.get("answer").get("name"),\
+                         answer1.get("name"))
+            
 #+END_SRC
 
 * Infra                                                         :boilerplate:
@@ -361,5 +396,6 @@ if __name__ == '__main__':
 <<test_add_question>>
 <<test_add_answer>>
 <<test_add_feedback>>
+<<test_add_response>>
 <<run_test_cases>>
 #+end_src

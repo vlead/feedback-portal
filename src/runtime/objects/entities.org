@@ -55,6 +55,9 @@ check_answer = check_pred(is_answer)
 is_feedback = is_inst(Feedback)
 check_feedback = check_pred(is_feedback)
 
+is_response = is_inst(Response)
+check_response = check_pred(is_response)
+
 def are_responses_or_empty_list(responses):
     ret_val = True
     if is_list(responses):
