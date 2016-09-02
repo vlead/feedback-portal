@@ -226,6 +226,33 @@ class AddQuestion():
         return question
 
 #+end_src
+** =AddAnswer=
+#+NAME: class_addanswer
+#+begin_src python
+class AddAnswer():
+    arg_types = {"answer": is_answer, "key": is_str}
+    arity_and_type_checks_needed = True
+
+    @staticmethod
+    def auth_check(args):
+        key = args['key']
+        if not key:
+            raise AuthError("Not Authorized to perform this action")
+
+    @staticmethod
+    def state_check(args):
+        key = args["key"]
+        if not System.delegate.key_exists(key):
+            raise StateError("key %s does not exist in System"
+                                % key)
+
+    @staticmethod
+    def action(args):
+        answer = args["answer"]
+        answer = System.delegate.add_answer(answer)
+        return answer
+
+#+end_src
 ** =DeleteUser=
 #+NAME: class_deleteuser
 #+begin_src python
@@ -962,7 +989,9 @@ class DeleteArtefact():
 
  #+NAME: ops_table
  #+BEGIN_SRC python                                                                          
-ops_table = {'add_question' : AddQuestion }
+ops_table = {'add_question' : AddQuestion,
+             'add_answer' : AddAnswer
+            }
 
  #+END_SRC   
 
@@ -977,7 +1006,7 @@ ops_table = {'add_question' : AddQuestion }
 
 from runtime.exceptions.custom_exceptions import *
 from runtime.exceptions.exceptions import *
-from runtime.objects.entities import is_str, is_question
+from runtime.objects.entities import is_str, is_question, is_answer
 
 #+end_src
 
@@ -991,6 +1020,7 @@ from runtime.objects.entities import is_str, is_question
 <<arity_type_checks>>
 <<do_function>>
 <<class_addquestion>>
+<<class_addanswer>>
 #<<class_adduser>>
 #<<class_login>>
 #<<class_logout>>

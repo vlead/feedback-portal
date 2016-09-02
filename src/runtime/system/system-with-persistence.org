@@ -219,6 +219,38 @@ class TestAddQuestion(TestCase):
             
 #+END_SRC
 
+* Test AddAnswer
+#+NAME: test_add_answer
+#+BEGIN_SRC python
+class TestAddAnswer(TestCase):
+    TESTING = True
+    persistent_delegate = None
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        System.initialize_system(PersistenceDelegate)
+        self.persistent_delegate = PersistenceDelegate()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.persistent_delegate = None
+
+    def test_add_answer(self):
+        print "test_add_answer_in_system_persistence"
+        ans = "excellent labs"
+        answer = Answer(name=ans)
+        key = Config.key
+        answer = System.do("add_answer", answer=answer, key=key)
+        answer1 = Answer.get_by_id(1)
+        self.assertEqual(answer1.get("name"), ans)
+            
+#+END_SRC
+
 * Test DeleteUser
 #+NAME: test_delete_user
 #+BEGIN_SRC python
@@ -3627,6 +3659,7 @@ if __name__ == '__main__':
 <<imports_for_tests>>
 <<populate_db>>
 <<test_add_question>>
+<<test_add_answer>>
 #<<test_persistent_system_constructor>>
 #<<test_arity_and_types>>
 #<<test_add_user>>
