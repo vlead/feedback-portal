@@ -251,6 +251,45 @@ class TestAddAnswer(TestCase):
             
 #+END_SRC
 
+* Test AddFeedback
+#+NAME: test_add_feedback
+#+BEGIN_SRC python
+class TestAddFeedback(TestCase):
+    TESTING = True
+    persistent_delegate = None
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        System.initialize_system(PersistenceDelegate)
+        self.persistent_delegate = PersistenceDelegate()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.persistent_delegate = None
+
+    def test_add_feedback(self):
+        print "test_add_feedback_in_system_persistence"
+        gateway_ip = "10.100.40.2"
+        lab_id = "cse01"
+        exp_id = "data01"
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        key = Config.key
+        feedback = System.do("add_feedback", gateway_ip=gateway_ip,
+                                 lab_id=lab_id, exp_id=exp_id,
+                                 date=date, key=key)
+        fb = Feedback.get_by_id(1)
+        self.assertEqual(fb.get("gateway_ip"), gateway_ip)
+        self.assertEqual(fb.get("lab_id"), lab_id)
+        self.assertEqual(fb.get("exp_id"), exp_id)
+        self.assertEqual(fb.get("responses"), [])
+            
+#+END_SRC
+
 * Test DeleteUser
 #+NAME: test_delete_user
 #+BEGIN_SRC python
@@ -3660,6 +3699,7 @@ if __name__ == '__main__':
 <<populate_db>>
 <<test_add_question>>
 <<test_add_answer>>
+<<test_add_feedback>>
 #<<test_persistent_system_constructor>>
 #<<test_arity_and_types>>
 #<<test_add_user>>

@@ -253,6 +253,37 @@ class AddAnswer():
         return answer
 
 #+end_src
+** =AddFeedback=
+#+NAME: class_addfeedback
+#+begin_src python
+class AddFeedback():
+    arg_types = {"gateway_ip": is_str, "lab_id": is_str,
+                  "exp_id": is_str, "date": is_date, "key": is_str}
+    arity_and_type_checks_needed = True
+
+    @staticmethod
+    def auth_check(args):
+        key = args['key']
+        if not key:
+            raise AuthError("Not Authorized to perform this action")
+
+    @staticmethod
+    def state_check(args):
+        key = args["key"]
+        if not System.delegate.key_exists(key):
+            raise StateError("key %s does not exist in System"
+                                % key)
+
+    @staticmethod
+    def action(args):
+        gateway_ip = args["gateway_ip"]
+        lab_id = args["lab_id"]
+        exp_id = args["exp_id"]
+        date = args["date"]
+        feedback = System.delegate.add_feedback(gateway_ip, lab_id, exp_id, date)
+        return feedback
+
+#+end_src
 ** =DeleteUser=
 #+NAME: class_deleteuser
 #+begin_src python
@@ -990,7 +1021,8 @@ class DeleteArtefact():
  #+NAME: ops_table
  #+BEGIN_SRC python                                                                          
 ops_table = {'add_question' : AddQuestion,
-             'add_answer' : AddAnswer
+             'add_answer' : AddAnswer,
+             'add_feedback': AddFeedback
             }
 
  #+END_SRC   
@@ -1006,7 +1038,8 @@ ops_table = {'add_question' : AddQuestion,
 
 from runtime.exceptions.custom_exceptions import *
 from runtime.exceptions.exceptions import *
-from runtime.objects.entities import is_str, is_question, is_answer
+from runtime.objects.entities import is_str, is_question, is_answer, \
+     is_feedback, is_date
 
 #+end_src
 
@@ -1021,6 +1054,7 @@ from runtime.objects.entities import is_str, is_question, is_answer
 <<do_function>>
 <<class_addquestion>>
 <<class_addanswer>>
+<<class_addfeedback>>
 #<<class_adduser>>
 #<<class_login>>
 #<<class_logout>>

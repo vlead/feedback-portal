@@ -181,9 +181,14 @@ class TestPersistentDelegate(TestCase):
     This function adds a feedback to the system.
 #+NAME: persistent_add_feedback
 #+BEGIN_SRC python
-    def add_feedback(self, feedback):
-        feedback.save()
-        return feedback
+    def add_feedback(self, gateway_ip, lab_id, exp_id, date):
+        new_feedback = Feedback(gateway_ip=gateway_ip,
+                                lab_id=lab_id,
+                                exp_id=exp_id,
+                                date=date,
+                                responses=[])
+        new_feedback.save()
+        return new_feedback
 
 #+END_SRC
 
@@ -196,15 +201,9 @@ class TestPersistentDelegate(TestCase):
          lab_id = "cse01"
          exp_id = "data01"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
-         fb = Feedback(gateway_ip=gateway_ip,
-                        lab_id=lab_id,
-                        exp_id=exp_id,
-                        date=date,
-                        responses=[])
-
-         fb1 = self.persistent_delegate.add_feedback(fb)
+         fb1 = self.persistent_delegate.add_feedback(gateway_ip, lab_id,
+                                                        exp_id, date)
          feedback = Feedback.get_by_id(1)
-
          self.assertEqual(feedback.get("gateway_ip"), gateway_ip)
          self.assertEqual(feedback.get("lab_id"), lab_id)
          self.assertEqual(feedback.get("exp_id"), exp_id)
