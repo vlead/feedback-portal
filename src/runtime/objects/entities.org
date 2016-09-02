@@ -88,10 +88,10 @@ class TestQuestion(TestCase):
     def test_object_question(self):
         print "test_object_question"
         name="how are labs?"
-        radio="radio"
-        question = Question(name=name, question_type=radio)
-    
+        q_type="radio"
+        question = Question(name=name, question_type=q_type)
         self.assertEqual(question.get("name"), name)
+        self.assertEqual(question.get("question_type"), q_type)
 
 #+END_SRC
 
@@ -190,8 +190,9 @@ class TestResponse(TestCase):
     def test_object_response(self):
         print "test_object_response"
 
-        name="how are labs?"
-        question1 = Question(name=name)
+        name = "how are labs?"
+        q_type = "radio"
+        question1 = Question(name=name, question_type=q_type)
 
         ans = "excellent labs"
         answer1 = Answer(name=ans)
@@ -207,7 +208,6 @@ class TestResponse(TestCase):
                       responses=[])
 
         res = Response(question=question1, answer=answer1, feedback=fb)
-
 
         self.assertEqual(res.get("question").get("name"),\
                          question1.get("name"))

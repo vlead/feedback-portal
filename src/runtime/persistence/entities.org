@@ -55,7 +55,8 @@ class TestPersistentQuestion(TestCase):
         question1.save()
 
         new_question = Question.get_by_id(1)
-        self.assertEqual(new_question.get("name"), "how are labs?")
+        self.assertEqual(new_question.get("name"), name)
+        self.assertEqual(new_question.get("question_type"), radio)
 
 #+END_SRC
 
@@ -204,8 +205,9 @@ class TestPersistenceResponse(TestCase):
     def test_create_response(self):
         print "test_create_response"
 
-        name="how are labs?"
-        question1 = Question(name=name)
+        name = "how are labs?"
+        q_type = "radio"
+        question1 = Question(name=name, question_type=q_type)
         question1.save()
 
         ans = "excellent labs"

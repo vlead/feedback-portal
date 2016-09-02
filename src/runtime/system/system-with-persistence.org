@@ -212,11 +212,12 @@ class TestAddQuestion(TestCase):
         print "test_add_question_in_system_persistence"
         name="how are labs?"
         radio="radio"
-        question = Question(name=name, question_type=radio)
         key = Config.key
-        question = System.do("add_question", question=question, key=key)
-        question1 = Question.get_by_id(1)
-        self.assertEqual(question1.get("name"), name)
+        question = Question(name=name, question_type=radio)
+        question1 = System.do("add_question", question=question,
+                                  key=key)
+        new_question = Question.get_by_id(1)
+        self.assertEqual(new_question.get("name"), name)
             
 #+END_SRC
 
