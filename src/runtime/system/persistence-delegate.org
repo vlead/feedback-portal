@@ -151,7 +151,6 @@ class TestPersistentDelegate(TestCase):
 
 #+END_SRC
 
-
 ***  Add question to the system
     This function adds question to the system.
 #+NAME: persistent_add_question
@@ -172,6 +171,30 @@ class TestPersistentDelegate(TestCase):
          question1 = self.persistent_delegate.add_question(question)
          self.assertEqual(self.persistent_delegate.question_exists(question1),
                           True)
+
+#+END_SRC
+
+
+***  Add answer to the system
+    This function adds question to the system.
+#+NAME: persistent_add_answer
+#+BEGIN_SRC python
+    def add_answer(self, answer):
+        answer.save()
+        return answer
+
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistent_add_answer
+#+BEGIN_SRC python
+    def test_add_answer(self):
+         print "test_add_answer"
+         ans = "excellent labs"
+         answer = Answer(name=ans)
+         answer1 = self.persistent_delegate.add_answer(answer)
+         answer1 = Answer.get_by_id(1)
+         self.assertEqual(answer1.get("name"), ans)
 
 #+END_SRC
 
@@ -1692,6 +1715,7 @@ if __name__ == '__main__':
 <<persistent_get_question>>
 <<persistent_question_exists>>
 <<persistent_add_question>>
+<<persistent_add_answer>>
 
 <<persistent_get_object>>
 <<persistent_get_role_set>>
@@ -1752,7 +1776,7 @@ if __name__ == '__main__':
 <<tes_persistent_get_question>>
 <<test_persistent_question_exists>>
 <<test_persistent_add_question>>
-
+<<test_persistent_add_answer>>
 #<<test_persistent_email_exists>>
 #<<test_persistent_name_exists>>
 #<<test_persistent_get_name>>
