@@ -8,7 +8,7 @@
 
 * Introduction
 
-In the object implementation of the Outreach Portal, 
+In the object implementation of the Feedback Portal, 
 all entities are Objects.  In addition, there is an object 
 called =System= that holds the state of the application 
 (=user-set=, =session-set=, etc.).
