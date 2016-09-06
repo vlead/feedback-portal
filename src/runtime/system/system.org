@@ -188,7 +188,7 @@ class AddQuestion():
         question = args["question"]
         if System.delegate.question_exists(question):
             raise StateError("question %s already exists in System"
-                                 % question)
+                                 % question.to_client())
 
     @staticmethod
     def action(args):
@@ -215,7 +215,7 @@ class AddAnswer():
         answer = args["answer"]
         if System.delegate.answer_exists(answer):
             raise StateError("answer %s already exists in System"
-                                 % answer)
+                                 % answer.to_client())
 
     @staticmethod
     def action(args):
@@ -259,11 +259,12 @@ class AddFeedback():
 
 #+end_src
 
-** COMMENT =AddResponse=
-#+NAME: class_addresponse
+** =AddResponsesToFeedBack=
+#+NAME: class_addresponses_to_feedback
 #+begin_src python
-class AddResponse():
-    arg_types = {"response": is_response, "session": is_session}
+class AddResponsesToFeedback():
+    arg_types = {"responses": are_responses, "fb_id": is_int, 
+                     "session": is_session}
     arity_and_type_checks_needed = True
 
     @staticmethod
@@ -274,11 +275,17 @@ class AddResponse():
 
     @staticmethod
     def state_check(args):
-        pass
+        feedback = args["fb_id"]
+        if not System.delegate.feedback_exists(fb_id):
+            raise StateError("feedback %s does not exist in System"
+                                 % feedback.to_client())
 
     @staticmethod
     def action(args):
-        pass
+        fb_id = args["fb_id"]
+        responses = args["responses"]
+        feedback = System.delegate.add_responses_to_feedback(fb_id, responses)
+        return feedback
 
 #+end_src
 
@@ -290,7 +297,8 @@ class AddResponse():
  #+BEGIN_SRC python                                                                          
 ops_table = {'add_question' : AddQuestion,
              'add_answer' : AddAnswer,
-             'add_feedback': AddFeedback
+             'add_feedback': AddFeedback,
+             'add_responses_to_feedback': AddResponsesToFeedback
             }
 
  #+END_SRC   
@@ -324,6 +332,7 @@ from runtime.config.config import Config
 <<class_addquestion>>
 <<class_addanswer>>
 <<class_addfeedback>>
+<<class_addresponses_to_feedback>>
 <<ops_table>>
 
 #+end_src

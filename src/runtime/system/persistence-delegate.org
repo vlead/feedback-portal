@@ -116,6 +116,40 @@ class TestPersistentDelegate(TestCase):
 #+END_SRC
 
 
+***  Check if =feedback= already exists
+    This function checks if feedback is already in the system
+#+NAME: persistent_feedback_exists
+#+BEGIN_SRC python
+    def feedback_exists(self, fb_id):
+        try:
+            feedback = Feedback.get_by_id(fb_id)
+            return True
+        except Exception as e:
+            return False
+        
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistent_answer_exists
+#+BEGIN_SRC python
+    def test_answer_exists(self):
+        print "test_answer_exists"
+
+        ans1 = "excellent labs"
+        answer1 = Answer(name=ans1)
+        self.persistent_delegate.add_answer(answer1)
+
+        ans2 = "excellent"
+        answer2 = Answer(name=ans2)
+        
+        self.assertEqual(self.persistent_delegate.answer_exists(answer1),
+                            True)
+        self.assertEqual(self.persistent_delegate.answer_exists(answer2),
+                            False)
+
+#+END_SRC
+
+
 ***  Add question to the system
     This function adds question to the system.
 #+NAME: persistent_add_question
@@ -201,12 +235,16 @@ class TestPersistentDelegate(TestCase):
 
 
 ***  Add response to the system
-    This function adds a response to the system.
-#+NAME: persistent_add_response
+    This function adds responses to the system.
+#+NAME: persistent_add_responses_to_feedback
 #+BEGIN_SRC python
-    def add_response(self, response):
-        response.save()
-        return response
+    def add_responses_to_feedback(self, fb_id, responses):
+        feedback = FeedBack.get_by_id(fb_id)
+        feedback.get("responses") = responses
+        feedback.save()
+        return feedback
+        
+
 
 #+END_SRC
 

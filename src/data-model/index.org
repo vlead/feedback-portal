@@ -388,7 +388,6 @@ is a relation =r: A? > K!=.
 ;;; Primary state variables
 Sets
   feedback-set  : set[Feedback]  ; set of all feedbacks in the system
-  response-set  : set[Response]  ; set of all Question & Answer Responses in the system
 
  #+END_SRC
 
@@ -399,7 +398,7 @@ Sets
 #+BEGIN_SRC spec :tangle spec.txt
   question-set  : response-set.question  ; set of questions in the system
   answer-set    : response-set.answer    ; set of answers in the system
-  
+  response-set  : feedback-set.responses  ; set of all responses in the system  
   workshop-set : feedback-set.workshop  ; determine the workshop of each feedback identified 
                                         ; by IP and date.  The number of feddback elements in 
                                         ; the feedback-set that match a workshop determine the usage. 
@@ -498,7 +497,7 @@ entity-set.   The operation may take additional parameters.
 ** Add Feedback
 *** Parameters
 #+BEGIN_SRC spec :tangle spec.txt
-    responses: [Response], s: Session
+    fb:Feedback, s: Session
 #+END_SRC   
 *** Actor credentials
 #+BEGIN_SRC spec :tangle spec.txt
@@ -512,8 +511,29 @@ entity-set.   The operation may take additional parameters.
 #+BEGIN_SRC spec :tangle spec.txt
     f = new feedback
     feedback-set = feedback-set U {f}
-    response-set = response-set U {responses}
 
-    A feedback with the given responses is created and added to feedback-set
+    A feedback is created and added to feedback-set.  The responses are not
+    added to the the newly created feedback. 
 
 #+END_SRC   
+
+
+** Add Responses to Feedback
+*** Parameters
+#+BEGIN_SRC spec :tangle spec.txt
+    responses: [Response], s: Session, fb: Feedback
+#+END_SRC   
+*** Actor credentials
+#+BEGIN_SRC spec :tangle spec.txt
+    s.key == system configured key
+#+END_SRC   
+*** Referential Integrity
+#+BEGIN_SRC spec :tangle spec.txt
+    fb: feedback-set
+#+END_SRC   
+*** Effect
+#+BEGIN_SRC spec :tangle spec.txt
+    fb.responses = responses
+    response-set = response-set U {responses}
+
+#+END_SRC

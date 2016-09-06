@@ -81,6 +81,12 @@ def are_responses_or_empty_list(responses):
 
     return ret_val
 
+def are_responses(responses):
+    if are_responses_or_empty_list(responses):
+        return not responses == []
+    else:
+        return False
+
 is_session = is_inst(Session)
 check_session = check_pred(is_session)
 
