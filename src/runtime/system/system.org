@@ -277,7 +277,7 @@ class AddResponsesToFeedback():
 
     @staticmethod
     def state_check(args):
-        feedback = args["fb_id"]
+        fb_id = args["fb_id"]
         if not System.delegate.feedback_exists(fb_id):
             raise StateError("feedback %s does not exist in System"
                                  % feedback.to_client())

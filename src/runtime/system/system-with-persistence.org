@@ -157,10 +157,10 @@ class TestAddFeedback(TestCase):
             
 #+END_SRC
 
-* Test AddResponse
-#+NAME: test_add_response
+* Test AddResponsesToFeedback
+#+NAME: test_add_responses_to_feedback
 #+BEGIN_SRC python
-class TestAddResponse(TestCase):
+class TestAddResponsesToFeedback(TestCase):
     TESTING = True
     persistent_delegate = None
 
@@ -178,8 +178,8 @@ class TestAddResponse(TestCase):
         db.drop_all()
         self.persistent_delegate = None
 
-    def test_add_response(self):
-        print "test_add_response_in_system_persistence"
+    def test_add_responses_to_feedback(self):
+        print "test_add_responses_to_feedback_in_system_persistence"
         name = "how are labs?"
         q_type = "radio"
         question1 = Question(name=name, question_type=q_type)
@@ -201,20 +201,21 @@ class TestAddResponse(TestCase):
                       responses=[])
         fb.save()
 
-        res = Response(question=question1, answer=answer1, feedback=fb)
+        res = Response(question=question1, answers=[answer1], feedback=fb)
         key = Config.key
         session = Session(key=key)
-        response1 = System.do("add_response", response=res,
+        fb1 = System.do("add_responses_to_feedback", responses=[res],
+                                  fb_id=1,
                                   session=session)
 
-        response = Response.get_by_id(1)
+        feedback = Feedback.get_by_id(1)
 
-        self.assertEqual(response.get("question").get("name"),\
-                         question1.get("name"))
+        self.assertEqual(feedback.get("lab_name"), lab_name)
+        self.assertEqual(feedback.get("responses")[0].get("question").\
+                             get("name"), question1.get("name"))
+        self.assertEqual(feedback.get("responses")[0].get("answers")[0].\
+                             get("name"), answer1.get("name"))
 
-        self.assertEqual(response.get("answer").get("name"),\
-                         answer1.get("name"))
-            
 #+END_SRC
 
 * Infra                                                         :boilerplate:
@@ -261,6 +262,6 @@ if __name__ == '__main__':
 <<test_add_question>>
 <<test_add_answer>>
 <<test_add_feedback>>
-#<<test_add_response>>
+<<test_add_responses_to_feedback>>
 <<run_test_cases>>
 #+end_src
