@@ -169,10 +169,10 @@ class TestPersistentDelegate(TestCase):
     This function adds a feedback to the system.
 #+NAME: persistent_add_feedback
 #+BEGIN_SRC python
-    def add_feedback(self, gateway_ip, lab_id, exp_id, date):
+    def add_feedback(self, gateway_ip, lab_name, exp_name, date):
         new_feedback = Feedback(gateway_ip=gateway_ip,
-                                lab_id=lab_id,
-                                exp_id=exp_id,
+                                lab_name=lab_name,
+                                exp_name=exp_name,
                                 date=date,
                                 responses=[])
         new_feedback.save()
@@ -186,15 +186,15 @@ class TestPersistentDelegate(TestCase):
     def test_add_feedback(self):
          print "test_add_feedback"
          gateway_ip = "10.100.40.2"
-         lab_id = "cse01"
-         exp_id = "data01"
+         lab_name = "cse01"
+         exp_name = "data01"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
-         fb1 = self.persistent_delegate.add_feedback(gateway_ip, lab_id,
-                                                        exp_id, date)
+         fb1 = self.persistent_delegate.add_feedback(gateway_ip, lab_name,
+                                                        exp_name, date)
          feedback = Feedback.get_by_id(1)
          self.assertEqual(feedback.get("gateway_ip"), gateway_ip)
-         self.assertEqual(feedback.get("lab_id"), lab_id)
-         self.assertEqual(feedback.get("exp_id"), exp_id)
+         self.assertEqual(feedback.get("lab_name"), lab_name)
+         self.assertEqual(feedback.get("exp_name"), exp_name)
          self.assertEqual(feedback.get("responses"), [])
 
 #+END_SRC
@@ -224,17 +224,17 @@ class TestPersistentDelegate(TestCase):
          answer1 = Answer(name=ans)
          answer1.save()
          gateway_ip = "10.100.40.2"
-         lab_id = "cse01"
-         exp_id = "data01"
+         lab_name = "cse01"
+         exp_name = "data01"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
          fb = Feedback(gateway_ip=gateway_ip,
-                        lab_id=lab_id,
-                        exp_id=exp_id,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
                         date=date,
                         responses=[])
          fb.save()
-         res = Response(question=question1, answer=answer1, feedback=fb)
+         res = Response(question=question1, answers=[answer1], feedback=fb)
          res1 = self.persistent_delegate.add_response(res)
 
          response = Response.get_by_id(1)
@@ -242,8 +242,11 @@ class TestPersistentDelegate(TestCase):
          self.assertEqual(response.get("question").get("name"),\
                             question1.get("name"))
 
-         self.assertEqual(response.get("answer").get("name"),\
+         self.assertEqual(response.get("answers")[0].get("name"),\
                             answer1.get("name"))
+
+         self.assertEqual(response.get("feedback").get("lab_name"),\
+                            fb.get("lab_name"))
 
 #+END_SRC
 
