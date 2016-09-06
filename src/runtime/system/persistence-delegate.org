@@ -130,21 +130,35 @@ class TestPersistentDelegate(TestCase):
 #+END_SRC
 
 **** Tests
-#+NAME: test_persistent_answer_exists
+#+NAME: test_persistent_feedback_exists
 #+BEGIN_SRC python
-    def test_answer_exists(self):
-        print "test_answer_exists"
+    def test_feedback_exists(self):
+        print "test_feedback_exists"
+        gateway_ip1 = "10.100.40.2"
+        lab_name1 = "cse01"
+        exp_name1 = "data01"
+        date1 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        fb1 = Feedback(gateway_ip=gateway_ip1,
+                        lab_name=lab_name1,
+                        exp_name=exp_name1,
+                        date=date1,
+                        responses=[])
+        fb1.save()
 
-        ans1 = "excellent labs"
-        answer1 = Answer(name=ans1)
-        self.persistent_delegate.add_answer(answer1)
-
-        ans2 = "excellent"
-        answer2 = Answer(name=ans2)
+        gateway_ip2 = "10.100.50.2"
+        lab_name2 = "cse02"
+        exp_name2 = "data02"
+        date2 = datetime.datetime.strptime("30-06-2017", "%d-%m-%Y").date()
+        fb2 = Feedback(gateway_ip=gateway_ip2,
+                                lab_name=lab_name2,
+                                exp_name=exp_name2,
+                                date=date2,
+                                responses=[]
+                                )
         
-        self.assertEqual(self.persistent_delegate.answer_exists(answer1),
+        self.assertEqual(self.persistent_delegate.feedback_exists(1),
                             True)
-        self.assertEqual(self.persistent_delegate.answer_exists(answer2),
+        self.assertEqual(self.persistent_delegate.feedback_exists(2),
                             False)
 
 #+END_SRC
@@ -223,8 +237,10 @@ class TestPersistentDelegate(TestCase):
          lab_name = "cse01"
          exp_name = "data01"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+         responses = []
          fb1 = self.persistent_delegate.add_feedback(gateway_ip, lab_name,
-                                                        exp_name, date)
+                                                        exp_name, date,
+                                                        responses)
          feedback = Feedback.get_by_id(1)
          self.assertEqual(feedback.get("gateway_ip"), gateway_ip)
          self.assertEqual(feedback.get("lab_name"), lab_name)
@@ -238,21 +254,20 @@ class TestPersistentDelegate(TestCase):
     This function adds responses to the system.
 #+NAME: persistent_add_responses_to_feedback
 #+BEGIN_SRC python
-    def add_responses_to_feedback(self, fb_id, responses):
-        feedback = FeedBack.get_by_id(fb_id)
-        feedback.get("responses") = responses
-        feedback.save()
+    def add_responses_to_feedback(self, fb_id, new_responses):
+        feedback = Feedback.get_by_id(fb_id)
+        responses = feedback.get("responses")
+        for response in new_responses:
+            responses.append(response)
         return feedback
         
-
-
 #+END_SRC
 
 **** Tests
-#+NAME: test_persistent_add_response
+#+NAME: test_persistent_add_responses_to_feedback
 #+BEGIN_SRC python
-    def test_add_response(self):
-         print "test_add_response"
+    def test_add_responses_to_feedback(self):
+         print "test_add_responses_to_feedback"
 
          name = "how are labs?"
          q_type = "radio"
@@ -273,18 +288,14 @@ class TestPersistentDelegate(TestCase):
                         responses=[])
          fb.save()
          res = Response(question=question1, answers=[answer1], feedback=fb)
-         res1 = self.persistent_delegate.add_response(res)
+         feedback = self.persistent_delegate.add_responses_to_feedback(1,
+                                                                        [res])
 
-         response = Response.get_by_id(1)
-
-         self.assertEqual(response.get("question").get("name"),\
-                            question1.get("name"))
-
-         self.assertEqual(response.get("answers")[0].get("name"),\
-                            answer1.get("name"))
-
-         self.assertEqual(response.get("feedback").get("lab_name"),\
-                            fb.get("lab_name"))
+         self.assertEqual(feedback.get("lab_name"), lab_name)
+         self.assertEqual(feedback.get("responses")[0].get("question").\
+                              get("name"), question1.get("name"))
+         self.assertEqual(feedback.get("responses")[0].get("answers")[0].\
+                              get("name"), answer1.get("name"))
 
 #+END_SRC
 
@@ -417,10 +428,12 @@ if __name__ == '__main__':
 <<persistent_get_answer>>
 <<persistent_question_exists>>
 <<persistent_answer_exists>>
+<<persistent_feedback_exists>>
 <<persistent_add_question>>
 <<persistent_add_answer>>
 <<persistent_add_feedback>>
-<<persistent_add_response>>
+<<persistent_add_responses_to_feedback>>
+
 #+end_src
 
 ** tests
@@ -432,10 +445,11 @@ if __name__ == '__main__':
 <<test_persistent_get_answer>>
 <<test_persistent_question_exists>>
 <<test_persistent_answer_exists>>
+<<test_persistent_feedback_exists>>
 <<test_persistent_add_question>>
 <<test_persistent_add_answer>>
 <<test_persistent_add_feedback>>
-<<test_persistent_add_response>>
+<<test_persistent_add_responses_to_feedback>>
 <<run_test_cases>>
 
 #+end_src
