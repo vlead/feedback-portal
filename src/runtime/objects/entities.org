@@ -52,6 +52,17 @@ check_question = check_pred(is_question)
 is_answer = is_inst(Answer)
 check_answer = check_pred(is_answer)
 
+def are_answers(answers):
+    ret_val = True
+    if is_list(answers):
+        for answer in answers:
+            if not is_answer(answer):
+                ret_val = False
+    else:
+        ret_val = False
+
+    return ret_val
+
 is_feedback = is_inst(Feedback)
 check_feedback = check_pred(is_feedback)
 
@@ -126,14 +137,14 @@ class TestAnswer(TestCase):
 
 
 * Feedback
-  A =Feedback= entity has fields =gateway= of type string, =lab_id= of type
-  string, =exp_id= of type sting and responses of type =Response=.
+  A =Feedback= entity has fields =gateway= of type string, =lab_name= of type
+  string, =exp_name= of type sting and responses of type =Response=.
 
 #+NAME: class_Feedback
 #+BEGIN_SRC python
 Feedback.add_attributes(gateway_ip=is_str,
-                        lab_id=is_str,
-                        exp_id=is_str,
+                        lab_name=is_str,
+                        exp_name=is_str,
                         date=is_date,
                         responses=are_responses_or_empty_list)
 
@@ -152,20 +163,21 @@ class TestFeedback(TestCase):
     def test_object_feedback(self):
         print "test_object_feedback"
         gateway_ip = "10.100.40.2"
-        lab_id = "cse01"
-        exp_id = "data01"
+        lab_name = "cse01"
+        exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
         fb = Feedback(gateway_ip=gateway_ip,
-                      lab_id=lab_id,
-                      exp_id=exp_id,
+                      lab_name=lab_name,
+                      exp_name=exp_name,
                       date=date,
                       responses=[])
 
         self.assertEqual(fb.get("gateway_ip"), gateway_ip)
-        self.assertEqual(fb.get("lab_id"), lab_id)
-        self.assertEqual(fb.get("exp_id"), exp_id)
+        self.assertEqual(fb.get("lab_name"), lab_name)
+        self.assertEqual(fb.get("exp_name"), exp_name)
         self.assertEqual(fb.get("date"), date)
         self.assertEqual(fb.get("responses"), [])
+
 #+END_SRC
 
 
@@ -175,12 +187,13 @@ class TestFeedback(TestCase):
 #+NAME: class_Response
 #+BEGIN_SRC python
 Response.add_attributes(question=is_question, 
-                        answer=is_answer, 
+                        answers=are_answers, 
                         feedback=is_feedback)
 
 Response.__eq__ = lambda self, other: \
                   isinstance(other, self.__class__) and \
-                  self.get("question") == other.get("question")
+                  self.get("question") == other.get("question") and \
+                  self.get("answers") == other.get("answers")
 
 #+END_SRC
 
@@ -201,25 +214,25 @@ class TestResponse(TestCase):
         answer1 = Answer(name=ans)
 
         gateway_ip = "10.100.40.2"
-        lab_id = "cse01"
-        exp_id = "data01"
+        lab_name = "cse01"
+        exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
         fb = Feedback(gateway_ip=gateway_ip,
-                      lab_id=lab_id,
-                      exp_id=exp_id,
+                      lab_name=lab_name,
+                      exp_name=exp_name,
                       date=date,
                       responses=[])
 
-        res = Response(question=question1, answer=answer1, feedback=fb)
+        res = Response(question=question1, answers=[answer1], feedback=fb)
 
-        self.assertEqual(res.get("question").get("name"),\
-                         question1.get("name"))
+        self.assertEqual(res.get("question").get("name"), 
+                             question1.get("name"))
 
-        self.assertEqual(res.get("answer").get("name"),\
-                         answer1.get("name"))
+        self.assertEqual(res.get("answers")[0].get("name"), 
+                             answer1.get("name"))
 
-        self.assertEqual(res.get("feedback").get("gateway_ip"),\
-                         gateway_ip)
+        self.assertEqual(res.get("feedback").get("gateway_ip"), 
+                             gateway_ip)
 
 #+END_SRC
 

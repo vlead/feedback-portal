@@ -327,15 +327,15 @@ TYPE Response
   The constraints are defined both in terms of formal notation and also in
   diagrams for visual clarity. 
 
-** Formal Notation
+** Relations
 For each relation, we define its inverse next to it.
 #+BEGIN_SRC spec :tangle spec.txt
 
 ;;; Relations with cardinality constraints
 
 [feedback, response]   : Feedback !  >    Response *
-[response, question]   : Response !  >    Question !
-[response, answer]     : Response !  >    Answer +
+[response, question]   : Response    >    Question !
+[response, answer]     : Response    >    Answer +
 
 #+END_SRC
 
@@ -384,12 +384,8 @@ is a relation =r: A? > K!=.
 :PROPERTIES:
 :CUSTOM_ID: primary_entity_sets
 :END:    
-
-
 #+BEGIN_SRC spec :tangle spec.txt
-
 ;;; Primary state variables
-
 Sets
   feedback-set  : set[Feedback]  ; set of all feedbacks in the system
   response-set  : set[Response]  ; set of all Question & Answer Responses in the system
@@ -400,7 +396,6 @@ Sets
 :PROPERTIES:
 :CUSTOM_ID: derived_entity_sets
 :END: 
-
 #+BEGIN_SRC spec :tangle spec.txt
   question-set  : response-set.question  ; set of questions in the system
   answer-set    : response-set.answer    ; set of answers in the system
@@ -414,6 +409,14 @@ Sets
 
 #+END_SRC
 
+* Referential Integrity over primary and derived entity sets
+#+BEGIN_SRC spec :tangle spec.txt
+  [feedback, response]   : feedback-set !  >  response-set +
+  [response, question]   : response-set    >  question-set !
+  [response, answer]     : response-set    >  answer-set + 
+  [workshop, feedback]   : feedback-set    >  workshop-set !
+
+#+END_SRC
 
 * Operations 
 

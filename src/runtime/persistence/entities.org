@@ -20,10 +20,10 @@
 args = {"__tablename__": "question",
         "id": db.Column(db.Integer, primary_key=True),
         "name": db.Column(db.String(255), unique=True, nullable=False),
-        "question_type": db.Column(db.String(255), unique=False, nullable=False),
-        "response": db.relationship('Response', 
-                                        backref=db.backref('question',\
-                                                        uselist=False))
+        "question_type": db.Column(db.String(255), unique=False, 
+                                       nullable=False),
+        "responses": db.relationship('Response', 
+                                        backref=db.backref('question'))
         }
 
 Question = ClassPersistenceTemplate.mk_persistent(Question, ['name'], **args)
@@ -67,9 +67,7 @@ class TestPersistentQuestion(TestCase):
 #+begin_src python
 args = {"__tablename__": "answer",
         "id": db.Column(db.Integer, primary_key=True),
-        "name": db.Column(db.String(255), unique=True, nullable=False),
-        "response": db.relationship('Response', backref=db.backref('answer',\
-                                                            uselist=False))
+        "name": db.Column(db.String(255), unique=True, nullable=False)
         }
 
 Answer = ClassPersistenceTemplate.mk_persistent(Answer, ['name'], **args)
@@ -112,8 +110,8 @@ class TestPersistenceAnswer(TestCase):
 args = {"__tablename__": "feedback",
         "id": db.Column(db.Integer, primary_key=True),
         "gateway_ip" : db.Column(db.String(255), nullable=False),
-        "lab_id" : db.Column(db.String(255), nullable=False),
-        "exp_id" : db.Column(db.String(255), nullable=False),
+        "lab_name" : db.Column(db.String(255), nullable=False),
+        "exp_name" : db.Column(db.String(255), nullable=False),
         "date": db.Column(db.Date, nullable=False),
         "responses": db.relationship('Response', backref='feedback')
         }
@@ -143,27 +141,37 @@ class TestPersistenceFeedback(TestCase):
         print "test_create_feedback"
 
         gateway_ip = "10.100.40.2"
-        lab_id = "cse01"
-        exp_id = "data01"
+        lab_name = "cse01"
+        exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
         fb = Feedback(gateway_ip=gateway_ip,
-                      lab_id=lab_id,
-                      exp_id=exp_id,
+                      lab_name=lab_name,
+                      exp_name=exp_name,
                       date=date,
                       responses=[])
         fb.save()
 
         self.assertEqual(fb.get("gateway_ip"), gateway_ip)
-        self.assertEqual(fb.get("lab_id"), lab_id)
-        self.assertEqual(fb.get("exp_id"), exp_id)
+        self.assertEqual(fb.get("lab_name"), lab_name)
+        self.assertEqual(fb.get("exp_name"), exp_name)
         self.assertEqual(fb.get("responses"), [])
 
  #+END_SRC
 
 
 * Response
-  =Response= is an entity that has fields =question= of type =Question=
-  and =answer= of type =Answer=.
+  =Response= is an entity that has fields =question= of type =Question=,
+  =answers= of type =Answer=, and =feedback= of type =Feedback=
+
+#+NAME: class_association_Table
+#+BEGIN_SRC python
+responses_answers = db.Table('responses_answers',
+		      db.Column('response_id', db.Integer, 
+                            db.ForeignKey('response.id')),
+		      db.Column('answer_id', db.Integer,db.ForeignKey('answer.id')))
+
+#+END_SRC
+
 
 #+NAME: class_Response
 #+BEGIN_SRC python
@@ -172,16 +180,17 @@ args = {"__tablename__": "response",
         "question_id": db.Column(db.Integer, 
                                       db.ForeignKey('question.id'), 
                                       unique=True, nullable=True),
-        "answer_id": db.Column(db.Integer, 
-                                      db.ForeignKey('answer.id'), 
-                                      unique=True, nullable=True),
 
         "feedback_id": db.Column(db.Integer, db.ForeignKey('feedback.id'),
-                       nullable=False)
+                       nullable=False),
+
+        "answers": db.relationship('Answer',
+                                       secondary=responses_answers, 
+                                       backref='responses')
       }
 
 Response = ClassPersistenceTemplate.mk_persistent(Response, 
-                                   [], **args)
+                                   ['question', 'answers'], **args)
 
 #+END_SRC
 
@@ -215,27 +224,30 @@ class TestPersistenceResponse(TestCase):
         answer1.save()
 
         gateway_ip = "10.100.40.2"
-        lab_id = "cse01"
-        exp_id = "data01"
+        lab_name = "cse01"
+        exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
         fb = Feedback(gateway_ip=gateway_ip,
-                      lab_id=lab_id,
-                      exp_id=exp_id,
+                      lab_name=lab_name,
+                      exp_name=exp_name,
                       date=date,
                       responses=[])
         fb.save()
 
-        res = Response(question=question1, answer=answer1, feedback=fb)
+        res = Response(question=question1, answers=[answer1], feedback=fb)
         res.save()
 
         response = Response.get_by_id(1)
 
-        self.assertEqual(response.get("question").get("name"),\
-                         question1.get("name"))
+        self.assertEqual(response.get("question").get("name"), 
+                             question1.get("name"))
 
-        self.assertEqual(response.get("answer").get("name"),\
-                         answer1.get("name"))
+        self.assertEqual(response.get("answers")[0].get("name"), 
+                             answer1.get("name"))
+
+        self.assertEqual(response.get("feedback").get("lab_name"), 
+                             fb.get("lab_name"))
 
 #+END_SRC
 
@@ -286,6 +298,7 @@ if __name__ == '__main__':
 <<class_Question>>
 <<class_Answer>>
 <<class_Feedback>>
+<<class_association_Table>>
 <<class_Response>>
 
 #+end_src
