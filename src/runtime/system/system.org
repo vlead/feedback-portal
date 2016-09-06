@@ -230,7 +230,9 @@ class AddAnswer():
 #+begin_src python
 class AddFeedback():
     arg_types = {"gateway_ip": is_str, "lab_name": is_str,
-                  "exp_name": is_str, "date": is_date, "session": is_session}
+                  "exp_name": is_str, "date": is_date,
+                  "responses": are_responses_or_empty_list,
+                  "session": is_session}
     arity_and_type_checks_needed = True
 
     @staticmethod
@@ -315,7 +317,8 @@ ops_table = {'add_question' : AddQuestion,
 from runtime.exceptions.custom_exceptions import *
 from runtime.exceptions.exceptions import *
 from runtime.objects.entities import is_str, is_question, is_answer, \
-     is_feedback, is_date, is_response, is_session
+     is_feedback, is_date, is_response, is_session, are_responses, is_int,\
+     are_responses_or_empty_list
 from runtime.config.config import Config
 
 #+end_src
