@@ -28,24 +28,6 @@ class PersistenceDelegate():
 #+END_SRC
 
 
-*** get_role_set
-#+NAME: persistent_get_role_set
-#+begin_src python
-    def get_role_set(self):
-        return Role.get_all()
-
-#+end_src
-
-
-*** get_user_set
-#+NAME: persistent_get_user_set
-#+begin_src python
-    def get_user_set(self):
-        return User.get_all()
-
-#+end_src
-
-
 *** Tests
 #+NAME: test_class_persistent_delegate
 #+BEGIN_SRC python
@@ -78,11 +60,8 @@ class TestPersistentDelegate(TestCase):
 #+BEGIN_SRC python
     def question_exists(self, question):
         question_name = question.get("name")
-        if question_name:
-            return question == self.get_question(name=question_name)
-        else:
-            return False
-
+        return question == self.get_question(name=question_name)
+        
 #+END_SRC
 
 **** Tests
@@ -102,31 +81,6 @@ class TestPersistentDelegate(TestCase):
                             True)
         self.assertEqual(self.persistent_delegate.question_exists(question2),
                             False)
-
-#+END_SRC
-
-
-***  Check if =key= already exists
-    This function checks if a key matches with the configuration key.
-#+NAME: persistent_key_exists
-#+BEGIN_SRC python
-    def key_exists(self, key):
-        if key == Config.key:
-            return True
-        else:
-            return False
-
-#+END_SRC
-
-**** Tests
-#+NAME: test_persistent_key_exists
-#+BEGIN_SRC python
-    def test_key_exists(self):
-        print "test_key_exists"
-        key = "some alphanumeric string" 
-        self.assertEqual(self.persistent_delegate.key_exists(key), True)
-        key1 = "some other string"
-        self.assertEqual(self.persistent_delegate.key_exists(key1), False)
 
 #+END_SRC
 
@@ -314,12 +268,12 @@ class TestPersistentDelegate(TestCase):
 ** sources
 *** Imports 
 
-#+name: imports_for_persistent_delegates
+#+name: imports_for_persistent_delegate
 #+BEGIN_SRC python
 # -*- coding: utf-8 -*-
 from runtime.persistence.entities import *
-from runtime.config.config import Config
 from runtime.exceptions.custom_exceptions import *
+
 #+end_src
 
 ** Tests
@@ -331,7 +285,7 @@ from runtime.exceptions.custom_exceptions import *
 import unittest
 from flask_testing import TestCase
 from runtime.rest.app import create_app
-from runtime.system.persistent_delegates import *
+from runtime.system.persistent_delegate import *
 
 
 config = {
@@ -353,8 +307,8 @@ if __name__ == '__main__':
   
 ** sources
    
-#+BEGIN_SRC python :tangle persistent_delegates.py :eval no :noweb yes
-<<imports_for_persistent_delegates>>
+#+BEGIN_SRC python :tangle persistent_delegate.py :eval no :noweb yes
+<<imports_for_persistent_delegate>>
 <<class_persistence_delegate>>
 <<persistent_key_exists>>
 <<persistent_get_object>>
@@ -367,7 +321,7 @@ if __name__ == '__main__':
 #+end_src
 
 ** tests
-#+BEGIN_SRC python :tangle test_persistent_delegates.py :eval no :noweb yes
+#+BEGIN_SRC python :tangle test_persistent_delegate.py :eval no :noweb yes
 <<imports_for_tests_persistence>>
 <<test_class_persistent_delegate>>
 <<test_persistent_key_exists>>

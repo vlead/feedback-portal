@@ -1,4 +1,4 @@
-#+TITLE: System implementation for Feedback Poratal 3.0
+#+TITLE: System implementation for Feedback Portal
 #+AUTHOR: VLEAD
 #+DATE: [2016-07-28 Thu]
 #+SETUPFILE: ../../org-templates/level-2.org
@@ -91,47 +91,21 @@ class System ():
     @staticmethod
     def initialize_system(cls):
         System.delegate = cls()
-        System.session_set = []
 
     @staticmethod
-    def is_session_admin(session):
-        return session.get("role").get('name') == "admin"
-
-    @staticmethod
-    def is_session_OCC(session):
-        return session.get("role").get('name')== "OCC"
-
-    @staticmethod
-    def is_session_NCC(session):
-        return session.get("role").get('name')== "NCC"
-
-    @staticmethod
-    def is_session_reviewer(session):
-        return session.get("role").get('name')== "reviewer"
-
-    @staticmethod
-    def is_session_guest(session):
-        return session.get("role").get('name')== "guest"
-
-    @staticmethod
-    def is_session_noc(session):
-        return session.get("role").get('name')== "noc"
-
-    @staticmethod
-    def session_exists(session):
-        return session in System.session_set
+    def is_session_valid(session):
+        return session.key == Config.key
  
 #+end_src
 
-
-
 ** Arity and Type check methods 
-   Arity Check ensures that correct number of arguments are passed to a functions. 
-   Type Check ensures that the type of the arguments passed to a function are
-   same as expected. 
+   Arity Check ensures that correct number of arguments are passed to a
+   functions.  Type Check ensures that the type of the arguments passed to a
+   function are same as expected.
    
    Any operation, before being executed is subjected to =Arity= and =Type=
-   checks.  
+   checks.
+
 #+NAME: arity_type_checks
 #+BEGIN_SRC python
    
@@ -146,12 +120,9 @@ class System ():
         for key, value in args.iteritems():
             if not arg_types[key](value):
                 raise TypeError("type mismatch: argument %s is not of " + 
-                                "type " )
-       
-   
+                                "type " )   
+
 #+end_src
-
-
 
 ** =do= method 
    The =do= method is the main work-horse of =System= which is construed as the
@@ -203,21 +174,21 @@ class System ():
 #+NAME: class_addquestion
 #+begin_src python
 class AddQuestion():
-    arg_types = {"question": is_question, "key": is_str}
+    arg_types = {"question": is_question, "session": is_session}
     arity_and_type_checks_needed = True
 
     @staticmethod
     def auth_check(args):
-        key = args['key']
-        if not key:
+        session = args['session']
+        if not System.is_session_valid(session):
             raise AuthError("Not Authorized to perform this action")
 
     @staticmethod
     def state_check(args):
-        key = args["key"]
-        if not System.delegate.key_exists(key):
-            raise StateError("key %s does not exist in System"
-                                % key)
+        question = args["question"]
+        if System.delegate.question_exists(question):
+            raise StateError("question %s already exists in System"
+                                 % question)
 
     @staticmethod
     def action(args):
@@ -230,21 +201,21 @@ class AddQuestion():
 #+NAME: class_addanswer
 #+begin_src python
 class AddAnswer():
-    arg_types = {"answer": is_answer, "key": is_str}
+    arg_types = {"answer": is_answer, "session": is_session}
     arity_and_type_checks_needed = True
 
     @staticmethod
     def auth_check(args):
-        key = args['key']
-        if not key:
+        session = args['session']
+        if not System.is_session_valid(session):
             raise AuthError("Not Authorized to perform this action")
 
     @staticmethod
     def state_check(args):
-        key = args["key"]
-        if not System.delegate.key_exists(key):
-            raise StateError("key %s does not exist in System"
-                                % key)
+        answer = args["answer"]
+        if System.delegate.answer_exists(answer):
+            raise StateError("answer %s already exists in System"
+                                 % answer)
 
     @staticmethod
     def action(args):
@@ -253,73 +224,73 @@ class AddAnswer():
         return answer
 
 #+end_src
+
 ** =AddFeedback=
 #+NAME: class_addfeedback
 #+begin_src python
 class AddFeedback():
-    arg_types = {"gateway_ip": is_str, "lab_id": is_str,
-                  "exp_id": is_str, "date": is_date, "key": is_str}
+    arg_types = {"gateway_ip": is_str, "lab_name": is_str,
+                  "exp_name": is_str, "date": is_date, "session": is_session}
     arity_and_type_checks_needed = True
 
     @staticmethod
     def auth_check(args):
-        key = args['key']
-        if not key:
+        session = args['session']
+        if not System.is_session_valid(session):
             raise AuthError("Not Authorized to perform this action")
 
     @staticmethod
     def state_check(args):
-        key = args["key"]
-        if not System.delegate.key_exists(key):
-            raise StateError("key %s does not exist in System"
-                                % key)
+        pass
 
     @staticmethod
     def action(args):
         gateway_ip = args["gateway_ip"]
-        lab_id = args["lab_id"]
-        exp_id = args["exp_id"]
+        lab_name = args["lab_name"]
+        exp_name = args["exp_name"]
         date = args["date"]
-        feedback = System.delegate.add_feedback(gateway_ip, lab_id, exp_id, date)
+        responses = args['responses']
+        feedback = System.delegate.add_feedback(gateway_ip, 
+                                                    lab_name,
+                                                    exp_name,
+                                                    date,
+                                                    responses)
         return feedback
 
 #+end_src
-** =AddResponse=
+
+** COMMENT =AddResponse=
 #+NAME: class_addresponse
 #+begin_src python
 class AddResponse():
-    arg_types = {"response": is_response, "key": is_str}
+    arg_types = {"response": is_response, "session": is_session}
     arity_and_type_checks_needed = True
 
     @staticmethod
     def auth_check(args):
-        key = args['key']
-        if not key:
+        session = args['session']
+        if not System.is_session_valid(session):
             raise AuthError("Not Authorized to perform this action")
 
     @staticmethod
     def state_check(args):
-        key = args["key"]
-        if not System.delegate.key_exists(key):
-            raise StateError("key %s does not exist in System"
-                                % key)
+        pass
 
     @staticmethod
     def action(args):
-        response = args["response"]
-        response = System.delegate.add_response(response)
-        return response
+        pass
 
 #+end_src
+
+
 ** Operations Table
-    Each operation has a corresponding implementation defined as a class. 
+   Each operation has a corresponding implementation defined as a class.
 
  #+NAME: ops_table
  #+BEGIN_SRC python                                                                          
 ops_table = {'add_question' : AddQuestion,
              'add_answer' : AddAnswer,
-             'add_feedback': AddFeedback,
-             'add_response': AddResponse
+             'add_feedback': AddFeedback
             }
 
  #+END_SRC   
@@ -337,6 +308,7 @@ from runtime.exceptions.custom_exceptions import *
 from runtime.exceptions.exceptions import *
 from runtime.objects.entities import is_str, is_question, is_answer, \
      is_feedback, is_date, is_response
+from runtime.config.config import Config
 
 #+end_src
 
@@ -352,7 +324,6 @@ from runtime.objects.entities import is_str, is_question, is_answer, \
 <<class_addquestion>>
 <<class_addanswer>>
 <<class_addfeedback>>
-<<class_addresponse>>
 <<ops_table>>
 
 #+end_src

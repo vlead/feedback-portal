@@ -39,6 +39,7 @@ Question = ClassTemplate.mk_class("Question")
 Answer = ClassTemplate.mk_class("Answer")
 Response = ClassTemplate.mk_class("Response")
 Feedback = ClassTemplate.mk_class("Feedback")
+Session = ClassTemplate.mk_class("Session")
 
 #+END_SRC
 
@@ -79,6 +80,9 @@ def are_responses_or_empty_list(responses):
         ret_val = False
 
     return ret_val
+
+is_session = is_inst(Session)
+check_session = check_pred(is_session)
 
 #+END_SRC
 
@@ -238,6 +242,32 @@ class TestResponse(TestCase):
 
 
 
+* Session
+   =Session= is an entity that has a field =key= which is a string
+#+NAME: class_Session
+#+begin_src python
+Session.add_attributes(key=is_str)
+Session.__eq__ = lambda self, other: \
+                  isinstance(other, self.__class__) and \
+                  self.get("key") == other.get("key")
+
+#+end_src
+
+*** Test Session
+#+NAME: class_TesSession
+#+BEGIN_SRC python
+class TestSession(TestCase):
+    TESTING = True
+
+    def test_object_session(self):
+        print "test_object_session"
+        key = "dkjhfkjdhfkjadhfkjhdafkjh"
+        session = Session(key=key)
+        self.assertEqual(answer.get("key"), key)
+
+#+END_SRC
+
+
 * Infra                                                         :boilerplate:
   
 ** sources
@@ -283,6 +313,7 @@ if __name__ == '__main__':
 <<class_Answer>>
 <<class_Response>>
 <<class_Feedback>>
+<<class_Session>>
 #+end_src
 
 
@@ -293,5 +324,6 @@ if __name__ == '__main__':
 <<class_TestAnswer>>
 <<class_TestFeedback>>
 <<class_TestResponse>>
+<<class_TestSession>>
 <<run_test_cases>>
 #+end_src

@@ -409,6 +409,7 @@ Sets
 
 #+END_SRC
 
+
 * Referential Integrity over primary and derived entity sets
 #+BEGIN_SRC spec :tangle spec.txt
   [feedback, response]   : feedback-set !  >  response-set +
@@ -417,6 +418,7 @@ Sets
   [workshop, feedback]   : feedback-set    >  workshop-set !
 
 #+END_SRC
+
 
 * Operations 
 
@@ -437,11 +439,10 @@ entity-set.   The operation may take additional parameters.
 #+END_SRC   
 *** Actor credentials
 #+BEGIN_SRC spec :tangle spec.txt
-    s.key == key where key:key need to be passed by the client 
+    s.key == system configured key
 #+END_SRC   
 *** Referential Integrity
 #+BEGIN_SRC spec :tangle spec.txt
-    s: session-set
     q: ~question-set
 #+END_SRC   
 *** Effect
@@ -459,11 +460,10 @@ entity-set.   The operation may take additional parameters.
 #+END_SRC   
 *** Actor credentials
 #+BEGIN_SRC spec :tangle spec.txt
-    s.key == key where key:key need to be passed by the client 
+    s.key == system configured key
 #+END_SRC   
 *** Referential Integrity
 #+BEGIN_SRC spec :tangle spec.txt
-    s: session-set
     a: ~answer-set
 #+END_SRC   
 *** Effect
@@ -476,17 +476,17 @@ entity-set.   The operation may take additional parameters.
 ** Add Response
 *** Parameters
 #+BEGIN_SRC spec :tangle spec.txt
-    a: Answer, q: Question, s: Session
+    answers: [Answer], q: Question, f: Feedback, s: Session
 #+END_SRC   
 *** Actor credentials
 #+BEGIN_SRC spec :tangle spec.txt
-    s.key == key where key:key need to be passed by the client 
+    s.key == system configured key
 #+END_SRC   
 *** Referential Integrity
 #+BEGIN_SRC spec :tangle spec.txt
-    s: session-set
-    a: answer-set
+    answers: answer-set
     q: question-set
+    f: feedback-set
 #+END_SRC   
 *** Effect
 #+BEGIN_SRC spec :tangle spec.txt
@@ -498,20 +498,22 @@ entity-set.   The operation may take additional parameters.
 ** Add Feedback
 *** Parameters
 #+BEGIN_SRC spec :tangle spec.txt
-    r: Response s: Session
+    responses: [Response], s: Session
 #+END_SRC   
 *** Actor credentials
 #+BEGIN_SRC spec :tangle spec.txt
-    s.key == key where key:key need to be passed by the client 
+    s.key == system configured key
 #+END_SRC   
 *** Referential Integrity
 #+BEGIN_SRC spec :tangle spec.txt
-    s: session-set
-    r: response-set
+    No referential integrity checks
 #+END_SRC   
 *** Effect
 #+BEGIN_SRC spec :tangle spec.txt
     f = new feedback
     feedback-set = feedback-set U {f}
+    response-set = response-set U {responses}
+
     A feedback with the given responses is created and added to feedback-set
+
 #+END_SRC   
