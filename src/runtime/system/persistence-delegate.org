@@ -85,6 +85,37 @@ class TestPersistentDelegate(TestCase):
 #+END_SRC
 
 
+***  Check if =answer= already exists
+    This function checks if a user is already in the user-set of the =System=.
+#+NAME: persistent_answer_exists
+#+BEGIN_SRC python
+    def answer_exists(self, answer):
+        answer_name = answer.get("name")
+        return answer == self.get_answer(name=answer_name)
+        
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistent_answer_exists
+#+BEGIN_SRC python
+    def test_answer_exists(self):
+        print "test_answer_exists"
+
+        ans1 = "excellent labs"
+        answer1 = Answer(name=ans1)
+        self.persistent_delegate.add_answer(answer1)
+
+        ans2 = "excellent"
+        answer2 = Answer(name=ans2)
+        
+        self.assertEqual(self.persistent_delegate.answer_exists(answer1),
+                            True)
+        self.assertEqual(self.persistent_delegate.answer_exists(answer2),
+                            False)
+
+#+END_SRC
+
+
 ***  Add question to the system
     This function adds question to the system.
 #+NAME: persistent_add_question
@@ -263,6 +294,35 @@ class TestPersistentDelegate(TestCase):
 
 
 
+***  Get Answer
+    This function returns answer if present in the database.  If the answer is
+    not present, =None= type is returned.
+#+NAME: persistent_get_answer
+#+BEGIN_SRC python
+    def get_answer(self, **kwargs):
+        return self.get_object(Answer, **kwargs)
+
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistent_get_answer
+#+BEGIN_SRC python
+    def test_get_answer(self):
+         print "test_get_answer"
+
+         ans1 = "excellent labs"
+         answer1 = Answer(name=ans1)
+         answer1.save()
+
+         answer_obj = self.persistent_delegate.get_answer(name=
+                                                answer1.get("name"))
+         self.assertEqual(answer_obj.get("name"),
+                              answer1.get("name"))
+
+#+END_SRC
+
+
+
 * Infra                                                         :boilerplate:
 
 ** sources
@@ -313,7 +373,9 @@ if __name__ == '__main__':
 <<persistent_key_exists>>
 <<persistent_get_object>>
 <<persistent_get_question>>
+<<persistent_get_answer>>
 <<persistent_question_exists>>
+<<persistent_answer_exists>>
 <<persistent_add_question>>
 <<persistent_add_answer>>
 <<persistent_add_feedback>>
@@ -326,7 +388,9 @@ if __name__ == '__main__':
 <<test_class_persistent_delegate>>
 <<test_persistent_key_exists>>
 <<tes_persistent_get_question>>
+<<test_persistent_get_answer>>
 <<test_persistent_question_exists>>
+<<test_persistent_answer_exists>>
 <<test_persistent_add_question>>
 <<test_persistent_add_answer>>
 <<test_persistent_add_feedback>>
