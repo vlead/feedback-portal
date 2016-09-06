@@ -94,7 +94,7 @@ class System ():
 
     @staticmethod
     def is_session_valid(session):
-        return session.key == Config.key
+        return session.get("key") == Config.key
  
 #+end_src
 
@@ -307,7 +307,7 @@ ops_table = {'add_question' : AddQuestion,
 from runtime.exceptions.custom_exceptions import *
 from runtime.exceptions.exceptions import *
 from runtime.objects.entities import is_str, is_question, is_answer, \
-     is_feedback, is_date, is_response
+     is_feedback, is_date, is_response, is_session
 from runtime.config.config import Config
 
 #+end_src

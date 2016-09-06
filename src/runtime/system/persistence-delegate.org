@@ -169,12 +169,12 @@ class TestPersistentDelegate(TestCase):
     This function adds a feedback to the system.
 #+NAME: persistent_add_feedback
 #+BEGIN_SRC python
-    def add_feedback(self, gateway_ip, lab_name, exp_name, date):
+    def add_feedback(self, gateway_ip, lab_name, exp_name, date, responses):
         new_feedback = Feedback(gateway_ip=gateway_ip,
                                 lab_name=lab_name,
                                 exp_name=exp_name,
                                 date=date,
-                                responses=[])
+                                responses=responses)
         new_feedback.save()
         return new_feedback
 

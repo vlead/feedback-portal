@@ -73,9 +73,10 @@ class TestAddQuestion(TestCase):
         name="how are labs?"
         radio="radio"
         key = Config.key
+        session = Session(key=key)
         question = Question(name=name, question_type=radio)
         question1 = System.do("add_question", question=question,
-                                  key=key)
+                                  session=session)
         new_question = Question.get_by_id(1)
         self.assertEqual(new_question.get("name"), name)
             
@@ -107,7 +108,8 @@ class TestAddAnswer(TestCase):
         ans = "excellent labs"
         answer = Answer(name=ans)
         key = Config.key
-        answer = System.do("add_answer", answer=answer, key=key)
+        session = Session(key=key)
+        answer = System.do("add_answer", answer=answer, session=session)
         answer1 = Answer.get_by_id(1)
         self.assertEqual(answer1.get("name"), ans)
             
@@ -137,17 +139,20 @@ class TestAddFeedback(TestCase):
     def test_add_feedback(self):
         print "test_add_feedback_in_system_persistence"
         gateway_ip = "10.100.40.2"
-        lab_id = "cse01"
-        exp_id = "data01"
+        lab_name = "cse01"
+        exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
         key = Config.key
+        session = Session(key=key)
         feedback = System.do("add_feedback", gateway_ip=gateway_ip,
-                                 lab_id=lab_id, exp_id=exp_id,
-                                 date=date, key=key)
+                                 lab_name=lab_name, exp_name=exp_name,
+                                 date=date, responses=[],
+                                 session=session)
+        
         fb = Feedback.get_by_id(1)
         self.assertEqual(fb.get("gateway_ip"), gateway_ip)
-        self.assertEqual(fb.get("lab_id"), lab_id)
-        self.assertEqual(fb.get("exp_id"), exp_id)
+        self.assertEqual(fb.get("lab_name"), lab_name)
+        self.assertEqual(fb.get("exp_name"), exp_name)
         self.assertEqual(fb.get("responses"), [])
             
 #+END_SRC
@@ -185,21 +190,22 @@ class TestAddResponse(TestCase):
         answer1.save()
 
         gateway_ip = "10.100.40.2"
-        lab_id = "cse01"
-        exp_id = "data01"
+        lab_name = "cse01"
+        exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
         fb = Feedback(gateway_ip=gateway_ip,
-                      lab_id=lab_id,
-                      exp_id=exp_id,
+                      lab_name=lab_name,
+                      exp_name=exp_name,
                       date=date,
                       responses=[])
         fb.save()
 
         res = Response(question=question1, answer=answer1, feedback=fb)
         key = Config.key
+        session = Session(key=key)
         response1 = System.do("add_response", response=res,
-                                  key=key)
+                                  session=session)
 
         response = Response.get_by_id(1)
 
@@ -225,8 +231,7 @@ from flask_testing import TestCase
 #from runtime.utils.class_persistence_template import *
 from runtime.rest.app import create_app
 #from sqlalchemy.exc import IntegrityError
-from runtime.system.persistent_delegates import *
-
+from runtime.system.persistent_delegate import *
 from runtime.system.system import *
 from runtime.system.populate_db import *
 config = {
@@ -256,6 +261,6 @@ if __name__ == '__main__':
 <<test_add_question>>
 <<test_add_answer>>
 <<test_add_feedback>>
-<<test_add_response>>
+#<<test_add_response>>
 <<run_test_cases>>
 #+end_src
