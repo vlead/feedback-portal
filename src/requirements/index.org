@@ -1,67 +1,33 @@
-#+TITLE: Requirements for Feedback Portal 3.0
+#+TITLE: Requirements for Feedback Portal
 #+AUTHOR: VLEAD
-#+DATE: [2016-06-15 Wed]
+#+DATE: [2016-08-15 Mon]
 #+PROPERTY: results output
 #+PROPERTY: exports code
 #+SETUPFILE: ../org-templates/level-1.org
 #+options: ^:nil
 #+LATEX: Literal LaTeX code for export
 
-Requirements of a Feedback Portal to capture the Virtual Labs Feedback are listed here. 
+The requirements of =Feedback Portal/Service= are listed here. 
 
 
-* Requriements for the Feedback Service 
+* Ability of the user of =Virtual Labs= to provide feedback
+:PROPERTIES:
+:CUSTOM_ID: provide_feedback
+:END: 
+  A user is able to provide feedback after conducting an experiment.
 
-1) Feedback service should be a micro service and not a part of data service.
+* Capture =Workshop Usage= via feedback forms
+:PROPERTIES:
+:CUSTOM_ID: workshop_usage
+:END: 
+  A =Nodal Center Coordinator= is able to view the usage from a workshop.  The
+  workshop usage is defined as the number of feedback forms submitted by the
+  students attending the workshop.
 
-2) Feedback service gets the data from labs which are running on Open edX. 
-   Open edX should provide the following data fields to feedback service:
-
-   - Discipline name/id
-   - Lab name/id
-   - Experiment name/id
-   - Gateway ip
-   - User id
-   - Date
-
-3) This service can be queried using different fields (lab name , date, gateway
-   ip address, experiment) to get feedback data.
-
-4) Authentication for feedback service needs to be implemented. (Also to which
-   user feedback data should be exposed - TBD).
-
-5) Dashboard should be implemented to fetch/get the feedback data from the feedback
-   service. 
-
-
-* Requirements for the Outreach portal to consume the feedback service
-
-1) In Outreach portal, NCC (Nodal Centre Coordinator) should fill the gateway
-   IP, date of the workshop to get the actual usage for the completed
-   workshop. Data will be served by feedback service.
-
-   
-*  Requirements for the UI form
-
-Feedback form should be very concise and user friendly. It should not take much
-time for user to fill the feedback. 
-
-1) Feedback form should be pre-populated with Lab name and experiment name.
-
-2) The IP (field key is ip) of the user is detected automatically at the
-   back-end and is not part of the questionnaire.
-
-3) The feedback form will be available in three different levels(places)
-
-a) Genric Feedback Form
-
- Questionnaire to be decided and answers should be in form of radio button.
-
-b) Experiment Specific Feedback Form:
-
- Questionnaire to be decided and answers should be in form of radio button.
-
-c) Lab Specific Feedback Form:
-
- Questionnaire to be decided and answers should be in form of radio button.
-
+* Analytics
+:PROPERTIES:
+:CUSTOM_ID: analytics
+:END: 
+  Provide an API to dump the data from outreach service to an elastic
+  search engine
+  
