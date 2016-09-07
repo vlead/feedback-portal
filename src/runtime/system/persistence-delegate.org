@@ -120,30 +120,57 @@ class TestPersistentDelegate(TestCase):
     This function checks if response is already in the System.
 #+NAME: persistent_response_exists
 #+BEGIN_SRC python
-    def response_exists(self, response):
-        question = response.get("question").get("name")
-        answer = response.get("answer").get("name")
-        feedback = response.get("")
-        return answer == self.get_answer(name=answer_name)
-        
+    def response_exists(self, new_response):
+        question = new_response.get("question")
+        answers = new_response.get("answers")
+        return new_response == self.get_response(question=question, \
+                                                     answers=answers)
+
 #+END_SRC
 
 **** Tests
-#+NAME: test_persistent_answer_exists
+#+NAME: test_persistent_response_exists
 #+BEGIN_SRC python
-    def test_answer_exists(self):
-        print "test_answer_exists"
+    def test_response_exists(self):
+        print "test_response_exists"
+        
+        name1 = "how are labs?"
+        q_type1 = "radio"
+        question1 = Question(name=name1, question_type=q_type1)
+        question1.save()
 
+        name2 = "how are experiments?"
+        q_type2 = "radio"
+        question2 = Question(name=name2, question_type=q_type2)
+        question2.save()
+        
         ans1 = "excellent labs"
         answer1 = Answer(name=ans1)
-        self.persistent_delegate.add_answer(answer1)
+        answer1.save()
 
-        ans2 = "excellent"
+        ans2 = "good"
         answer2 = Answer(name=ans2)
-        
-        self.assertEqual(self.persistent_delegate.answer_exists(answer1),
+        answer2.save()
+
+        gateway_ip1 = "10.100.40.2"
+        lab_name1 = "cse01"
+        exp_name1 = "data01"
+        date1 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        fb1 = Feedback(gateway_ip=gateway_ip1,
+                        lab_name=lab_name1,
+                        exp_name=exp_name1,
+                        date=date1,
+                        responses=[])
+        fb1.save()
+
+        res1 = Response(question=question1, answers=[answer1], feedbacks=[fb1])
+        res1.save()
+
+        res2 = Response(question=question2, answers=[answer2], feedbacks=[fb1])
+
+        self.assertEqual(self.persistent_delegate.response_exists(res1),
                             True)
-        self.assertEqual(self.persistent_delegate.answer_exists(answer2),
+        self.assertEqual(self.persistent_delegate.answer_exists(res2),
                             False)
 
 #+END_SRC
@@ -408,6 +435,58 @@ class TestPersistentDelegate(TestCase):
 
 
 
+***  Get Response
+    This function returns response if present in the database.  If the response is
+    not present, =None= type is returned.
+#+NAME: persistent_get_response
+#+BEGIN_SRC python
+    def get_response(self, **kwargs):
+        return self.get_object(Response, **kwargs)
+
+#+END_SRC
+
+****  Tests
+#+NAME: test_persistent_get_response
+#+BEGIN_SRC python
+    def test_get_response(self):
+         print "test_get_response"
+
+         name = "how are labs?"
+         q_type = "radio"
+         question1 = Question(name=name, question_type=q_type)
+         question1.save()
+         ans = "excellent labs"
+         answer1 = Answer(name=ans)
+         answer1.save()
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         res = Response(question=question1, answers=[answer1], feedbacks=[fb])
+         res.save()
+         
+         question = res.get("question")
+         answers = res.get("answers")
+
+         response_obj = self.persistent_delegate.get_response(\
+                                                            question=question)
+         self.assertEqual(response_obj.get("question").get("name"),
+                              res.get("question").get("name"))
+         self.assertEqual(response_obj.get("answers")[0].get("name"),
+                              res.get("answers")[0].get("name"))
+
+#+END_SRC
+
+
+
 * Infra                                                         :boilerplate:
 
 ** sources
@@ -459,9 +538,11 @@ if __name__ == '__main__':
 <<persistent_get_object>>
 <<persistent_get_question>>
 <<persistent_get_answer>>
+<<persistent_get_response>>
 <<persistent_question_exists>>
 <<persistent_answer_exists>>
 <<persistent_feedback_exists>>
+<<persistent_response_exists>>
 <<persistent_add_question>>
 <<persistent_add_answer>>
 <<persistent_add_feedback>>
@@ -476,9 +557,11 @@ if __name__ == '__main__':
 <<test_persistent_key_exists>>
 <<tes_persistent_get_question>>
 <<test_persistent_get_answer>>
+<<test_persistent_get_response>>
 <<test_persistent_question_exists>>
 <<test_persistent_answer_exists>>
 <<test_persistent_feedback_exists>>
+<<test_persistent_response_exists>>
 <<test_persistent_add_question>>
 <<test_persistent_add_answer>>
 <<test_persistent_add_feedback>>
