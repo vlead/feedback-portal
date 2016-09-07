@@ -112,8 +112,7 @@ args = {"__tablename__": "feedback",
         "gateway_ip" : db.Column(db.String(255), nullable=False),
         "lab_name" : db.Column(db.String(255), nullable=False),
         "exp_name" : db.Column(db.String(255), nullable=False),
-        "date": db.Column(db.Date, nullable=False),
-        "responses": db.relationship('Response', backref='feedback')
+        "date": db.Column(db.Date, nullable=False)
         }
 
 Feedback = ClassPersistenceTemplate.mk_persistent(Feedback, [], **args)
@@ -161,14 +160,21 @@ class TestPersistenceFeedback(TestCase):
 
 * Response
   =Response= is an entity that has fields =question= of type =Question=,
-  =answers= of type =Answer=, and =feedback= of type =Feedback=
+  =answers= of type =Answer=, and =feedbacks= of type =Feedback=
 
 #+NAME: class_association_Table
 #+BEGIN_SRC python
 responses_answers = db.Table('responses_answers',
 		      db.Column('response_id', db.Integer, 
                             db.ForeignKey('response.id')),
-		      db.Column('answer_id', db.Integer,db.ForeignKey('answer.id')))
+		      db.Column('answer_id', db.Integer,
+                            db.ForeignKey('answer.id')))
+
+responses_feedbacks = db.Table('responses_feedbacks',
+		      db.Column('response_id', db.Integer, 
+                            db.ForeignKey('response.id')),
+		      db.Column('feedback_id', db.Integer,
+                            db.ForeignKey('feedback.id')))
 
 #+END_SRC
 
@@ -181,8 +187,9 @@ args = {"__tablename__": "response",
                                       db.ForeignKey('question.id'), 
                                       unique=True, nullable=True),
 
-        "feedback_id": db.Column(db.Integer, db.ForeignKey('feedback.id'),
-                       nullable=False),
+        "feedbacks": db.relationship('Feedback',
+                                       secondary=responses_feedbacks, 
+                                       backref='responses'),
 
         "answers": db.relationship('Answer',
                                        secondary=responses_answers, 
@@ -235,7 +242,7 @@ class TestPersistenceResponse(TestCase):
                       responses=[])
         fb.save()
 
-        res = Response(question=question1, answers=[answer1], feedback=fb)
+        res = Response(question=question1, answers=[answer1], feedbacks=[fb])
         res.save()
 
         response = Response.get_by_id(1)
@@ -246,7 +253,7 @@ class TestPersistenceResponse(TestCase):
         self.assertEqual(response.get("answers")[0].get("name"), 
                              answer1.get("name"))
 
-        self.assertEqual(response.get("feedback").get("lab_name"), 
+        self.assertEqual(response.get("feedbacks")[0].get("lab_name"), 
                              fb.get("lab_name"))
 
 #+END_SRC
