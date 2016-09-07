@@ -116,6 +116,39 @@ class TestPersistentDelegate(TestCase):
 #+END_SRC
 
 
+***  Check if =response= already exists
+    This function checks if response is already in the System.
+#+NAME: persistent_response_exists
+#+BEGIN_SRC python
+    def response_exists(self, response):
+        question = response.get("question").get("name")
+        answer = response.get("answer").get("name")
+        feedback = response.get("")
+        return answer == self.get_answer(name=answer_name)
+        
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistent_answer_exists
+#+BEGIN_SRC python
+    def test_answer_exists(self):
+        print "test_answer_exists"
+
+        ans1 = "excellent labs"
+        answer1 = Answer(name=ans1)
+        self.persistent_delegate.add_answer(answer1)
+
+        ans2 = "excellent"
+        answer2 = Answer(name=ans2)
+        
+        self.assertEqual(self.persistent_delegate.answer_exists(answer1),
+                            True)
+        self.assertEqual(self.persistent_delegate.answer_exists(answer2),
+                            False)
+
+#+END_SRC
+
+
 ***  Check if =feedback= already exists
     This function checks if feedback is already in the system
 #+NAME: persistent_feedback_exists
@@ -287,7 +320,7 @@ class TestPersistentDelegate(TestCase):
                         date=date,
                         responses=[])
          fb.save()
-         res = Response(question=question1, answers=[answer1], feedback=fb)
+         res = Response(question=question1, answers=[answer1], feedbacks=[fb])
          feedback = self.persistent_delegate.add_responses_to_feedback(1,
                                                                         [res])
 

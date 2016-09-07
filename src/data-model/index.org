@@ -333,7 +333,7 @@ For each relation, we define its inverse next to it.
 
 ;;; Relations with cardinality constraints
 
-[feedback, response]   : Feedback !  >    Response *
+[feedback, response]   : Feedback    >    Response *
 [response, question]   : Response    >    Question !
 [response, answer]     : Response    >    Answer +
 

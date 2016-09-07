@@ -67,6 +67,17 @@ def are_answers(answers):
 is_feedback = is_inst(Feedback)
 check_feedback = check_pred(is_feedback)
 
+def are_feedbacks(feedbacks):
+    ret_val = True
+    if is_list(feedbacks):
+        for feedback in feedbacks:
+            if not is_feedback(feedback):
+                ret_val = False
+    else:
+        ret_val = False
+
+    return ret_val
+
 is_response = is_inst(Response)
 check_response = check_pred(is_response)
 
@@ -198,7 +209,7 @@ class TestFeedback(TestCase):
 #+BEGIN_SRC python
 Response.add_attributes(question=is_question, 
                         answers=are_answers, 
-                        feedback=is_feedback)
+                        feedbacks=are_feedbacks)
 
 Response.__eq__ = lambda self, other: \
                   isinstance(other, self.__class__) and \
@@ -233,7 +244,7 @@ class TestResponse(TestCase):
                       date=date,
                       responses=[])
 
-        res = Response(question=question1, answers=[answer1], feedback=fb)
+        res = Response(question=question1, answers=[answer1], feedbacks=[fb])
 
         self.assertEqual(res.get("question").get("name"), 
                              question1.get("name"))
@@ -241,7 +252,7 @@ class TestResponse(TestCase):
         self.assertEqual(res.get("answers")[0].get("name"), 
                              answer1.get("name"))
 
-        self.assertEqual(res.get("feedback").get("gateway_ip"), 
+        self.assertEqual(res.get("feedbacks")[0].get("gateway_ip"), 
                              gateway_ip)
 
 #+END_SRC
