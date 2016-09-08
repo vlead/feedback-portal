@@ -13,36 +13,39 @@ This document illustrates building of the REST API.
 
 #+NAME: add_feedback
 #+BEGIN_SRC python
-  @api.route('/feedback', methods=['GET', 'POST'])
-  def add_feedback():
-      
-      if request.mehtod == 'GET':
-          pass
-      
-      if request.mothod == 'POST':
-          if not request.json or not 'lab_name' in request.json or not 'exp_name' in request.json or \
-             not 'questions' in request.json or not 'key' in request.json:
-              abort(400)
-          else:
-              lab_name = request.json['lab_name']
-              exp_name = request.json['exp_name']
-              questions = request.json['questions']
-              key = request.json['key']
-              gate_way_ip = request.environ['REMOTE_ADDR']
-              date = "25-07-1993"
-              try:
-                  fb = SystemInterface()
-                  user = fb.add_feedback(lab_name, exp_name, date,questions, key)
-                  return jsonify(user)
-                  
-              except Exception, e:
-                  abort(500)
+@api.route('/feedback', methods=['GET', 'POST'])
+def add_feedback():
+    SystemInterface(PersistenceDelegate)
+    if request.mehtod == 'GET':
+       pass
+
+    if request.mothod == 'POST':
+        print "#########################"
+	if not request.json or not 'lab_name' in request.json or not 'exp_name' in request.json or \
+	    not 'responses' in request.json or not 'key' in request.json:
+	    abort(400)
+            
+	else:
+	    lab_name = request.json['lab_name']
+	    exp_name = request.json['exp_name']
+	    responses = request.json['responses']
+	    key = request.json['key']
+	    gate_way_ip = request.environ['REMOTE_ADDR']
+	    date = "25-07-1993"
+	    try:
+	        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
+	                                         gate_way_ip, responses, key)
+
+		return fb.to_client()
+
+	    except Exception, e:
+	        abort(500)
 #+END_SRC
 
 ** TestAddFeedback
-#+NAME: test_create_user
+#+NAME: test_add_feedback
 #+BEGIN_SRC python
-class TestCreateUser(TestCase):
+class TestAddFeedback(TestCase):
     TESTING = True
     def create_app(self):
         app = create_app(config)
@@ -61,9 +64,10 @@ class TestCreateUser(TestCase):
                    'exp_name': 'tuples',                   
                    'date': '25-07-2016',
                    'gate_way_ip': '10.2.56.65',
-                   'responses: [{name:'Exp is working ', answers:['ans1', 'ans2'] }]}
+                   'key' : Config.key,
+                   'responses': [{'name': 'Exp is working', 'answers':['yes', 'no'] }]}
 
-        headers = {'content-type': 'application/json', 'key' : Config.key}
+        headers = {'content-type': 'application/json'}
 
         response = self.client.post("/feedback", data=json.dumps(payload), headers=headers)
 
@@ -86,7 +90,6 @@ from flask import current_app
 from flask import Flask, redirect, url_for
 from werkzeug import secure_filename
 from runtime.config.config import Config
-
 from runtime.system.system_interface import *
 
 api = Blueprint('APIs', __name__)
@@ -125,12 +128,12 @@ if __name__ == '__main__':
 * Tangle                          :boilerplate:
 ** sources
 #+BEGIN_SRC python :tangle api.py :eval no :noweb yes
-#<<imports_for_sources>>
-#<<create_user>>
+<<imports_for_sources>>
+<<add_feedback>>
 #+END_SRC
 ** tests
 #+BEGIN_SRC python :tangle test_api.py :eval no :noweb yes
-#<<imports_for_tests>>
-#<<test_create_user>>
-#<<run_test_cases>>
+<<imports_for_tests>>
+<<test_add_feedback>>
+<<run_test_cases>>
 #+end_src
