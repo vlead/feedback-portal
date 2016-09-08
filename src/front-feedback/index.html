@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Feedback Portal</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity = "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href = "main.css" rel = "stylesheet">
+    <style>
+    div {
+      border: 1px solid #000;
+    }
+</style>
+  </head>
+
+  <body>
+    <div class = "container">
+      <button onclick="renderFeedbackform()">ok</button>
+      <div class = "row">
+        <div class = "col-md-4" id="lab_name_label"></div>
+        <div class = "col-md-8" id="lab_name_value"></div>
+      </div>
+      <div class="row">
+        <div class = "col-md-4" id="exp_name_label"></div>
+        <div class = "col-md-8" id="exp_name_value"></div>
+      </div>
+      <div class="row col-md-12" id="questions_list"></div>
+      <button class="btn btn-primary" onclick="submitFeedback()">Submit</button>
+
+    </div>
+  </body>
+
+  <!-- Jquery and Scipts Link -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script type="text/javascript" src="main.js"></script>
+</html>
+ 
+ 
