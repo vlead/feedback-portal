@@ -1,6 +1,6 @@
 #+TITLE: Building a Feedback Portal :  Ground up to the Cloud
 #+AUTHOR: VLEAD
-#+DATE: [2016-06-15 Wed]
+#+DATE: [2016-08-15 Mon]
 #+SETUPFILE: ./org-templates/level-0.org
 #+TAGS: boilerplate(b)
 #+EXCLUDE_TAGS: boilerplate
@@ -8,160 +8,171 @@
 
 * Version/Branch History
 
+
+** Design
+
+
+
 * Application
   The outreach portal helps conduct workshops on Virtual Labs.  The development
   of the application is divided into the following phases:
 
- 1. [[./requirements/index.org][Requirements]]
+** [[./requirements/index.org][Requirements]]
 
- 2. [[./data-model/index.org][Data Model]]
+** Design
+*** Application Programming Interface
 
- 3. [[./runtime/index.org][Runtime]]
+    1. Display the feedback form. 
+   
+       - URL :: /feedback?lab_name=:lab_name&exp_name=:exp_name&key=:key
+                OR
+                /feedback?lab_name=:lab_name&key=:key
 
- 4. [[./deployment/index.org][Deployment]]
+       - Method :: GET
+
+       - URL Params
+         Required: lab_name=[string], key=[string]
+         Optional: exp_name=[string]
+
+       - Success Response
+         + Code: 200
+
+         + Content:
+           {
+            lab_name: 'lab_name',
+            exp_name: 'exp_name',
+            questions: [{name: 'question', 
+                         type: 'radio | checkbox | textbox',
+                         options: 'list of options' | 'size of text'}, ....]
+           }
+
+       - Error Response:
+         + Code: 401 UNAUTHORIZED
+
+         + Content: { error : "Wrong Key configured" }
+
+         OR
+
+         + Code: 400 Bad Request
+
+         + Content: { error : "lab name is mandatory and experiment is optional" }
+
+    2. Save the feedback form. 
+       The authentication for the =POST= is sent as part of header.
+       - URL :: /feedback
+
+       - Method :: POST
+
+       - Data Params
+         {
+            lab_name: 'lab_name',
+            exp_name: 'exp_name',
+            questions: [{name: 'question', 
+                         answers: [ans1, ...]
+           }
+
+       - Success Response
+         + Code: 200
+
+         + Content:
+           {
+             status: "success"
+           }
+
+       - Error Response:
+         + Code: 401 UNAUTHORIZED
+
+         + Content: { error : "Wrong Key configured" }
+
+         OR
+
+         + Code: 400 Bad Request
+
+         + Content: { error : "some of the parameters are not part of the
+           request" }
+
+    3. Display the feedback form. 
+   
+       - URL :: /feedback_usage_by_workshop?ip=:ip&date=:date&key=:key
+
+       - Method :: GET
+
+       - URL Params
+         Required: ip=[string]
+                   date=[string], the format of the date string is in
+         'mm-dd-yyyy' format. 
+                   key=[string]
+                  
+       - Success Response
+         + Code: 200
+
+         + Content:
+           {
+            usage: 'usage_number'
+           }
+
+       - Error Response:
+         + Code: 401 UNAUTHORIZED
+
+         + Content: { error : "Wrong Key configured" }
+
+         OR
+
+         + Code: 400 Bad Request
+
+         + Content: { error : "IP and Date are mandatory and date should be in
+           'mm-dd-yyyy' format" }
+
+    4. Display the feedback form. 
+   
+       - URL :: /feedback_dump?date=:date&key=:key
+
+       - Method :: GET
+
+       - URL Params
+         Required: date=[string], the format of the string is in 'mm-dd-yyyy'
+         format
+                   key=[string]
+
+       - Success Response
+         + Code: 200
+
+         + Content:
+           {
+            feedbacks: [{lab_name: 'lab_name',
+                         exp_name: 'exp_name',
+                         date: 'mm-dd-yyyy',
+                         IP: 'ip',
+                         responses: [{question: 'name',
+                                      answers: ['val1',..]
+                                     }, ...]
+                        }, ...]
+           }
+
+       - Error Response:
+         + Code: 401 UNAUTHORIZED
+
+         + Content: { error : "Wrong Key configured" }
+
+         OR
+
+         + Code: 400 Bad Request
+
+         + Content: { error : "Date is mandatory and should be in 'mm-dd-yyyy' format" }
+*** Services Interplay
+*** Capturing workshop usage through feedback forms
+    Give a scenario diagram
+*** Dynamic generation of =feedback form=
+*** Dumping the data from the feedback service to elastic search
     
 
-* Design
+** [[./data-model/index.org][Data Model]]
 
-** Application Programming Interfaces
 
-   1. Display the feedback form. 
-   
-      - URL :: /feedback?lab_name=:lab_name&exp_name=:exp_name&key=:key
-               OR
-               /feedback?lab_name=:lab_name&key=:key
+** [[./runtime/index.org][Runtime]]
 
-      - Method :: GET
 
-      - URL Params
-        Required: lab_name=[string], key=[string]
-        Optional: exp_name=[string]
-
-      - Success Response
-        + Code: 200
-
-        + Content:
-          {
-           lab_name: 'lab_name',
-           exp_name: 'exp_name',
-           questions: [{name: 'question', 
-                        type: 'radio | checkbox | textbox',
-                        options: 'list of options' | 'size of text'}, ....]
-          }
-
-      - Error Response:
-        + Code: 401 UNAUTHORIZED
-
-        + Content: { error : "Wrong Key configures" }
-
-        OR
-
-        + Code: 400 Bad Request
-
-        + Content: { error : "lab name is mandatory and experiment is optional" }
-
-   2. Save the feedback form. 
-      The authentication for the =POST= is sent as part of header.
-      - URL :: /feedback
-
-      - Method :: POST
-
-      - Data Params
-        {
-           lab_name: 'lab_name',
-           exp_name: 'exp_name',
-           questions: [{name: 'question', 
-                        answers: [ans1, ...]
-          }
-
-      - Success Response
-        + Code: 200
-
-        + Content:
-          {
-            status: "success"
-          }
-
-      - Error Response:
-        + Code: 401 UNAUTHORIZED
-
-        + Content: { error : "Wrong Key configures" }
-
-        OR
-
-        + Code: 400 Bad Request
-
-        + Content: { error : "some of the parameters are not part of the
-          request" }
-
-   3. Display the feedback form. 
-   
-      - URL :: /feedback_usage_by_workshop?ip=:ip&date=:date&key=:key
-
-      - Method :: GET
-
-      - URL Params
-        Required: ip=[string]
-                  date=[string], the format of the date string is in
-        'mm-dd-yyyy' format. 
-                  key=[string]
-                  
-      - Success Response
-        + Code: 200
-
-        + Content:
-          {
-           usage: 'usage_number'
-          }
-
-      - Error Response:
-        + Code: 401 UNAUTHORIZED
-
-        + Content: { error : "Wrong Key configures" }
-
-        OR
-
-        + Code: 400 Bad Request
-
-        + Content: { error : "IP and Date are mandatory and date should be in
-          'mm-dd-yyyy' format" }
-
-   4. Display the feedback form. 
-   
-      - URL :: /feedback_dump?date=:date&key=:key
-
-      - Method :: GET
-
-      - URL Params
-        Required: date=[string], the format of the string is in 'mm-dd-yyyy'
-        format
-                  key=[string]
-
-      - Success Response
-        + Code: 200
-
-        + Content:
-          {
-           feedbacks: [{lab_name: 'lab_name',
-                        exp_name: 'exp_name',
-                        date: 'mm-dd-yyyy',
-                        IP: 'ip',
-                        responses: [{question: 'name',
-                                     answers: ['val1',..]
-                                    }, ...]
-                       }, ...]
-          }
-
-      - Error Response:
-        + Code: 401 UNAUTHORIZED
-
-        + Content: { error : "Wrong Key configures" }
-
-        OR
-
-        + Code: 400 Bad Request
-
-        + Content: { error : "Date is mandatory and should be in 'mm-dd-yyyy' format" }
+** [[./deployment/index.org][Deployment]]
        
 
 * Tangle                                       :boilerplate:
