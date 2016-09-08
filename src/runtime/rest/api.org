@@ -8,36 +8,38 @@
 
 This document illustrates building of the REST API.
 * REST
-** Create a user
-   This is the REST API method for creating a user. 
+** Add Feedback
+   This is the REST API method for adding feedback. 
 
-#+NAME: create_user
+#+NAME: add_feedback
 #+BEGIN_SRC python
-@api.route('/users', methods=['POST'])
-def create_user():
-    ### Check if there is a session and act according to the specification
-    if not request.json or not 'name' in request.json or not 'email' in request.json:
-        abort(400)
-    else:
-        name = request.json['name']
-        email = request.json['email']
-        session_email = request.json['session_email']
-        session_role = request.json['session_role']
-        try:
-            print "inside try"
-            db.create_all()
-            SystemInterface.initialize_system_interface(PersistenceHandler)
-            add = AddUser()
-            user = add.api_add_user(name, email, session_email, session_role)
-            return jsonify(user)
-
-        except Exception, e:
-            current_app.logger.error("Error occured while inserting"
-                                     "user record: %s" % str(e))
-            abort(500, str(e))
+  @api.route('/feedback', methods=['GET', 'POST'])
+  def add_feedback():
+      
+      if request.mehtod == 'GET':
+          pass
+      
+      if request.mothod == 'POST':
+          if not request.json or not 'lab_name' in request.json or not 'exp_name' in request.json or \
+             not 'questions' in request.json or not 'key' in request.json:
+              abort(400)
+          else:
+              lab_name = request.json['lab_name']
+              exp_name = request.json['exp_name']
+              questions = request.json['questions']
+              key = request.json['key']
+              gate_way_ip = request.environ['REMOTE_ADDR']
+              date = "25-07-1993"
+              try:
+                  fb = SystemInterface()
+                  user = fb.add_feedback(lab_name, exp_name, date,questions, key)
+                  return jsonify(user)
+                  
+              except Exception, e:
+                  abort(500)
 #+END_SRC
 
-** TestCreateUser
+** TestAddFeedback
 #+NAME: test_create_user
 #+BEGIN_SRC python
 class TestCreateUser(TestCase):
@@ -52,18 +54,18 @@ class TestCreateUser(TestCase):
     def tearDown(self):
         pass
 
-    def test_create_new_user(self):
-        print "test_create_new_user"
+    def test_add_feedback(self):
+        print "test_add_feedback"
 
-        payload = {'email': 'ttt@kkk.com',
-                   'name': 'normal user',
-                   'session_email': 'app-admin@vlabs.ac.in',
-                   'session_role': 'admin'}
+        payload = {'lab_name': 'data structure',
+                   'exp_name': 'tuples',                   
+                   'date': '25-07-2016',
+                   'gate_way_ip': '10.2.56.65',
+                   'responses: [{name:'Exp is working ', answers:['ans1', 'ans2'] }]}
 
-        headers = {'content-type': 'application/json'}
+        headers = {'content-type': 'application/json', 'key' : Config.key}
 
-        #print payload
-        response = self.client.post("/users", data=json.dumps(payload), headers=headers)
+        response = self.client.post("/feedback", data=json.dumps(payload), headers=headers)
 
         self.assertEqual(response.status_code, 200)
 

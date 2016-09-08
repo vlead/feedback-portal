@@ -123,9 +123,16 @@ class TestPersistentDelegate(TestCase):
     def response_exists(self, new_response):
         question = new_response.get("question")
         answers = new_response.get("answers")
-        return new_response == self.get_response(question=question, \
-                                                     answers=answers)
-
+        n_responses = self.get_responses(question=question)
+        if n_responses:
+            response = filter(lambda x: x.get("answers") == answers,
+                                  n_responses)
+            if response:
+                return True
+            else:
+                return False
+        else:
+            return False
 #+END_SRC
 
 **** Tests
@@ -170,7 +177,7 @@ class TestPersistentDelegate(TestCase):
 
         self.assertEqual(self.persistent_delegate.response_exists(res1),
                             True)
-        self.assertEqual(self.persistent_delegate.answer_exists(res2),
+        self.assertEqual(self.persistent_delegate.response_exists(res2),
                             False)
 
 #+END_SRC
@@ -435,21 +442,27 @@ class TestPersistentDelegate(TestCase):
 
 
 
-***  Get Response
+***  Get Responses
     This function returns response if present in the database.  If the response is
     not present, =None= type is returned.
-#+NAME: persistent_get_response
+#+NAME: persistent_get_responses
 #+BEGIN_SRC python
-    def get_response(self, **kwargs):
-        return self.get_object(Response, **kwargs)
+    def get_responses(self, **kwargs):
+        ret_val = None
+        try:
+            ret_val = Response.apply_filters(**kwargs)
+        except NotFoundError as e:
+            ret_val = None
+        
+        return ret_val
 
 #+END_SRC
 
 ****  Tests
-#+NAME: test_persistent_get_response
+#+NAME: test_persistent_get_responses
 #+BEGIN_SRC python
-    def test_get_response(self):
-         print "test_get_response"
+    def test_get_responses(self):
+         print "test_get_responses"
 
          name = "how are labs?"
          q_type = "radio"
@@ -476,11 +489,11 @@ class TestPersistentDelegate(TestCase):
          question = res.get("question")
          answers = res.get("answers")
 
-         response_obj = self.persistent_delegate.get_response(\
+         response_obj = self.persistent_delegate.get_responses(\
                                                             question=question)
-         self.assertEqual(response_obj.get("question").get("name"),
+         self.assertEqual(response_obj[0].get("question").get("name"),
                               res.get("question").get("name"))
-         self.assertEqual(response_obj.get("answers")[0].get("name"),
+         self.assertEqual(response_obj[0].get("answers")[0].get("name"),
                               res.get("answers")[0].get("name"))
 
 #+END_SRC
@@ -538,7 +551,7 @@ if __name__ == '__main__':
 <<persistent_get_object>>
 <<persistent_get_question>>
 <<persistent_get_answer>>
-<<persistent_get_response>>
+<<persistent_get_responses>>
 <<persistent_question_exists>>
 <<persistent_answer_exists>>
 <<persistent_feedback_exists>>
@@ -557,7 +570,7 @@ if __name__ == '__main__':
 <<test_persistent_key_exists>>
 <<tes_persistent_get_question>>
 <<test_persistent_get_answer>>
-<<test_persistent_get_response>>
+<<test_persistent_get_responses>>
 <<test_persistent_question_exists>>
 <<test_persistent_answer_exists>>
 <<test_persistent_feedback_exists>>
