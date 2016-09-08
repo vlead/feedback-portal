@@ -17,8 +17,8 @@
 #+begin_src python
 class SystemInterface ():
     
-    def __init__(self):
-        raise Error('Can not instantiate system interface')
+    def __init__(self, cls):
+        System.initialize_system(cls)
 
 #+end_src
 
@@ -27,16 +27,37 @@ class SystemInterface ():
 
 #+NAME: class_si_add_feedback
 #+begin_src python
+    @staticmethod
+    def add_feedback(lab_name, exp_name, new_date, gateway_ip,
+                         responses, key ):
 
-def add_feedback(self, lab_name, exp_name, date, gate_way_ip, responses, key ):
-    print "test_add_feedback_in_system_interface"
+        session = Session(key=key)
+        date = datetime.datetime.strptime(new_date, "%d-%m-%Y").date()
+        fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+        fb.save()
+        response_list = []
+        for response in responses:
+            question = Question(name=response['name'], question_type="")
+            answers = response['answers']
+            answer_list = []
+            for answer in answers:
+                answer = Answer(name=answer)
+                answer_list.append(answer)
+            res = Response(question=question, answers=answer_list,
+                               feedbacks=[fb])
+            response_list.append(res)
 
-    session = Session(key=key)
-    feedback = System.do("add_feedback", gateway_ip=gateway_ip,
-                           lab_name=lab_name, exp_name=exp_name,
-                           date=date, responses=responses,
-                           session=session)
-    return feedback
+            fb_id = fb.id
+            feedback = System.do("add_responses_to_feedback",
+                                    responses=response_list,
+                                    fb_id=fb_id,
+                                    session=session)
+    
+            return feedback
 
 #+end_src
 
@@ -52,24 +73,33 @@ class TestAddFeedback(TestCase):
 
     def setUp(self):
         db.create_all()
+        SystemInterface(PersistenceDelegate)
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
 
-    def test_api_add_feedback(self):
-        print "test_api_add_user"
+    def test_add_feedback_in_system_interface(self):
+        print "test_add_feedback_in_system_interface"
 
         lab_name = "data structure"
         exp_name = "lists"
         date = "25-07-2016"
-        gate_way_ip = "10.2.56.65"
-        responses = [{name : "question", answers : ["ans1", "ans2"]}]
-        key = Config.key
-        system_interface = SystemInterface()  
+        gateway_ip = "10.2.56.65"
+        responses = [{"name": "how are you?", "answers" : ["yes"]},
+                     {"name": "how are the labs?", 
+                     "answers": ["yes", "no", "ok"]}
+                    ]
 
-        fb = system_interface.add_feedback(lab_name, exp_name, date, gate_way_ip, responses, key)
-        self.assertEqual("sripathi", user_dict2['name']['name'])
+        key = Config.key
+
+        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
+                                               gateway_ip, responses, key)
+        self.assertEqual(fb.get("lab_name"), lab_name)
+        self.assertEqual(fb.get("exp_name"), exp_name)
+        self.assertEqual(fb.get("gateway_ip"), gateway_ip)
+        self.assertEqual(responses[0]['name'], 
+                         fb.get("responses")[0].get("question").get("name"))
 
 
 #+END_SRC
@@ -84,6 +114,7 @@ class TestAddFeedback(TestCase):
 # -*- coding: utf-8 -*-
 from runtime.config.config import Config
 from runtime.system.system import *
+from runtime.system.persistent_delegate import *
 from runtime.objects.entities import Session
 #+end_src
 
@@ -96,14 +127,15 @@ from runtime.objects.entities import Session
 import unittest
 from flask_testing import TestCase
 from runtime.rest.app import create_app
+from runtime.rest.app import system_interface
 from sqlalchemy.exc import IntegrityError
-
-
+from runtime.utils.class_persistence_template import db
 from system_interface import *
 
 config = {
          'SQLALCHEMY_DATABASE_URI': ''
          }
+
 #+end_src
 
 *** Running tests
@@ -128,7 +160,6 @@ if __name__ == '__main__':
 ** tests
 #+BEGIN_SRC python :tangle test_system_interface.py :eval no :noweb yes
 <<imports_for_tests>>
-<<test_class_system_interface>>
 <<test_class_si_add_feedback>>
 <<run_test_cases>>
 #+end_src
