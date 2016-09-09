@@ -8,11 +8,6 @@
 
 * Version/Branch History
 
-
-** Design
-
-
-
 * Application
   The outreach portal helps conduct workshops on Virtual Labs.  The development
   of the application is divided into the following phases:
@@ -21,7 +16,9 @@
 
 ** Design
 *** Application Programming Interface
-
+:PROPERTIES:
+:CUSTOM_ID: api
+:END: 
     1. Display the feedback form. 
    
        - URL :: /feedback?lab_name=:lab_name&exp_name=:exp_name&key=:key
@@ -159,18 +156,57 @@
          + Code: 400 Bad Request
 
          + Content: { error : "Date is mandatory and should be in 'mm-dd-yyyy' format" }
+
+
 *** Services Interplay
+    The following diagram summarizes the interplay of different services that
+    enable collection of feedback and integration with =virtual labs= and
+    =outreach portal=.
+
+#+BEGIN_HTML
+<img src="https://docs.google.com/drawings/d/1h7Tqof8X9u_V3qKAs8Yu6Jk9VzxjIzDz78FynwGYCVk/pub?w=960&amp;h=720">
+<p align="center"> Services Interplay </p>
+#+END_HTML
+
+  To edit the feedback relations image click [[https://docs.google.com/drawings/d/1h7Tqof8X9u_V3qKAs8Yu6Jk9VzxjIzDz78FynwGYCVk/edit?usp=sharing][here]]
+
+
 *** Capturing workshop usage through feedback forms
-    Give a scenario diagram
+    Feebback forms are submitted by the students attending a workshop after
+    completion of each experiment.  Outreach facilitates conducting of
+    workshops.   The scenario below shows the way to capture the usage from the
+    feedback forms submitted for a workshop.
+
+#+BEGIN_HTML
+<img src="https://docs.google.com/drawings/d/1bWGDP8jT7JUW49D0Wp7bI9uzqfZ8XGPWkCti7jqg17M/pub?w=960&amp;h=720">
+<p align="center"> Workshop Usage </p>
+#+END_HTML
+
+
+    To edit the feedback relations image click [[https://docs.google.com/drawings/d/1bWGDP8jT7JUW49D0Wp7bI9uzqfZ8XGPWkCti7jqg17M/edit?usp=sharing][here]]
+
+
 *** Dynamic generation of =feedback form=
+    Feebback form is buult on the browser from the data that is sent as part of
+    the [[./index.org::#api][=GET=]] response.  The response contains all the relevant data to build
+    the form.  It will hold the questions, the type like if the question is a
+    radio button or a check box etc. and the values for each option. 
+
+#+BEGIN_HTML
+<img src="https://docs.google.com/drawings/d/10nfQZtJ7NJaDYKZru5DiXlS-YZaXQ1nlLoYb5-oRaCY/pub?w=960&amp;h=720">
+<p align="center"> Workshop Usage </p>
+#+END_HTML
+
+
+    To edit the feedback relations image click [[https://docs.google.com/drawings/d/10nfQZtJ7NJaDYKZru5DiXlS-YZaXQ1nlLoYb5-oRaCY/edit?usp=sharing][here]]
+    
+
 *** Dumping the data from the feedback service to elastic search
     
 
 ** [[./data-model/index.org][Data Model]]
 
-
 ** [[./runtime/index.org][Runtime]]
-
 
 ** [[./deployment/index.org][Deployment]]
        
