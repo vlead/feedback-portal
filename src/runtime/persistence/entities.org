@@ -21,7 +21,7 @@ args = {"__tablename__": "question",
         "id": db.Column(db.Integer, primary_key=True),
         "name": db.Column(db.String(255), unique=True, nullable=False),
         "question_type": db.Column(db.String(255), unique=False, 
-                                       nullable=False),
+                                       nullable=True),
         "responses": db.relationship('Response', 
                                         backref=db.backref('question'))
         }
