@@ -30,34 +30,50 @@ class SystemInterface ():
     @staticmethod
     def add_feedback(lab_name, exp_name, new_date, gateway_ip,
                          responses, key ):
-
-        session = Session(key=key)
+        try:
+            session = Session(key=str(key))
+        except Exception as e:
+            print str(e)
         date = datetime.datetime.strptime(new_date, "%d-%m-%Y").date()
-        fb = Feedback(gateway_ip=gateway_ip,
-                        lab_name=lab_name,
-                        exp_name=exp_name,
-                        date=date,
-                        responses=[])
-        fb.save()
+        try:
+            fb = Feedback(gateway_ip=str(gateway_ip),
+                            lab_name=str(lab_name),
+                            exp_name=str(exp_name),
+                            date=date,
+                            responses=[])
+            fb.save()
+        except Exception as e:
+            print str(e)
+
         response_list = []
         for response in responses:
-            question = Question(name=response['name'], question_type="")
+            try:
+                question = Question(name=str(response['name']),
+                                        question_type="")
+            except Exception as e:
+                print str(e)
             answers = response['answers']
             answer_list = []
             for answer in answers:
-                answer = Answer(name=answer)
-                answer_list.append(answer)
+                try:
+                    answer = Answer(name=str(answer))
+                    answer_list.append(answer)
+                except Exception as e:
+                    print str(e)
             res = Response(question=question, answers=answer_list,
                                feedbacks=[fb])
             response_list.append(res)
 
             fb_id = fb.id
-            feedback = System.do("add_responses_to_feedback",
+
+            try:
+                feedback = System.do("add_responses_to_feedback",
                                     responses=response_list,
                                     fb_id=fb_id,
                                     session=session)
-    
-            return feedback
+                return feedback
+            except Exception as e:
+                print str(e)
 
 #+end_src
 
@@ -101,7 +117,6 @@ class TestAddFeedback(TestCase):
         self.assertEqual(responses[0]['name'], 
                          fb.get("responses")[0].get("question").get("name"))
 
-
 #+END_SRC
 
 
@@ -116,6 +131,7 @@ from runtime.config.config import Config
 from runtime.system.system import *
 from runtime.system.persistent_delegate import *
 from runtime.objects.entities import Session
+
 #+end_src
 
 

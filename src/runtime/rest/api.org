@@ -15,31 +15,28 @@ This document illustrates building of the REST API.
 #+BEGIN_SRC python
 @api.route('/feedback', methods=['GET', 'POST'])
 def add_feedback():
-    SystemInterface(PersistenceDelegate)
-    if request.mehtod == 'GET':
+    if request.method == 'GET':
        pass
-
-    if request.mothod == 'POST':
-        print "#########################"
-	if not request.json or not 'lab_name' in request.json or not 'exp_name' in request.json or \
-	    not 'responses' in request.json or not 'key' in request.json:
+    if request.method == 'POST':
+        if not request.json or not 'lab_name' in request.json or not \
+          'exp_name' in request.json or not 'responses' in request.json \
+          or not 'key' in request.json:
 	    abort(400)
-            
-	else:
-	    lab_name = request.json['lab_name']
-	    exp_name = request.json['exp_name']
-	    responses = request.json['responses']
-	    key = request.json['key']
-	    gate_way_ip = request.environ['REMOTE_ADDR']
-	    date = "25-07-1993"
-	    try:
-	        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
-	                                         gate_way_ip, responses, key)
+        else:
+            lab_name = request.json['lab_name']
+            exp_name = request.json['exp_name']
+            responses = request.json['responses']
+            key = request.json['key']
+            gate_way_ip = "10.3.12.34"
+            date = "25-07-1993"
+            try:
+                fb = SystemInterface.add_feedback(lab_name, exp_name, date, \
+                                                gate_way_ip, responses, key)
 
-		return fb.to_client()
+                return "{'status' : 'success'}"
+            except Exception, e:
+                abort(500)
 
-	    except Exception, e:
-	        abort(500)
 #+END_SRC
 
 ** TestAddFeedback
@@ -52,25 +49,28 @@ class TestAddFeedback(TestCase):
         return app
 
     def setUp(self):
-        pass
+        db.create_all()
+        SystemInterface(PersistenceDelegate)
 
     def tearDown(self):
-        pass
+        db.session.remove()
+        db.drop_all()
 
     def test_add_feedback(self):
         print "test_add_feedback"
 
         payload = {'lab_name': 'data structure',
-                   'exp_name': 'tuples',                   
+                   'exp_name': 'tuples',
                    'date': '25-07-2016',
                    'gate_way_ip': '10.2.56.65',
                    'key' : Config.key,
-                   'responses': [{'name': 'Exp is working', 'answers':['yes', 'no'] }]}
+                   'responses': [{'name': 'Exp is working',
+                                  'answers':['yes', 'no'] }]
+                  }
 
         headers = {'content-type': 'application/json'}
-
-        response = self.client.post("/feedback", data=json.dumps(payload), headers=headers)
-
+        response = self.client.post("/feedback", data=json.dumps(payload),
+                                        headers=headers)
         self.assertEqual(response.status_code, 200)
 
 #+END_SRC
@@ -84,16 +84,16 @@ class TestAddFeedback(TestCase):
 # -*- coding: utf-8 -*-
 import os
 import requests
-from flask import session, render_template, Blueprint, request, jsonify, abort, current_app, redirect, url_for
+from flask import session, render_template, Blueprint, request, \
+     jsonify, abort, current_app, redirect, url_for
 from flask import current_app
 
 from flask import Flask, redirect, url_for
 from werkzeug import secure_filename
 from runtime.config.config import Config
 from runtime.system.system_interface import *
-
+import json
 api = Blueprint('APIs', __name__)
-
 
 #+end_src
 
@@ -108,13 +108,14 @@ from flask_testing import TestCase
 from runtime.utils.class_persistence_template import *
 from runtime.rest.app import create_app
 from sqlalchemy.exc import IntegrityError
-from runtime.persistence.entities import *
 import json
 from api import *
+from runtime.system.system_interface import *
 
 config = {
          'SQLALCHEMY_DATABASE_URI': ''
          }
+
 #+end_src
 
 *** Running tests

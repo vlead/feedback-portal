@@ -18,7 +18,7 @@ from flask import Flask, jsonify, make_response
 # from flask.ext.cors import CORS
 
 from runtime.utils.class_persistence_template import db
-#from api import *
+from api import api
 from config import config
 
 def create_app(config):
@@ -29,8 +29,8 @@ def create_app(config):
     # init sqlalchemy db instance
     db.init_app(app)
     db.app = app
-    
-#    app.register_blueprint(api)
+
+    app.register_blueprint(api)
     return app
 
 def system_interface():
