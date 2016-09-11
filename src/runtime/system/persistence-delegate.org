@@ -360,6 +360,49 @@ class TestPersistentDelegate(TestCase):
 #+END_SRC
 
 
+***  Get feedback Dump from the system
+    This function gets the feedback usage from the system.
+#+NAME: persistent_get_feedback_dump
+#+BEGIN_SRC python
+    def get_feedback_dump(self, date):
+        try:
+            feedbacks = self.get_feedbacks(date=date)
+            return feedbacks
+        except Exception as e:
+            print "no feedbacks were found on date %s" \
+              %(date)
+
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistent_get_feedback_dump
+#+BEGIN_SRC python
+    def test_get_feedback_dump(self):
+         print "test_get_feedback_dump"
+         gateway_ip1 = "10.100.40.2"
+         lab_name1 = "cse01"
+         exp_name1 = "data01"
+         date1 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+         responses1 = []
+         fb1 = self.persistent_delegate.add_feedback(gateway_ip1, lab_name1,
+                                                        exp_name1, date1,
+                                                        responses1)
+         gateway_ip2 = "10.100.40.2"
+         lab_name2 = "cse02"
+         exp_name2 = "data02"
+         date2 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+         responses2 = []
+         fb2 = self.persistent_delegate.add_feedback(gateway_ip2, lab_name2,
+                                                        exp_name2, date2,
+                                                        responses2)
+         feedbacks = self.persistent_delegate.get_feedback_dump(date2)
+
+         self.assertEqual(feedbacks[0].date, date1)
+         self.assertEqual(feedbacks[0].gateway_ip, gateway_ip1)
+
+#+END_SRC
+
+
 ***  Add response to the system
     This function adds responses to the system.
 #+NAME: persistent_add_responses_to_feedback
@@ -655,6 +698,7 @@ if __name__ == '__main__':
 <<persistent_add_feedback>>
 <<persistent_get_feedbacks>>
 <<persistent_get_feedback_usage>>
+<<persistent_get_feedback_dump>>
 <<persistent_add_responses_to_feedback>>
 
 #+end_src
@@ -676,6 +720,7 @@ if __name__ == '__main__':
 <<test_persistent_add_feedback>>
 <<test_persistent_get_feedback>>
 <<test_persistent_get_feedback_usage>>
+<<test_persistent_get_feedback_dump>>
 <<test_persistent_add_responses_to_feedback>>
 <<run_test_cases>>
 

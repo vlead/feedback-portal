@@ -123,7 +123,7 @@ class TestAddFeedback(TestCase):
 #+END_SRC
 
 ** Get Feedback Usage
-   This is the REST API method for adding feedback. 
+   This is the REST API method for getting the feedback usage. 
 
 #+NAME: get_feedback_usage
 #+BEGIN_SRC python
@@ -187,6 +187,69 @@ class TestGetFeedbackUsage(TestCase):
 
 #+END_SRC
 
+** Get Feedback Dump
+   This is the REST API method for dumping the feedback forms to elastic search. 
+
+#+NAME: get_feedback_dump
+#+BEGIN_SRC python
+@api.route('/feedback_dump', methods=['GET', 'POST'])
+def get_feedback_dump():
+    if request.method == 'GET':
+        if 'date' in request.args and 'key' in request.args:
+            date  = request.args['date']
+            key = request.args['key']
+            try:
+                feedbacks = SystemInterface.get_feedback_usage(date, key)
+                print feedbacks
+                print type(feedbacks)
+                return jsonify(feedbacks)
+            except Exception, e:
+                abort(500)
+
+#+END_SRC
+
+** TestGetFeedbackDump
+#+NAME: test_get_feedback_dump
+#+BEGIN_SRC python
+class TestGetFeedbackDump(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        SystemInterface(PersistenceDelegate)
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_feedback_dump(self):
+        print "test_get_feedback_dump"
+
+        lab_name = "data structure"
+        exp_name = "lists"
+        date = "25-07-2016"
+        gateway_ip = "10.2.56.65"
+        responses = [{"name": "how are you?", "answers" : ["yes"]},
+                     {"name": "how are the labs?", 
+                     "answers": ["yes", "no", "ok"]}
+                    ]
+        key = Config.key
+        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
+                                               gateway_ip, responses, key)
+
+        headers = {'content-type': 'application/json'}
+        url = "/feedback_dump?date=25-07-2016&key=some alphanumeric string"
+        response = self.client.get(url, headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(result), 1)
+
+#+END_SRC
+
+
 * Infra                                                         :boilerplate:
 
 ** sources
@@ -245,11 +308,13 @@ if __name__ == '__main__':
 <<imports_for_sources>>
 <<add_feedback>>
 <<get_feedback_usage>>
+#<<get_feedback_dump>>
 #+END_SRC
 ** tests
 #+BEGIN_SRC python :tangle test_api.py :eval no :noweb yes
 <<imports_for_tests>>
 <<test_add_feedback>>
 <<test_get_feedback_usage>>
+#<<test_get_feedback_dump>>
 <<run_test_cases>>
 #+end_src
