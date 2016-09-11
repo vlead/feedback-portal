@@ -340,7 +340,6 @@ class TestPersistentDelegate(TestCase):
          fb1 = self.persistent_delegate.add_feedback(gateway_ip1, lab_name1,
                                                         exp_name1, date1,
                                                         responses1)
-
          gateway_ip2 = "10.100.40.2"
          lab_name2 = "cse02"
          exp_name2 = "data02"
@@ -349,7 +348,8 @@ class TestPersistentDelegate(TestCase):
          fb2 = self.persistent_delegate.add_feedback(gateway_ip2, lab_name2,
                                                         exp_name2, date2,
                                                         responses2)
-         usage = self.persistent_delegate.get_feedback_usage(gateway_ip1, date1)
+         usage = self.persistent_delegate.get_feedback_usage(gateway_ip2, 
+                                                                 date2)
 
          self.assertEqual(usage, 2)
 
@@ -671,7 +671,7 @@ if __name__ == '__main__':
 <<test_persistent_add_answer>>
 <<test_persistent_add_feedback>>
 <<test_persistent_get_feedback>>
-#<<test_persistent_get_feedback_usage>>
+<<test_persistent_get_feedback_usage>>
 <<test_persistent_add_responses_to_feedback>>
 <<run_test_cases>>
 
