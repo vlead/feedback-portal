@@ -125,16 +125,16 @@ class TestAddFeedback(TestCase):
 #+NAME: class_si_get_feedback_usge
 #+begin_src python
     @staticmethod
-    def get_feedback_usage(ip, new_date, key ):
+    def get_feedback_usage(gateway_ip, new_date, key ):
         try:
             session = Session(key=str(key))
         except Exception as e:
             print str(e)
         date = datetime.datetime.strptime(new_date, "%d-%m-%Y").date()
-        ip = str(ip)
+        gateway_ip = str(gateway_ip)
         try:
             usage = System.do("get_feedback_usage",
-                                     ip=ip,
+                                     gateway_ip=gateway_ip,
                                      date=date,
                                      session=session)
             return usage
@@ -144,7 +144,7 @@ class TestAddFeedback(TestCase):
 #+end_src
 
 
-** TestGetFeedbackUsagae
+** TestGetFeedbackUsage
 #+NAME: test_class_si_get_feedback_usage
 #+BEGIN_SRC python
 class TestGetFeedbackUsage(TestCase):
@@ -179,11 +179,9 @@ class TestGetFeedbackUsage(TestCase):
                                                gateway_ip, responses, key)
 
         date = "25-07-2016"
-        ip = "10.2.56.65"
+        gateway_ip = "10.2.56.65"
         key = Config.key
-
-        usage = SystemInterface.get_feedback_usage(ip, date, key)
-
+        usage = SystemInterface.get_feedback_usage(gateway_ip, date, key)
         self.assertEqual(usage, 1)
 
 #+END_SRC
@@ -212,7 +210,7 @@ from runtime.objects.entities import Session
 import unittest
 from flask_testing import TestCase
 from runtime.rest.app import create_app
-from runtime.rest.app import system_interface
+#from runtime.rest.app import system_interface
 from sqlalchemy.exc import IntegrityError
 from runtime.utils.class_persistence_template import db
 from system_interface import *
@@ -239,6 +237,7 @@ if __name__ == '__main__':
 <<imports_for_sources>>
 <<class_system_interface>>
 <<class_si_add_feedback>>
+<<class_si_get_feedback_usge>>
 #+end_src
 
 
@@ -246,5 +245,6 @@ if __name__ == '__main__':
 #+BEGIN_SRC python :tangle test_system_interface.py :eval no :noweb yes
 <<imports_for_tests>>
 <<test_class_si_add_feedback>>
+<<test_class_si_get_feedback_usage>>
 <<run_test_cases>>
 #+end_src
