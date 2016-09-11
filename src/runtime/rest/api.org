@@ -26,6 +26,13 @@ def add_feedback():
             json_data = {'lab_name': str(lab_name), 'exp_name': str(exp_name), 
                          'questions': questions}
             return jsonify(json_data)
+
+        elif 'lab_name' in request.args and 'key' in request.args:
+            lab_name = request.args['lab_name']
+            key = request.args['key']
+            questions = Config.questions
+            json_data = {'lab_name': str(lab_name), 'questions': questions}
+            return jsonify(json_data)
         else:
             pass
 
