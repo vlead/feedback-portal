@@ -54,7 +54,9 @@ def add_feedback():
             try:
                 fb = SystemInterface.add_feedback(lab_name, exp_name, date, \
                                                 gateway_ip, responses, key)
-                return "{'status' : 'success'}"
+                                                
+
+                return "{'status' : 'Success'}"
 
             except Exception, e:
                 abort(500)
@@ -102,7 +104,9 @@ class TestAddFeedback(TestCase):
         response = self.client.get("/feedback?lab_name=data structure&key=some"
                                        " alphanumeric string",
                                         headers=headers)
+        result = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(result['lab_name'], "data structure")
 
     def test_get_exp_feedback_form_data(self):
         print "test_get_exp_feedback_form_data"
@@ -111,7 +115,10 @@ class TestAddFeedback(TestCase):
         response = self.client.get("/feedback?lab_name=data structure&exp_name"
                                        "=tuples&key=some alphanumeric string",
                                         headers=headers)
+        result = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(result['lab_name'], "data structure")
+        self.assertEqual(result['exp_name'], "tuples")
 
 #+END_SRC
 
@@ -173,7 +180,10 @@ class TestGetFeedbackUsage(TestCase):
         headers = {'content-type': 'application/json'}
         url = "/feedback_usage_by_workshop?gateway_ip=10.2.56.65&date=25-07-2016&key=some alphanumeric string"
         response = self.client.get(url, headers=headers)
+        result = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result['usage'], 1)
 
 #+END_SRC
 
