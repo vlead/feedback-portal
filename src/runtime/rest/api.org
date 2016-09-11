@@ -16,7 +16,19 @@ This document illustrates building of the REST API.
 @api.route('/feedback', methods=['GET', 'POST'])
 def add_feedback():
     if request.method == 'GET':
-       pass
+            
+        if 'lab_name' in request.args and 'exp_name' in request.args and 'key'\
+            in request.args:
+            lab_name = request.args['lab_name']
+            exp_name = request.args['exp_name']
+            key = request.args['key']
+            questions = Config.questions
+            json_data = {'lab_name': str(lab_name), 'exp_name': str(exp_name), 
+                         'questions': questions}
+            return jsonify(json_data)
+        else:
+            pass
+
     if request.method == 'POST':
         if not request.json or not 'lab_name' in request.json or not \
           'exp_name' in request.json or not 'responses' in request.json \
@@ -27,13 +39,14 @@ def add_feedback():
             exp_name = request.json['exp_name']
             responses = request.json['responses']
             key = request.json['key']
-            gate_way_ip = "10.3.12.34"
+            gate_way_ip = str(request.remote_addr)
             date = "25-07-1993"
             try:
                 fb = SystemInterface.add_feedback(lab_name, exp_name, date, \
                                                 gate_way_ip, responses, key)
 
-                return "{'status' : 'success'}"
+#                return "{'status' : 'success'}"
+
             except Exception, e:
                 abort(500)
 
@@ -62,7 +75,6 @@ class TestAddFeedback(TestCase):
         payload = {'lab_name': 'data structure',
                    'exp_name': 'tuples',
                    'date': '25-07-2016',
-                   'gate_way_ip': '10.2.56.65',
                    'key' : Config.key,
                    'responses': [{'name': 'Exp is working',
                                   'answers':['yes', 'no'] }]
@@ -70,6 +82,22 @@ class TestAddFeedback(TestCase):
 
         headers = {'content-type': 'application/json'}
         response = self.client.post("/feedback", data=json.dumps(payload),
+                                        headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_lab_feedback_form_data(self):
+        print "test_get_lab_feedback_form_data"
+
+        headers = {'content-type': 'application/json'}
+        response = self.client.get("/feedback?lab_name=data structure&key=some alphanumeric string",
+                                        headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_exp_feedback_form_data(self):
+        print "test_get_exp_feedback_form_data"
+
+        headers = {'content-type': 'application/json'}
+        response = self.client.get("/feedback?lab_name=data structure&exp_name=tuples&key=some alphanumeric string",
                                         headers=headers)
         self.assertEqual(response.status_code, 200)
 
@@ -87,11 +115,12 @@ import requests
 from flask import session, render_template, Blueprint, request, \
      jsonify, abort, current_app, redirect, url_for
 from flask import current_app
-
+from runtime.config.config import Config
 from flask import Flask, redirect, url_for
 from werkzeug import secure_filename
 from runtime.config.config import Config
 from runtime.system.system_interface import *
+from flask import jsonify
 import json
 api = Blueprint('APIs', __name__)
 

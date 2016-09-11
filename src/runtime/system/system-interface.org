@@ -78,6 +78,61 @@ class SystemInterface ():
 #+end_src
 
 
+** GetFeedbackForm
+
+#+NAME: class_si_add_feedback
+#+begin_src python
+    @staticmethod
+    def add_feedback(lab_name, exp_name, new_date, gateway_ip,
+                         responses, key ):
+        try:
+            session = Session(key=str(key))
+        except Exception as e:
+            print str(e)
+        date = datetime.datetime.strptime(new_date, "%d-%m-%Y").date()
+        try:
+            fb = Feedback(gateway_ip=str(gateway_ip),
+                            lab_name=str(lab_name),
+                            exp_name=str(exp_name),
+                            date=date,
+                            responses=[])
+            fb.save()
+        except Exception as e:
+            print str(e)
+
+        response_list = []
+        for response in responses:
+            try:
+                question = Question(name=str(response['name']),
+                                        question_type="")
+            except Exception as e:
+                print str(e)
+            answers = response['answers']
+            answer_list = []
+            for answer in answers:
+                try:
+                    answer = Answer(name=str(answer))
+                    answer_list.append(answer)
+                except Exception as e:
+                    print str(e)
+            res = Response(question=question, answers=answer_list,
+                               feedbacks=[fb])
+            response_list.append(res)
+
+            fb_id = fb.id
+
+            try:
+                feedback = System.do("add_responses_to_feedback",
+                                    responses=response_list,
+                                    fb_id=fb_id,
+                                    session=session)
+                return feedback
+            except Exception as e:
+                print str(e)
+
+#+end_src
+
+
 ** TestAddFeedback
 #+NAME: test_class_si_add_feedback
 #+BEGIN_SRC python
