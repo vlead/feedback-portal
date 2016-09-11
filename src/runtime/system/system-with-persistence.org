@@ -235,7 +235,7 @@ class TestGetFeedbackDump(TestCase):
                                  session=session)
 
         feedbacks = System.do("get_feedback_dump", date=date, session=session)
-        self.assertEqual(feedbacks, 1)
+        self.assertEqual(feedbacks[0].date, date)
             
 #+END_SRC
 
@@ -345,7 +345,7 @@ if __name__ == '__main__':
 <<test_add_answer>>
 <<test_add_feedback>>
 <<test_get_feedback_usage>>
-#<<test_get_feedback_dump>>
+<<test_get_feedback_dump>>
 <<test_add_responses_to_feedback>>
 <<run_test_cases>>
 #+end_src
