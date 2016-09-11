@@ -322,8 +322,12 @@ class TestPersistentDelegate(TestCase):
 #+NAME: persistent_get_feedback_usage
 #+BEGIN_SRC python
     def get_feedback_usage(self, gateway_ip, date):
-        feedback_list = self.get_feedbacks(gateway_ip=gateway_ip, date=date)
-        return len(feedback_list)
+        try:
+            feedbacks = self.get_feedbacks(gateway_ip=gateway_ip, date=date)
+            return len(feedbacks)
+        except Exception as e:
+            print "no feedback found with given ip %s and date %s" \
+              %(gateway_ip, date)
 
 #+END_SRC
 

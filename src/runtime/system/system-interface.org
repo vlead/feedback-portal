@@ -29,7 +29,7 @@ class SystemInterface ():
 #+begin_src python
     @staticmethod
     def add_feedback(lab_name, exp_name, new_date, gateway_ip,
-                         responses, key ):
+                         responses, key):
         try:
             session = Session(key=str(key))
         except Exception as e:
@@ -125,7 +125,7 @@ class TestAddFeedback(TestCase):
 #+NAME: class_si_get_feedback_usge
 #+begin_src python
     @staticmethod
-    def get_feedback_usage(gateway_ip, new_date, key ):
+    def get_feedback_usage(gateway_ip, new_date, key):
         try:
             session = Session(key=str(key))
         except Exception as e:

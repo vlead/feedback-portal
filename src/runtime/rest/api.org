@@ -46,37 +46,16 @@ def add_feedback():
             exp_name = request.json['exp_name']
             responses = request.json['responses']
             key = request.json['key']
-            gate_way_ip = str(request.remote_addr)
-            date = "25-07-1993"
+            if not 'gateway_ip' in request.json['gateway_ip']:
+                gateway_ip = str(request.remote_addr)
+            else:
+                gateway_ip = str(request.json['gateway_ip'])
+            date = request.json['date']
             try:
                 fb = SystemInterface.add_feedback(lab_name, exp_name, date, \
-                                                gate_way_ip, responses, key)
-
+                                                gateway_ip, responses, key)
                 return "{'status' : 'success'}"
 
-            except Exception, e:
-                abort(500)
-
-#+END_SRC
-
-** Get Feedback Usage
-   This is the REST API method for adding feedback. 
-
-#+NAME: add_feedback
-#+BEGIN_SRC python
-@api.route('/feedback_usage_by_workshop', methods=['GET', 'POST'])
-def get_feedback_usage():
-    if request.method == 'GET':
-            
-        if 'ip' in request.args and 'date' in request.args and 'key'\
-            in request.args:
-            ip = request.args['ip']
-            date  = request.args['date']
-            key = request.args['key']
-            try:
-                usage_count = SystemInterface.get_feedback_usage(ip, date, key)
-                usage = {'usage': usage_count}
-                return jsonify(usage)
             except Exception, e:
                 abort(500)
 
@@ -105,6 +84,7 @@ class TestAddFeedback(TestCase):
         payload = {'lab_name': 'data structure',
                    'exp_name': 'tuples',
                    'date': '25-07-2016',
+                   'gateway_ip': '10.4.0.12',
                    'key' : Config.key,
                    'responses': [{'name': 'Exp is working',
                                   'answers':['yes', 'no'] }]
@@ -131,6 +111,68 @@ class TestAddFeedback(TestCase):
         response = self.client.get("/feedback?lab_name=data structure&exp_name"
                                        "=tuples&key=some alphanumeric string",
                                         headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+#+END_SRC
+
+** Get Feedback Usage
+   This is the REST API method for adding feedback. 
+
+#+NAME: get_feedback_usage
+#+BEGIN_SRC python
+@api.route('/feedback_usage_by_workshop', methods=['GET', 'POST'])
+def get_feedback_usage():
+    if request.method == 'GET':
+        if 'gateway_ip' in request.args and 'date' in request.args and 'key'\
+            in request.args:
+            gateway_ip = str(request.args['gateway_ip'])
+            date  = request.args['date']
+            key = request.args['key']
+            try:
+                usage_count = SystemInterface.get_feedback_usage(gateway_ip,\
+                                                                     date, key)
+                usage = {'usage': usage_count}
+                return jsonify(usage)
+            except Exception, e:
+                abort(500)
+
+#+END_SRC
+
+** TestGetFeedbackUsage
+#+NAME: test_get_feedback_usage
+#+BEGIN_SRC python
+class TestGetFeedbackUsage(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        SystemInterface(PersistenceDelegate)
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_feedback_usage(self):
+        print "test_get_feedback_usage"
+
+        lab_name = "data structure"
+        exp_name = "lists"
+        date = "25-07-2016"
+        gateway_ip = "10.2.56.65"
+        responses = [{"name": "how are you?", "answers" : ["yes"]},
+                     {"name": "how are the labs?", 
+                     "answers": ["yes", "no", "ok"]}
+                    ]
+        key = Config.key
+        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
+                                               gateway_ip, responses, key)
+
+        headers = {'content-type': 'application/json'}
+        url = "/feedback_usage_by_workshop?gateway_ip=10.2.56.65&date=25-07-2016&key=some alphanumeric string"
+        response = self.client.get(url, headers=headers)
         self.assertEqual(response.status_code, 200)
 
 #+END_SRC
@@ -192,10 +234,12 @@ if __name__ == '__main__':
 #+BEGIN_SRC python :tangle api.py :eval no :noweb yes
 <<imports_for_sources>>
 <<add_feedback>>
+<<get_feedback_usage>>
 #+END_SRC
 ** tests
 #+BEGIN_SRC python :tangle test_api.py :eval no :noweb yes
 <<imports_for_tests>>
 <<test_add_feedback>>
+<<test_get_feedback_usage>>
 <<run_test_cases>>
 #+end_src
