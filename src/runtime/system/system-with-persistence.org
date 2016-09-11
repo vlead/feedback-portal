@@ -180,7 +180,7 @@ class TestGetFeedbackUsage(TestCase):
 
     def test_get_feedback_usage(self):
         print "test_get_feedback_usage_in_system_persistence"
-        ip = "10.100.40.2"
+        gateway_ip = "10.100.40.2"
         lab_name = "cse01"
         exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
@@ -191,10 +191,12 @@ class TestGetFeedbackUsage(TestCase):
                                  date=date, responses=[],
                                  session=session)
 
-        feedback_usage = System.do("get_feedback_usage", ip=ip, date=date, 
-                                 session=session)
+        feedback_usage = System.do("get_feedback_usage",
+                                       gateway_ip=gateway_ip, 
+                                       date=date, 
+                                       session=session)
         
-        self.assertEqual(feedback_usagae, 1)
+        self.assertEqual(feedback_usage, 1)
             
 #+END_SRC
 
@@ -303,7 +305,7 @@ if __name__ == '__main__':
 <<test_add_question>>
 <<test_add_answer>>
 <<test_add_feedback>>
-#<<test_get_feedback_usage>>
+<<test_get_feedback_usage>>
 <<test_add_responses_to_feedback>>
 <<run_test_cases>>
 #+end_src
