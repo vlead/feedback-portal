@@ -122,7 +122,7 @@ class TestAddFeedback(TestCase):
 
 ** GetFeedbackUsage
 
-#+NAME: class_si_get_feedback_usge
+#+NAME: class_si_get_feedback_usage
 #+begin_src python
     @staticmethod
     def get_feedback_usage(gateway_ip, new_date, key):
@@ -187,6 +187,69 @@ class TestGetFeedbackUsage(TestCase):
 #+END_SRC
 
 
+** GetFeedbackDump
+
+#+NAME: class_si_get_feedback_dump
+#+begin_src python
+    @staticmethod
+    def get_feedback_dump(new_date, key):
+        try:
+            session = Session(key=str(key))
+        except Exception as e:
+            print str(e)
+        date = datetime.datetime.strptime(new_date, "%d-%m-%Y").date()
+        try:
+            feedbacks = System.do("get_feedback_dump",
+                                     date=date,
+                                     session=session)
+            return feedbacks
+        except Exception as e:
+            print str(e)
+
+#+end_src
+
+
+** TestGetFeedbackDump
+#+NAME: test_class_si_get_feedback_dump
+#+BEGIN_SRC python
+class TestGetFeedbackDump(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        SystemInterface(PersistenceDelegate)
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_add_feedback_dump_in_system_interface(self):
+        print "test_get_feedback_dump_in_system_interface"
+
+        lab_name = "data structure"
+        exp_name = "lists"
+        date = "25-07-2016"
+        gateway_ip = "10.2.56.65"
+        responses = [{"name": "how are you?", "answers" : ["yes"]},
+                     {"name": "how are the labs?", 
+                     "answers": ["yes", "no", "ok"]}
+                    ]
+
+        key = Config.key
+
+        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
+                                               gateway_ip, responses, key)
+        key = Config.key
+        feedbacks = SystemInterface.get_feedback_dump(date, key)
+        date_1 = datetime.datetime.strptime(date, "%d-%m-%Y").date()
+        self.assertEqual(feedbacks[0].date, date_1)
+
+#+END_SRC
+
+
 * Infra                                                         :boilerplate:
   
 ** sources
@@ -237,7 +300,8 @@ if __name__ == '__main__':
 <<imports_for_sources>>
 <<class_system_interface>>
 <<class_si_add_feedback>>
-<<class_si_get_feedback_usge>>
+<<class_si_get_feedback_usage>>
+<<class_si_get_feedback_dump>>
 #+end_src
 
 
@@ -246,5 +310,6 @@ if __name__ == '__main__':
 <<imports_for_tests>>
 <<test_class_si_add_feedback>>
 <<test_class_si_get_feedback_usage>>
+<<test_class_si_get_feedback_dump>>
 <<run_test_cases>>
 #+end_src
