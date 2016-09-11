@@ -59,6 +59,29 @@ def add_feedback():
 
 #+END_SRC
 
+** Get Feedback Usage
+   This is the REST API method for adding feedback. 
+
+#+NAME: add_feedback
+#+BEGIN_SRC python
+@api.route('/feedback_usage_by_workshop', methods=['GET', 'POST'])
+def get_feedback_usage():
+    if request.method == 'GET':
+            
+        if 'ip' in request.args and 'date' in request.args and 'key'\
+            in request.args:
+            ip = request.args['ip']
+            date  = request.args['date']
+            key = request.args['key']
+            try:
+                usage_count = SystemInterface.get_feedback_usage(ip, date, key)
+                usage = {'usage': usage_count}
+                return jsonify(usage)
+            except Exception, e:
+                abort(500)
+
+#+END_SRC
+
 ** TestAddFeedback
 #+NAME: test_add_feedback
 #+BEGIN_SRC python
