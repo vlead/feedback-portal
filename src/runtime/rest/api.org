@@ -16,7 +16,26 @@ This document illustrates building of the REST API.
 @api.route('/feedback', methods=['GET', 'POST'])
 def add_feedback():
     if request.method == 'GET':
-       pass
+            
+        if 'lab_name' in request.args and 'exp_name' in request.args and 'key'\
+            in request.args:
+            lab_name = request.args['lab_name']
+            exp_name = request.args['exp_name']
+            key = request.args['key']
+            questions = Config.questions
+            json_data = {'lab_name': str(lab_name), 'exp_name': str(exp_name), 
+                         'questions': questions}
+            return jsonify(json_data)
+
+        elif 'lab_name' in request.args and 'key' in request.args:
+            lab_name = request.args['lab_name']
+            key = request.args['key']
+            questions = Config.questions
+            json_data = {'lab_name': str(lab_name), 'questions': questions}
+            return jsonify(json_data)
+        else:
+            pass
+
     if request.method == 'POST':
         if not request.json or not 'lab_name' in request.json or not \
           'exp_name' in request.json or not 'responses' in request.json \
@@ -27,13 +46,18 @@ def add_feedback():
             exp_name = request.json['exp_name']
             responses = request.json['responses']
             key = request.json['key']
-            gate_way_ip = "10.3.12.34"
-            date = "25-07-1993"
+            if not 'gateway_ip' in request.json['gateway_ip']:
+                gateway_ip = str(request.remote_addr)
+            else:
+                gateway_ip = str(request.json['gateway_ip'])
+            date = request.json['date']
             try:
                 fb = SystemInterface.add_feedback(lab_name, exp_name, date, \
-                                                gate_way_ip, responses, key)
+                                                gateway_ip, responses, key)
+                                                
 
-                return "{'status' : 'success'}"
+                return "{'status' : 'Success'}"
+
             except Exception, e:
                 abort(500)
 
@@ -62,7 +86,7 @@ class TestAddFeedback(TestCase):
         payload = {'lab_name': 'data structure',
                    'exp_name': 'tuples',
                    'date': '25-07-2016',
-                   'gate_way_ip': '10.2.56.65',
+                   'gateway_ip': '10.4.0.12',
                    'key' : Config.key,
                    'responses': [{'name': 'Exp is working',
                                   'answers':['yes', 'no'] }]
@@ -73,7 +97,158 @@ class TestAddFeedback(TestCase):
                                         headers=headers)
         self.assertEqual(response.status_code, 200)
 
+    def test_get_lab_feedback_form_data(self):
+        print "test_get_lab_feedback_form_data"
+
+        headers = {'content-type': 'application/json'}
+        response = self.client.get("/feedback?lab_name=data structure&key=some"
+                                       " alphanumeric string",
+                                        headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(result['lab_name'], "data structure")
+
+    def test_get_exp_feedback_form_data(self):
+        print "test_get_exp_feedback_form_data"
+
+        headers = {'content-type': 'application/json'}
+        response = self.client.get("/feedback?lab_name=data structure&exp_name"
+                                       "=tuples&key=some alphanumeric string",
+                                        headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(result['lab_name'], "data structure")
+        self.assertEqual(result['exp_name'], "tuples")
+
 #+END_SRC
+
+** Get Feedback Usage
+   This is the REST API method for getting the feedback usage. 
+
+#+NAME: get_feedback_usage
+#+BEGIN_SRC python
+@api.route('/feedback_usage_by_workshop', methods=['GET', 'POST'])
+def get_feedback_usage():
+    if request.method == 'GET':
+        if 'gateway_ip' in request.args and 'date' in request.args and 'key'\
+            in request.args:
+            gateway_ip = str(request.args['gateway_ip'])
+            date  = request.args['date']
+            key = request.args['key']
+            try:
+                usage_count = SystemInterface.get_feedback_usage(gateway_ip,\
+                                                                     date, key)
+                usage = {'usage': usage_count}
+                return jsonify(usage)
+            except Exception, e:
+                abort(500)
+
+#+END_SRC
+
+** TestGetFeedbackUsage
+#+NAME: test_get_feedback_usage
+#+BEGIN_SRC python
+class TestGetFeedbackUsage(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        SystemInterface(PersistenceDelegate)
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_feedback_usage(self):
+        print "test_get_feedback_usage"
+
+        lab_name = "data structure"
+        exp_name = "lists"
+        date = "25-07-2016"
+        gateway_ip = "10.2.56.65"
+        responses = [{"name": "how are you?", "answers" : ["yes"]},
+                     {"name": "how are the labs?", 
+                     "answers": ["yes", "no", "ok"]}
+                    ]
+        key = Config.key
+        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
+                                               gateway_ip, responses, key)
+
+        headers = {'content-type': 'application/json'}
+        url = "/feedback_usage_by_workshop?gateway_ip=10.2.56.65&date=25-07-2016&key=some alphanumeric string"
+        response = self.client.get(url, headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result['usage'], 1)
+
+#+END_SRC
+
+** Get Feedback Dump
+   This is the REST API method for dumping the feedback forms to elastic search. 
+
+#+NAME: get_feedback_dump
+#+BEGIN_SRC python
+@api.route('/feedback_dump', methods=['GET', 'POST'])
+def get_feedback_dump():
+    if request.method == 'GET':
+        if 'date' in request.args and 'key' in request.args:
+            date  = request.args['date']
+            key = request.args['key']
+            try:
+                feedbacks = SystemInterface.get_feedback_dump(date, key)
+                feedback_list=[]
+                for feedback in feedbacks:
+                    feedback_list.append(feedback.to_client())
+                print feedback_list
+                print type(feedback_list)
+                return jsonify_list(feedback_list)
+            except Exception, e:
+                abort(500)
+
+#+END_SRC
+
+** TestGetFeedbackDump
+#+NAME: test_get_feedback_dump
+#+BEGIN_SRC python
+class TestGetFeedbackDump(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        SystemInterface(PersistenceDelegate)
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_feedback_dump(self):
+        print "test_get_feedback_dump"
+
+        lab_name = "data structure"
+        exp_name = "lists"
+        date = "25-07-2016"
+        gateway_ip = "10.2.56.65"
+        responses = []
+        key = Config.key
+        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
+                                               gateway_ip, responses, key)
+
+        headers = {'content-type': 'application/json'}
+        url = "/feedback_dump?date=25-07-2016&key=some alphanumeric string"
+        response = self.client.get(url, headers=headers)
+        self.assertEqual(response.status_code, 200)
+        date_1 = datetime.datetime.strptime(date, "%d-%m-%Y").date()
+        self.assertEqual(response[0].date, date_1)
+
+#+END_SRC
+
 
 * Infra                                                         :boilerplate:
 
@@ -87,11 +262,13 @@ import requests
 from flask import session, render_template, Blueprint, request, \
      jsonify, abort, current_app, redirect, url_for
 from flask import current_app
-
+from runtime.config.config import Config
 from flask import Flask, redirect, url_for
 from werkzeug import secure_filename
 from runtime.config.config import Config
 from runtime.system.system_interface import *
+from flask import jsonify
+from runtime.utils.type_utils import jsonify_list
 import json
 api = Blueprint('APIs', __name__)
 
@@ -131,10 +308,14 @@ if __name__ == '__main__':
 #+BEGIN_SRC python :tangle api.py :eval no :noweb yes
 <<imports_for_sources>>
 <<add_feedback>>
+<<get_feedback_usage>>
+<<get_feedback_dump>>
 #+END_SRC
 ** tests
 #+BEGIN_SRC python :tangle test_api.py :eval no :noweb yes
 <<imports_for_tests>>
 <<test_add_feedback>>
+<<test_get_feedback_usage>>
+<<test_get_feedback_dump>>
 <<run_test_cases>>
 #+end_src

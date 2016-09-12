@@ -157,6 +157,88 @@ class TestAddFeedback(TestCase):
             
 #+END_SRC
 
+* Test GetFeedbackUsage
+#+NAME: test_get_feedback_usage
+#+BEGIN_SRC python
+class TestGetFeedbackUsage(TestCase):
+    TESTING = True
+    persistent_delegate = None
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        System.initialize_system(PersistenceDelegate)
+        self.persistent_delegate = PersistenceDelegate()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.persistent_delegate = None
+
+    def test_get_feedback_usage(self):
+        print "test_get_feedback_usage_in_system_persistence"
+        gateway_ip = "10.100.40.2"
+        lab_name = "cse01"
+        exp_name = "data01"
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        key = Config.key
+        session = Session(key=key)
+        feedback = System.do("add_feedback", gateway_ip=gateway_ip,
+                                 lab_name=lab_name, exp_name=exp_name,
+                                 date=date, responses=[],
+                                 session=session)
+
+        feedback_usage = System.do("get_feedback_usage",
+                                       gateway_ip=gateway_ip, 
+                                       date=date, 
+                                       session=session)
+        
+        self.assertEqual(feedback_usage, 1)
+            
+#+END_SRC
+
+* Test GetFeedbackDump
+#+NAME: test_get_feedback_dump
+#+BEGIN_SRC python
+class TestGetFeedbackDump(TestCase):
+    TESTING = True
+    persistent_delegate = None
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        System.initialize_system(PersistenceDelegate)
+        self.persistent_delegate = PersistenceDelegate()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.persistent_delegate = None
+
+    def test_get_feedback_dump(self):
+        print "test_get_feedback_dump_in_system_persistence"
+        gateway_ip = "10.100.40.2"
+        lab_name = "cse01"
+        exp_name = "data01"
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        key = Config.key
+        session = Session(key=key)
+        feedback = System.do("add_feedback", gateway_ip=gateway_ip,
+                                 lab_name=lab_name, exp_name=exp_name,
+                                 date=date, responses=[],
+                                 session=session)
+
+        feedbacks = System.do("get_feedback_dump", date=date, session=session)
+        self.assertEqual(feedbacks[0].date, date)
+            
+#+END_SRC
+
 * Test AddResponsesToFeedback
 #+NAME: test_add_responses_to_feedback
 #+BEGIN_SRC python
@@ -262,6 +344,8 @@ if __name__ == '__main__':
 <<test_add_question>>
 <<test_add_answer>>
 <<test_add_feedback>>
+<<test_get_feedback_usage>>
+<<test_get_feedback_dump>>
 <<test_add_responses_to_feedback>>
 <<run_test_cases>>
 #+end_src

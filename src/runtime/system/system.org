@@ -261,6 +261,58 @@ class AddFeedback():
 
 #+end_src
 
+** =GetFeedbackUsage=
+#+NAME: class_get_feedback_usage
+#+begin_src python
+class GetFeedbackUsage():
+    arg_types = {"gateway_ip": is_str, "date": is_date,
+                  "session": is_session}
+    arity_and_type_checks_needed = True
+
+    @staticmethod
+    def auth_check(args):
+        session = args['session']
+        if not System.is_session_valid(session):
+            raise AuthError("Not Authorized to perform this action")
+
+    @staticmethod
+    def state_check(args):
+        pass
+
+    @staticmethod
+    def action(args):
+        gateway_ip = args["gateway_ip"]
+        date = args["date"]
+        usage = System.delegate.get_feedback_usage(gateway_ip, date) 
+        return usage
+
+#+end_src
+
+** =GetFeedbackDump=
+#+NAME: class_get_feedback_dump
+#+begin_src python
+class GetFeedbackDump():
+    arg_types = {"date": is_date, "session": is_session}
+    arity_and_type_checks_needed = True
+
+    @staticmethod
+    def auth_check(args):
+        session = args['session']
+        if not System.is_session_valid(session):
+            raise AuthError("Not Authorized to perform this action")
+
+    @staticmethod
+    def state_check(args):
+        pass
+
+    @staticmethod
+    def action(args):
+        date = args["date"]
+        feedbacks = System.delegate.get_feedback_dump(date) 
+        return feedbacks
+
+#+end_src
+
 ** =AddResponsesToFeedBack=
 #+NAME: class_addresponses_to_feedback
 #+begin_src python
@@ -300,6 +352,8 @@ class AddResponsesToFeedback():
 ops_table = {'add_question' : AddQuestion,
              'add_answer' : AddAnswer,
              'add_feedback': AddFeedback,
+             'get_feedback_usage': GetFeedbackUsage,
+             'get_feedback_dump': GetFeedbackDump,
              'add_responses_to_feedback': AddResponsesToFeedback
             }
 
@@ -336,6 +390,8 @@ from runtime.config.config import Config
 <<class_addquestion>>
 <<class_addanswer>>
 <<class_addfeedback>>
+<<class_get_feedback_usage>>
+<<class_get_feedback_dump>>
 <<class_addresponses_to_feedback>>
 <<ops_table>>
 

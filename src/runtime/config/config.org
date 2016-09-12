@@ -9,4 +9,10 @@ This holds the application's configuration parameters.
 #+BEGIN_SRC python :tangle config.py :noweb yes
 class Config:
     key = "some alphanumeric string"
+    questions = [{'name':'how are labs', 'type':'radio', 
+                  'options':['excellent', 'good', 'average', 'bad']},
+                  {'name':'which all courses has this lab?', 'type':'checkbox', 
+                  'options': ['excellent', 'good', 'average', 'bad']},
+                  {'name': 'any other comments?', 'type': 'text', 'options': []}
+                ]
 #+END_SRC

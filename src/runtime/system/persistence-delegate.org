@@ -317,6 +317,92 @@ class TestPersistentDelegate(TestCase):
 #+END_SRC
 
 
+***  Get feedback Usage from the system
+    This function gets the feedback usage from the system.
+#+NAME: persistent_get_feedback_usage
+#+BEGIN_SRC python
+    def get_feedback_usage(self, gateway_ip, date):
+        try:
+            feedbacks = self.get_feedbacks(gateway_ip=gateway_ip, date=date)
+            return len(feedbacks)
+        except Exception as e:
+            print "no feedback found with given ip %s and date %s" \
+              %(gateway_ip, date)
+
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistent_get_feedback_usage
+#+BEGIN_SRC python
+    def test_get_feedback_usage(self):
+         print "test_get_feedback_usage"
+         gateway_ip1 = "10.100.40.2"
+         lab_name1 = "cse01"
+         exp_name1 = "data01"
+         date1 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+         responses1 = []
+         fb1 = self.persistent_delegate.add_feedback(gateway_ip1, lab_name1,
+                                                        exp_name1, date1,
+                                                        responses1)
+         gateway_ip2 = "10.100.40.2"
+         lab_name2 = "cse02"
+         exp_name2 = "data02"
+         date2 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+         responses2 = []
+         fb2 = self.persistent_delegate.add_feedback(gateway_ip2, lab_name2,
+                                                        exp_name2, date2,
+                                                        responses2)
+         usage = self.persistent_delegate.get_feedback_usage(gateway_ip2, 
+                                                                 date2)
+
+         self.assertEqual(usage, 2)
+
+#+END_SRC
+
+
+***  Get feedback Dump from the system
+    This function gets the feedback usage from the system.
+#+NAME: persistent_get_feedback_dump
+#+BEGIN_SRC python
+    def get_feedback_dump(self, date):
+        try:
+            feedbacks = self.get_feedbacks(date=date)
+            return feedbacks
+        except Exception as e:
+            print "no feedbacks were found on date %s" \
+              %(date)
+
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistent_get_feedback_dump
+#+BEGIN_SRC python
+    def test_get_feedback_dump(self):
+         print "test_get_feedback_dump"
+         gateway_ip1 = "10.100.40.2"
+         lab_name1 = "cse01"
+         exp_name1 = "data01"
+         date1 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+         responses1 = []
+         fb1 = self.persistent_delegate.add_feedback(gateway_ip1, lab_name1,
+                                                        exp_name1, date1,
+                                                        responses1)
+         gateway_ip2 = "10.100.40.2"
+         lab_name2 = "cse02"
+         exp_name2 = "data02"
+         date2 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+         responses2 = []
+         fb2 = self.persistent_delegate.add_feedback(gateway_ip2, lab_name2,
+                                                        exp_name2, date2,
+                                                        responses2)
+         feedbacks = self.persistent_delegate.get_feedback_dump(date2)
+
+         self.assertEqual(feedbacks[0].date, date1)
+         self.assertEqual(feedbacks[0].gateway_ip, gateway_ip1)
+
+#+END_SRC
+
+
 ***  Add response to the system
     This function adds responses to the system.
 #+NAME: persistent_add_responses_to_feedback
@@ -443,7 +529,7 @@ class TestPersistentDelegate(TestCase):
 
 
 ***  Get Responses
-    This function returns response if present in the database.  If the response is
+    This function returns responses if present in the database.  If the response is
     not present, =None= type is returned.
 #+NAME: persistent_get_responses
 #+BEGIN_SRC python
@@ -495,6 +581,57 @@ class TestPersistentDelegate(TestCase):
                               res.get("question").get("name"))
          self.assertEqual(response_obj[0].get("answers")[0].get("name"),
                               res.get("answers")[0].get("name"))
+
+#+END_SRC
+
+
+
+***  Get Feedbacks
+    This function returns all feedbacks if present in the database.  If the feedbacks is
+    not present, =None= type is returned.
+#+NAME: persistent_get_feedbacks
+#+BEGIN_SRC python
+    def get_feedbacks(self, **kwargs):
+        ret_val = None
+        try:
+            ret_val = Feedback.apply_filters(**kwargs)
+        except NotFoundError as e:
+            ret_val = None
+        
+        return ret_val
+
+#+END_SRC
+
+****  Tests
+#+NAME: test_persistent_get_feedback
+#+BEGIN_SRC python
+    def test_get_feedbacks(self):
+         print "test_get_feedbacks"
+
+         name = "how are labs?"
+         q_type = "radio"
+         question1 = Question(name=name, question_type=q_type)
+         question1.save()
+         ans = "excellent labs"
+         answer1 = Answer(name=ans)
+         answer1.save()
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         feedback_obj = self.persistent_delegate.get_feedbacks(gateway_ip=\
+                                                        gateway_ip, date=date)
+         self.assertEqual(feedback_obj[0].get("gateway_ip"),
+                              gateway_ip)
+         self.assertEqual(feedback_obj[0].get("date"), date)
 
 #+END_SRC
 
@@ -559,6 +696,9 @@ if __name__ == '__main__':
 <<persistent_add_question>>
 <<persistent_add_answer>>
 <<persistent_add_feedback>>
+<<persistent_get_feedbacks>>
+<<persistent_get_feedback_usage>>
+<<persistent_get_feedback_dump>>
 <<persistent_add_responses_to_feedback>>
 
 #+end_src
@@ -578,6 +718,9 @@ if __name__ == '__main__':
 <<test_persistent_add_question>>
 <<test_persistent_add_answer>>
 <<test_persistent_add_feedback>>
+<<test_persistent_get_feedback>>
+<<test_persistent_get_feedback_usage>>
+<<test_persistent_get_feedback_dump>>
 <<test_persistent_add_responses_to_feedback>>
 <<run_test_cases>>
 

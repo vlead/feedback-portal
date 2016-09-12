@@ -108,6 +108,19 @@ def is_none(value):
 
 #+END_SRC
 
+** Helper Function
+#+name: def_jsonify_list
+#+BEGIN_SRC  python
+# return a list of dicts as json with correct mime types
+# flask does not provide a jsonify for lists; hence this method
+def jsonify_list(data):
+    if type(data) is not list:
+        raise Exception('jsonify_list function accepts only a list')
+
+    return make_response(json.dumps(data), 200,
+                         {'content-type': 'application/json'})
+
+#+END_SRC
 
 * Checks
   All checks check on a predicate for a type.  
@@ -321,6 +334,9 @@ def check_inv(inv, *name):
 import re
 import types
 import datetime
+import json
+
+from flask import make_response
 
 #+END_SRC
 
@@ -358,6 +374,7 @@ if __name__ == '__main__':
 <<def_is_email_str>>
 <<def_is_date>>
 <<def_is_none>>
+<<def_jsonify_list>>
 <<def_is_int>>
 <<def_check_pred>>
 <<def_check_inst>>
