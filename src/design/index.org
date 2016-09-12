@@ -1,7 +1,7 @@
 #+TITLE: Design of Feedback Portal/Service
 #+AUTHOR: VLEAD
 #+DATE: [2016-09-09 Fri]
-#+SETUPFILE: ./org-templates/level-0.org
+#+SETUPFILE: ../org-templates/level-1.org
 #+TAGS: boilerplate(b)
 #+EXCLUDE_TAGS: boilerplate
 #+OPTIONS: ^:nil
@@ -9,6 +9,7 @@
 
 * Introduction 
   The =design= of the =Feedback Portal/Service= is captured here.
+
 
 * Application Programming Interface
   :PROPERTIES:
@@ -226,6 +227,6 @@
   elastic search database to analyze the data.  [[./index.org::#get_feedback_on_a_day][API]] provides the interface to
   fetch all the feedback forms submitted on a given date.  A job that runs
   every night 5 minutes past the midnight [[./index.org::#get_feedback_on_a_day][fetches]] the list of feedback forms
-  submitted the previous day and [[posts]] each feedback to the elastic search
+  submitted the previous day and posts each feedback to the elastic search
   engine.
     
