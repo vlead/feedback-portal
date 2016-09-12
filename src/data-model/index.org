@@ -1,4 +1,4 @@
-#+TITLE: Feedback Portal 3.0 Data Model
+#+TITLE: Data Model for Feedback Portal/Service
 #+AUTHOR: VLEAD
 #+DATE: [2016-08-29 Mon]
 #+PROPERTY: results output
@@ -281,9 +281,9 @@ zero, one or more elements of =B=.
   The following are the abstract data types in our system. 
 ** Feedback
 :PROPERTIES:
-:CUSTOM_ID: entity_user
+:CUSTOM_ID: entity_feedback
 :END: 
-  Requirement satisfied: [[../requirements/index.org::#req_user][Feedback]]
+  Requirement satisfied: [[../requirements/index.org::#feedback_form][Feedback]]
 
 #+BEGIN_SRC spec :tangle spec.txt
 ;;; Entity Types
@@ -292,18 +292,19 @@ TYPE Feedback
 
 ** Question
 :PROPERTIES:
-:CUSTOM_ID: entity_name
+:CUSTOM_ID: entity_question
 :END: 
-  Requirement satisfied: [[../requirements/index.org::#req_user_name][Question]]
+  Requirement satisfied: [[../requirements/index.org::#questions][Question]]
 #+BEGIN_SRC spec :tangle spec.txt
 ;;; Entity Types
 TYPE Question
 #+END_SRC
+
 ** Answer
 :PROPERTIES:
-:CUSTOM_ID: entity_email
+:CUSTOM_ID: entity_answer
 :END: 
-  Requirement satisfied: [[../requirements/index.org::#req_user_identification][Answer]]
+  Requirement satisfied: [[../requirements/index.org::#answers][Answer]]
 #+BEGIN_SRC spec :tangle spec.txt
 ;;; Entity Types
 TYPE Answer
@@ -311,14 +312,13 @@ TYPE Answer
 
 ** Response
 :PROPERTIES:
-:CUSTOM_ID: entity_role
+:CUSTOM_ID: entity_responses
 :END: 
-  Requirement satisfied: [[../requirements/index.org::#req_role][Response]]
+  Requirement satisfied: [[../requirements/index.org::#responses][Response]]
 #+BEGIN_SRC spec :tangle spec.txt
 ;;; Entity Types
 TYPE Response 
 #+END_SRC
-
 
 * Relations and cardinality constraints over entity types 
   :PROPERTIES:
@@ -328,24 +328,22 @@ TYPE Response
   diagrams for visual clarity. 
 
 ** Relations
-For each relation, we define its inverse next to it.
+   For each relation, we define its inverse next to it.
 #+BEGIN_SRC spec :tangle spec.txt
 
 ;;; Relations with cardinality constraints
 
-[feedback, response]   : Feedback    >    Response *
-[response, question]   : Response    >    Question !
-[response, answer]     : Response    >    Answer +
+[responses, feedbacks]   : Feedback +  >    Response +
+[question, responses]    : Response    >    Question !
+[answers, response]      : Response    >    Answer +
 
 #+END_SRC
 
 
 ** Diagrams
-   The following diagrams summarizes all the cardinality constraints across all
+   The following diagram summarizes all the cardinality constraints across all
    entities.
 
-   This diagrams depicts the relationships between User, Role, Session, Email
-   and Name entities
 #+BEGIN_HTML
 <img src="https://docs.google.com/drawings/d/1k3AovJg7GJe65MI_LAJA_3RdMsmlP9eTC8wLBbmfwdY/pub?w=960&h=720">
 <p align="center"> Feedback Relations </p>
@@ -374,7 +372,8 @@ is a relation =r: A? > K!=.
 
 * Assumptions
 
-1) Gateway IP, User id, Lab id, Discipline id will be provided by the OpenedX.
+  Lab name and experiment name are provided by the client asking to get the
+  feedback form. 
 
 
 * System state
@@ -390,6 +389,7 @@ Sets
   feedback-set  : set[Feedback]  ; set of all feedbacks in the system
 
  #+END_SRC
+
 
 ** Derived Entity sets
 :PROPERTIES:
@@ -410,13 +410,18 @@ Sets
 
 
 * Referential Integrity over primary and derived entity sets
+:PROPERTIES:
+:CUSTOM_ID: referential_integrity_relations
+:END: 
 #+BEGIN_SRC spec :tangle spec.txt
-  [feedback, response]   : feedback-set !  >  response-set +
-  [response, question]   : response-set    >  question-set !
-  [response, answer]     : response-set    >  answer-set + 
-  [workshop, feedback]   : feedback-set    >  workshop-set !
+  [responses, feedbacks]   : feedback-set +  >  response-set +
+  [question, responses]    : response-set    >  question-set !
+  [answers, response]      : response-set    >  answer-set + 
+  [workshop, feedbacks]    : feedback-set +  >  workshop-set ?
 
 #+END_SRC
+  The relation =feedbacks : workshop-set > feedback-set += is ascertained by the
+  fact that workshop-set is [[./index.org::#derived_entity_sets][derived entity set]].
 
 
 * Operations 

@@ -8,13 +8,42 @@
 #+LATEX: Literal LaTeX code for export
 
 The requirements of =Feedback Portal/Service= are listed here. 
-
-
+questions
 * Ability of the user of =Virtual Labs= to provide feedback
+  A user is provided with a feedback form with:
+  - a set of questions and
+  - an ability to answer these questions.
+
 :PROPERTIES:
 :CUSTOM_ID: provide_feedback
 :END: 
-  A user is able to provide feedback after conducting an experiment.
+** Feedback Form
+:PROPERTIES:
+:CUSTOM_ID: feedback_form
+:END: 
+   A user is able to provide feedback after conducting an experiment.
+
+
+** Questions
+:PROPERTIES:
+:CUSTOM_ID: questions
+:END: 
+   The feedback form consists of a set of questions
+
+
+** Answers
+:PROPERTIES:
+:CUSTOM_ID: answers
+:END: 
+   The user either chooses an option or a set a options or types text for the
+   questions posed. 
+
+** User Responses
+:PROPERTIES:
+:CUSTOM_ID: responses
+:END: 
+   The ability to pair the answer with the question for analysis is provided by
+   the feedback service.
 
 * Capture =Workshop Usage= via feedback forms
 :PROPERTIES:
@@ -23,6 +52,7 @@ The requirements of =Feedback Portal/Service= are listed here.
   A =Nodal Center Coordinator= is able to view the usage from a workshop.  The
   workshop usage is defined as the number of feedback forms submitted by the
   students attending the workshop.
+
 
 * Analytics
 :PROPERTIES:
