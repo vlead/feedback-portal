@@ -206,9 +206,10 @@
   :CUSTOM_ID: form_generation
   :END:          
   Feebback form is buult on the browser from the data that is sent as part of
-  the [[./index.org::#api][=GET=]] response.  The response contains all the relevant data to build the
-  form.  It will hold the questions, the type like if the question is a radio
-  button or a check box etc. and the values for each option.
+  the [[./index.org::#display_feedback_form][=GET=]] response.  The response contains all the relevant data to build the
+  form.  It will hold the questions, the =type= of the question like if the
+  question is a radio button or a check box etc. and the values of all the
+  oprions a question can have.
 
 #+BEGIN_HTML
 <img src="https://docs.google.com/drawings/d/10nfQZtJ7NJaDYKZru5DiXlS-YZaXQ1nlLoYb5-oRaCY/pub?w=960&amp;h=720">

@@ -9,6 +9,7 @@
 * Introduction
 ** Structure of each operation class
 
+
 * The =SystemInterface= class
 
 ** Constructor
@@ -21,6 +22,9 @@ class SystemInterface ():
         System.initialize_system(cls)
 
 #+end_src
+
+
+** GetFeedbackForm
 
 
 ** AddFeedback
@@ -107,7 +111,7 @@ class TestAddFeedback(TestCase):
                      "answers": ["yes", "no", "ok"]}
                     ]
 
-        key = Config.key
+        key = KEY
 
         fb = SystemInterface.add_feedback(lab_name, exp_name, date,
                                                gateway_ip, responses, key)
@@ -173,7 +177,7 @@ class TestGetFeedbackUsage(TestCase):
                      "answers": ["yes", "no", "ok"]}
                     ]
 
-        key = Config.key
+        key = KEY
 
         fb = SystemInterface.add_feedback(lab_name, exp_name, date,
                                                gateway_ip, responses, key)
@@ -257,7 +261,6 @@ class TestGetFeedbackDump(TestCase):
 #+name: imports_for_sources
 #+BEGIN_SRC python
 # -*- coding: utf-8 -*-
-from runtime.config.config import Config
 from runtime.system.system import *
 from runtime.system.persistent_delegate import *
 from runtime.objects.entities import Session

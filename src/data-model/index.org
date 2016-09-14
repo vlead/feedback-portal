@@ -320,6 +320,7 @@ TYPE Answer
 TYPE Response 
 #+END_SRC
 
+
 * Relations and cardinality constraints over entity types 
   :PROPERTIES:
   :CUSTOM_ID: cardinal_constraints

@@ -1,18 +1,92 @@
-#+title:  Configuration Parameters
+#+TITLE: Configuration
 #+AUTHOR: VLEAD
-#+SETUPFILE: ../../org-templates/level-1.org
+#+DATE: [2016-08-31 Wed]
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
 
 * Introduction
 
 This holds the application's configuration parameters.
 
-#+BEGIN_SRC python :tangle config.py :noweb yes
-class Config:
-    key = "some alphanumeric string"
-    questions = [{'name':'how are labs', 'type':'radio', 
-                  'options':['excellent', 'good', 'average', 'bad']},
-                  {'name':'which all courses has this lab?', 'type':'checkbox', 
-                  'options': ['excellent', 'good', 'average', 'bad']},
-                  {'name': 'any other comments?', 'type': 'text', 'options': []}
-                ]
+
+* Questions
+  The set of questions and meta data about questions like type of a question -
+  whether it is a =textbox= or a =radiobutton= or a =checkbox= along with the
+  options that a user can select for each question are captured as key value
+  pairs.  This information is rendered on the client dynamically when a
+  feedback form is requested. 
+#+NAME: questions_config
+#+BEGIN_SRC python
+questions_dict = {'questions': [
+    {'name':'how are labs', 'type':'radio', 
+         'options':['excellent', 'good', 'average', 'bad']},
+    {'name':'which all courses has this lab?', 'type':'checkbox', 
+         'options': ['excellent', 'good', 'average', 'bad']},
+    {'name': 'any other comments?', 'type': 'text', 'options': []}
+    ]}
+
 #+END_SRC
+
+
+* Flask Application Configuration
+  Configuration for the flask application. 
+#+NAME: flask_app_config
+#+BEGIN_SRC python
+# DB URI
+# example DB URI:
+# mysql+oursql://scott:tiger@localhost/mydatabase
+# postgresql+psycopg2://scott:tiger@localhost/mydatabase
+SQLALCHEMY_DATABASE_URI = 'mysql+oursql://<userid>:<password>@<servername>/<db_name>'
+# example
+# SQLALCHEMY_DATABASE_URI = 'mysql+oursql://root:mysql@localhost/outreach'
+
+# Debug from SQLAlchemy
+# Turn this to False on production
+SQLALCHEMY_ECHO = False
+SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+# List of allowed origins for CORS
+ALLOWED_ORIGINS = "['*']"
+
+# List of allowed IPs
+WHITELIST_IPS = ["127.0.0.1"]
+
+# Configure your log paths
+LOG_FILE_DIRECTORY = 'logs'
+LOG_FILE = 'feedback.log'
+
+# Log level for the application
+#10=DEBUG, 20=INFO, 30=WARNING, 40=ERROR, 50=CRITICAL",
+LOG_LEVEL = 10
+
+#+END_SRC
+
+
+* System Config
+#+NAME: system_config
+#+BEGIN_SRC python
+#Fill the value during deployment.  Generate the key. 
+KEY="default key"
+
+#+END_SRC
+
+
+* Tangling                                                      :boilerplate:
+** questions_config
+#+BEGIN_SRC python :tangle questions_config.py :eval no :noweb yes
+<<questions_config>>
+#+end_src
+
+
+** flask_app_config
+#+BEGIN_SRC python :tangle flask_app_config.py :eval no :noweb yes
+<<flask_app_config>>
+#+end_src
+
+
+** system_config
+#+BEGIN_SRC python :tangle system_config.py :eval no :noweb yes
+<<system_config>>
+#+end_src

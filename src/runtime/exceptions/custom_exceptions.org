@@ -6,11 +6,13 @@
 #+EXCLUDE_TAGS: boilerplate
 #+OPTIONS: ^:nil
 
-All custom exceptions used by the application are defined here.
+* Introduction
+  All custom exceptions used by the application are defined here.
 
-* Custom Exceptions
 
-  These are some of the custom exceptions used in the application.
+* Exceptions defined for the application
+
+  These are custom exceptions used in the application.
 
 *** AttributeRequired
 
@@ -129,4 +131,5 @@ class Error(Exception):
 <<class_StateError>>
 <<class_NotFoundError>>
 <<class_Error>>
+
 #+END_SRC

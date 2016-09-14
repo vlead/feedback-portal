@@ -6,10 +6,13 @@
 #+EXCLUDE_TAGS: boilerplate
 #+OPTIONS: ^:nil
 
-This document illustrates building of the REST API.
+* Introduction 
+  This document illustrates building of the REST API.
+
+
 * REST
-** Add Feedback
-   This is the REST API method for adding feedback. 
+** Get and Add Feedback
+   This is the REST API method for both getting and adding feedback.
 
 #+NAME: add_feedback
 #+BEGIN_SRC python
@@ -22,7 +25,7 @@ def add_feedback():
             lab_name = request.args['lab_name']
             exp_name = request.args['exp_name']
             key = request.args['key']
-            questions = Config.questions
+#            questions = Config.questions
             json_data = {'lab_name': str(lab_name), 'exp_name': str(exp_name), 
                          'questions': questions}
             return jsonify(json_data)
@@ -30,7 +33,7 @@ def add_feedback():
         elif 'lab_name' in request.args and 'key' in request.args:
             lab_name = request.args['lab_name']
             key = request.args['key']
-            questions = Config.questions
+#            questions = Config.questions
             json_data = {'lab_name': str(lab_name), 'questions': questions}
             return jsonify(json_data)
         else:
@@ -87,7 +90,7 @@ class TestAddFeedback(TestCase):
                    'exp_name': 'tuples',
                    'date': '25-07-2016',
                    'gateway_ip': '10.4.0.12',
-                   'key' : Config.key,
+                   'key' : '', #Config.key,
                    'responses': [{'name': 'Exp is working',
                                   'answers':['yes', 'no'] }]
                   }
@@ -173,7 +176,7 @@ class TestGetFeedbackUsage(TestCase):
                      {"name": "how are the labs?", 
                      "answers": ["yes", "no", "ok"]}
                     ]
-        key = Config.key
+#        key = Config.key
         fb = SystemInterface.add_feedback(lab_name, exp_name, date,
                                                gateway_ip, responses, key)
 
@@ -236,7 +239,7 @@ class TestGetFeedbackDump(TestCase):
         date = "25-07-2016"
         gateway_ip = "10.2.56.65"
         responses = []
-        key = Config.key
+#        key = Config.key
         fb = SystemInterface.add_feedback(lab_name, exp_name, date,
                                                gateway_ip, responses, key)
 
@@ -262,14 +265,13 @@ import requests
 from flask import session, render_template, Blueprint, request, \
      jsonify, abort, current_app, redirect, url_for
 from flask import current_app
-from runtime.config.config import Config
 from flask import Flask, redirect, url_for
 from werkzeug import secure_filename
-from runtime.config.config import Config
-from runtime.system.system_interface import *
+from runtime.config.questions_config import *
 from flask import jsonify
 from runtime.utils.type_utils import jsonify_list
 import json
+
 api = Blueprint('APIs', __name__)
 
 #+end_src
@@ -303,7 +305,8 @@ if __name__ == '__main__':
 
 #+END_SRC
 
-* Tangle                          :boilerplate:
+
+* Tangle                                                        :boilerplate:
 ** sources
 #+BEGIN_SRC python :tangle api.py :eval no :noweb yes
 <<imports_for_sources>>
@@ -319,3 +322,4 @@ if __name__ == '__main__':
 <<test_get_feedback_dump>>
 <<run_test_cases>>
 #+end_src
+

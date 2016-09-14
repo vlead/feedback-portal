@@ -294,7 +294,7 @@ class TestSession(TestCase):
 # -*- coding: utf-8 -*-
 from runtime.utils.type_utils import *
 from runtime.utils.class_templates import *
-from runtime.exceptions.exceptions import *
+from runtime.exceptions.custom_exceptions import *
 
 #+end_src
 
