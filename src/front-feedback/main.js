@@ -6,20 +6,39 @@ var sampleData = {
 	"questions":
 		[
 			{
-			"name": "How did this experiment helped you understanding the concept?",
+			"name": "1. Did you do the experiment?",
 			"type": "radioButton",
-			"options": ["fine", "good", "well", "not well"]
+			"options": ["Yes", "No"]
 			},
 
 			{
-			"name": "Hobbies check?",
-			"type": "checkBox",
-			"options": ["foo", "bar", "baz", "qux"]
+			"name": "2. Did the experiment work?",
+			"type": "radioButton",
+			"options": ["Yes", "No"]
 			},
 
 			{
-			"name": "College Name",
-			"type": "textBox",
+			"name": "3. How much did you know about the experiment before doing it in Virtual Labs?",
+			"type": "radioButton",
+			"options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+			},
+
+			{
+			"name": "4. Is this experiment part of your curriculum?",
+			"type": "radioButton",
+			"options": ["Yes", "No"]
+			},
+
+			{
+			"name": "5.  Does this help you to perform better in the curriculum?",
+			"type": "radioButton",
+			"options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+			},
+
+			{
+			"name": "6. Would you recommend it to your fellow students?",
+			"type": "radioButton",
+			"options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 			},
 
 			{
@@ -96,7 +115,6 @@ function renderFeedbackform() {
         radioLabel.insertBefore(radioOption, radioLabel.firstChild);
 				formGroup.appendChild(optionsDiv1);
 				questions_list.appendChild(formGroup);
-				console.log("radioblahhhhhhhhhhhhhhhhhhhhhhh");
 			}
 		}
     else if (sampleData.questions[i].type === "textArea") {
@@ -107,7 +125,6 @@ function renderFeedbackform() {
 			ansTextArea.className = "form-control"
 			ansTextArea.id = sampleData.questions[i].name;
 			formGroup.appendChild(ansTextArea);
-			console.log("textarea");
     }
 		else if(sampleData.questions[i].type === 'textBox') {
       var ansTextBox;
@@ -117,16 +134,14 @@ function renderFeedbackform() {
 			ansTextBox.className = "form-control"
 			ansTextBox.id = sampleData.questions[i].name;
 			formGroup.appendChild(ansTextBox);
-			//document.getElementById("questions_list").appendChild(ansTextBox);
-			console.log("text");
 		}
 	}
 }
 
 function submitFeedback(event) {
+
     event.preventDefault();
   	var feedback = {}; // the final feedback object
-
   	feedback.lab_name = sampleData.lab_name;
   	feedback.exp_name = sampleData.exp_name;
   	feedback.questions = []; // the list of questions and user answers
@@ -134,17 +149,17 @@ function submitFeedback(event) {
 
     // loop over the questions
 	for (var i = 0; i < quesArray; i++) {
-    // getByElementId using the question name - this is our answer div
 	  var questionElement = document.getElementById(sampleData.questions[i].name);
 	  var answer = null;
 		if(sampleData.questions[i].type === 'radioButton') {
       var children = questionElement.querySelectorAll('input');
 	  		for(var j = 0; j < children.length; j++) {
 	    		var child = children[j];
-          console.log('child', child, child.type, child.checked);
+          // console.log('child', child, child.type, child.checked);
 	    		if(child.type === 'radio' && child.checked === true) {
-	      			console.log('selected', child.value);
+	      			// console.log('selected', child.value);
 	      			answer = child.value;
+	      			
 	    		}
 	  		}
 		}
@@ -154,8 +169,9 @@ function submitFeedback(event) {
 	    	for(var j = 0; j < children.length; j++) {
 	        var child = children[j];
 	        if(child.checked === true) {
-	          console.log('selected', child.value);
+	          // console.log('selected', child.value);
 	          answer.push(child.value);
+	          
 	        }
 	      }
 	  }
@@ -176,5 +192,5 @@ function submitFeedback(event) {
 	  }
 	  console.log(feedback); // the final object
 	  console.log("Submitted feedback");
-	  // console.log("Submitted feedback");
+
 }
