@@ -16,6 +16,21 @@
       width: 80%;
       margin-top: 30px;
     }
+    .headInfo {
+    	margin-left: 0px; 
+    	margin-top: 20px;
+    }
+    .values {
+    	margin-left: 0px;
+    	text-align: left;
+    }
+    .rowCol {
+    	border: 1px solid #ccc
+    	/*margin-top: 2px;*/
+    }
+    .mainrow {
+    	margin-top: 4px;
+    }
 	</style>
   </head>
 
@@ -23,6 +38,28 @@
     <div class="container">
       <h1> Virtual Labs - Feedback Form </h1>
       <h4> Please fill in details below and click on submit </h4>
+      <div class="row headInfo">
+      	<div class="row">
+      		<div class = "col-sm-2" id = "user_name"></div>
+      		<div class = "col-sm-4 values" id = "user_name_value"></div>
+
+      		<div class = "col-sm-2" id = "roll_no"></div>
+      		<div class = "col-sm-4 values" id = "roll_no_value"></div>
+
+
+      	</div>
+      	<div class="row">
+      		<div class = "col-sm-2" id = "clg_name"></div>
+      		<div class = "col-sm-4 values" id = "clg_name_value"></div>
+
+      		<div class = "col-sm-2" id = "year_sem"></div>
+      		<div class = "col-sm-4 values" id = "year_sem_value"></div>
+      	</div>
+      	<div class="row mainrow" >
+      		<div id="row" disabed = "true"></div>
+      		
+      	</div>
+      </div>
       <form class="form" id="feedback-form" onsubmit="submitFeedback(event)">
         <div class="form-group">
           <label class="" id="lab_name_label"></label>
@@ -37,6 +74,11 @@
         <button class="btn btn-primary" >Submit</button>
       </form>
     </div>
+    <div id="footer">
+	<div class="container">
+    	<p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>
+  	</div>
+</div>
   </body>
 
   <!-- Jquery and Scipts Link -->

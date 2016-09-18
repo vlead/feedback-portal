@@ -1,6 +1,10 @@
 var sampleData = {
 	"lab_name": "Computer Prog Lab",
 	"exp_name": "Array",
+	"user_name": "John", 
+	"roll_no": "2016200523", 
+	"year_sem": "2015-16", 
+	"clg_name": "IIT Delhi",
 	"user_id": "user123",
 	"data": "11",
 	"questions":
@@ -18,25 +22,32 @@ var sampleData = {
 			},
 
 			{
-			"name": "3. How much did you know about the experiment before doing it in Virtual Labs?",
-			"type": "radioButton",
-			"options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
-			},
-
-			{
-			"name": "4. Is this experiment part of your curriculum?",
+			"name": "3. Did you find any bugs in the experiment? ",
 			"type": "radioButton",
 			"options": ["Yes", "No"]
 			},
 
 			{
-			"name": "5.  Does this help you to perform better in the curriculum?",
+			"name": "4. How much did you know about the experiment before doing it in Virtual Labs?",
+			"type": "radioButton",
+			"options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+			},
+
+			
+			{
+			"name": "5. Is this experiment part of your curriculum?",
+			"type": "radioButton",
+			"options": ["Yes", "No"]
+			},
+
+			{
+			"name": "6.  Does this help you to perform better in the curriculum?",
 			"type": "radioButton",
 			"options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 			},
 
 			{
-			"name": "6. Would you recommend it to your fellow students?",
+			"name": "7. Would you recommend it to your fellow students?",
 			"type": "radioButton",
 			"options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 			},
@@ -59,6 +70,31 @@ function renderQuesLabel() {
 }
 
 function renderFeedbackform() {
+	var user_name = document.getElementById("user_name");
+	user_name.innerHTML = "Name: ";
+	var user_name_value = document.getElementById("user_name_value");
+	user_name_value.innerHTML = sampleData.user_name;
+
+	var clg_name = document.getElementById("clg_name");
+	clg_name.innerHTML = "College Name: ";
+	var clg_name_value = document.getElementById("clg_name_value");
+	clg_name_value.innerHTML = sampleData.clg_name;
+
+	var year_sem = document.getElementById("year_sem");
+	year_sem.innerHTML = "Year/Sem: ";
+	var year_sem_value = document.getElementById("year_sem_value");
+	year_sem_value.innerHTML = sampleData.year_sem;
+
+	var roll_no = document.getElementById("roll_no");
+	roll_no.innerHTML = "Roll No.: ";
+	var roll_no_value = document.getElementById("roll_no_value");
+	roll_no_value.innerHTML = sampleData.roll_no;
+
+	var row = document.getElementById("row");
+	// <input class="form-control" id="lab_name_value" disabled="true">
+	row.className = "col-sm-10 rowCol";
+
+
 	var lab_name_label = document.getElementById("lab_name_label");
 	lab_name_label.innerHTML = "Lab Name";
 	var lab_name_value = document.getElementById("lab_name_value");
@@ -97,6 +133,7 @@ function renderFeedbackform() {
 		else if(sampleData.questions[i].type === "radioButton") {
 			renderQuesLabel();
 			labelQues.innerHTML = sampleData.questions[i].name;
+
 			var optionsDiv1 = document.createElement("div");
 			//optionsDiv1.className = "col-sm-12";
 			optionsDiv1.id = sampleData.questions[i].name;
@@ -112,7 +149,7 @@ function renderFeedbackform() {
 				radioLabel.innerHTML = sampleData.questions[i].options[k];
 				//optionsDiv1.appendChild(radioOption);
 				optionsDiv1.appendChild(radioLabel);
-        radioLabel.insertBefore(radioOption, radioLabel.firstChild);
+        		radioLabel.insertBefore(radioOption, radioLabel.firstChild);
 				formGroup.appendChild(optionsDiv1);
 				questions_list.appendChild(formGroup);
 			}
@@ -144,6 +181,10 @@ function submitFeedback(event) {
   	var feedback = {}; // the final feedback object
   	feedback.lab_name = sampleData.lab_name;
   	feedback.exp_name = sampleData.exp_name;
+  	feedback.user_name = sampleData.user_name;
+  	feedback.roll_no = sampleData.roll_no;
+  	feedback.clg_name = sampleData.clg_name;
+  	feedback.year_sem = sampleData.year_sem;
   	feedback.questions = []; // the list of questions and user answers
 	  var quesArray = sampleData.questions.length;
 
