@@ -17,27 +17,35 @@
 #+NAME: add_feedback
 #+BEGIN_SRC python
 @api.route('/feedback', methods=['GET', 'POST'])
-def add_feedback():
+def get_add_feedback():
     if request.method == 'GET':
-            
-        if 'lab_name' in request.args and 'exp_name' in request.args and 'key'\
-            in request.args:
-            lab_name = request.args['lab_name']
-            exp_name = request.args['exp_name']
-            key = request.args['key']
-#            questions = Config.questions
-            json_data = {'lab_name': str(lab_name), 'exp_name': str(exp_name), 
-                         'questions': questions}
-            return jsonify(json_data)
-
-        elif 'lab_name' in request.args and 'key' in request.args:
-            lab_name = request.args['lab_name']
-            key = request.args['key']
-#            questions = Config.questions
-            json_data = {'lab_name': str(lab_name), 'questions': questions}
-            return jsonify(json_data)
+        if 'lab_name' not in request.args or 'key' not in request.args:
+            abort(400, 'Either lab name or key or both are not passed')
         else:
-            pass
+            lab_name = str(request.args['lab_name'])
+            key = str(request.args['key'])
+        if 'exp_name' not in request.args:
+            exp_name = None
+        else:
+            exp_name = str(request.args['exp_name'])
+        if 'user_id' not in request.args:
+            user_id = None
+        else:
+            user_id = str(request.args['user_id'])
+
+        try:
+            response = SystemInterface.get_feedback_form(key, 
+                                                         lab_name, 
+                                                         exp_name,
+                                                         user_id)
+            return jsonify(response)
+        except NotAuthorizedError as err:
+            abort(401, 'Not Authorized error: %s' % str(err))
+        except TypeError as err:
+            abort(400, 'Malformed arguments, error: %s' % str(err))
+        except Exception as err:
+            abort(500, 'error: %s' % str(err))
+
 
     if request.method == 'POST':
         if not request.json or not 'lab_name' in request.json or not \
@@ -66,9 +74,76 @@ def add_feedback():
 
 #+END_SRC
 
-** TestAddFeedback
-#+NAME: test_add_feedback
-#+BEGIN_SRC python
+*** TestGetFeedback
+ #+NAME: test_get_feedback
+ #+BEGIN_SRC python
+class TestGetFeedback(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_lab_feedback_form_data(self):
+        print "test_get_lab_feedback_form_data"
+
+        lab_name = "Data Structures"
+        exp_name = "binary search"
+        user_id = "123user"
+        headers = {'content-type': 'application/json'}
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
+          % (lab_name, exp_name, user_id, KEY)
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(result['lab_name'], lab_name)
+
+    def test_get_lab_feedback_with_401_error(self):
+        print "test_get_lab_feedback_with_401_error"
+        print "test not authorized error"
+
+        lab_name = "Data Structures"
+        exp_name = "binary search"
+        user_id = "123user"
+        key = "jigajiga"
+        headers = {'content-type': 'application/json'}
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
+          % (lab_name, exp_name, user_id, key)
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_lab_feedback_with_400_error(self):
+        print "test_get_lab_feedback_with_401_error"
+        print "test bad request"
+
+        lab_name = ""
+        exp_name = "binary search"
+        user_id = "123user"
+        headers = {'content-type': 'application/json'}
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
+          % (lab_name, exp_name, user_id, KEY)
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 400)
+
+ #+END_SRC
+
+*** TestAddFeedback
+ #+NAME: test_add_feedback
+ #+BEGIN_SRC python
 class TestAddFeedback(TestCase):
     TESTING = True
     def create_app(self):
@@ -123,14 +198,15 @@ class TestAddFeedback(TestCase):
         self.assertEqual(result['lab_name'], "data structure")
         self.assertEqual(result['exp_name'], "tuples")
 
-#+END_SRC
+ #+END_SRC
+
 
 ** Get Feedback Usage
    This is the REST API method for getting the feedback usage. 
 
 #+NAME: get_feedback_usage
 #+BEGIN_SRC python
-@api.route('/feedback_usage_by_workshop', methods=['GET', 'POST'])
+@api.route('/feedback_usage_by_workshop', methods=['GET'])
 def get_feedback_usage():
     if request.method == 'GET':
         if 'gateway_ip' in request.args and 'date' in request.args and 'key'\
@@ -262,34 +338,32 @@ class TestGetFeedbackDump(TestCase):
 # -*- coding: utf-8 -*-
 import os
 import requests
+import json
 from flask import session, render_template, Blueprint, request, \
      jsonify, abort, current_app, redirect, url_for
-from flask import current_app
-from flask import Flask, redirect, url_for
-from werkzeug import secure_filename
-from runtime.config.questions_config import *
-from flask import jsonify
+from flask import Flask
 from runtime.utils.type_utils import jsonify_list
-import json
+from runtime.exceptions.custom_exceptions import *
+from runtime.system.system_interface import SystemInterface
+
 
 api = Blueprint('APIs', __name__)
 
 #+end_src
 
 
-** Tests
+** tests
 *** Imports 
 #+name: imports_for_tests
 #+BEGIN_SRC python
 # -*- coding: utf-8 -*-
 import unittest
 from flask_testing import TestCase
-from runtime.utils.class_persistence_template import *
-from runtime.rest.app import create_app
 from sqlalchemy.exc import IntegrityError
-import json
-from api import *
-from runtime.system.system_interface import *
+from runtime.utils.class_persistence_template import db
+from runtime.rest.app import create_app
+from runtime.config.system_config import KEY
+from runtime.rest.api import *
 
 config = {
          'SQLALCHEMY_DATABASE_URI': ''
@@ -317,9 +391,10 @@ if __name__ == '__main__':
 ** tests
 #+BEGIN_SRC python :tangle test_api.py :eval no :noweb yes
 <<imports_for_tests>>
-<<test_add_feedback>>
-<<test_get_feedback_usage>>
-<<test_get_feedback_dump>>
+<<test_get_feedback>>
+#<<test_add_feedback>>
+#<<test_get_feedback_usage>>
+#<<test_get_feedback_dump>>
 <<run_test_cases>>
 #+end_src
 

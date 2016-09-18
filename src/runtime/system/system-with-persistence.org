@@ -1,4 +1,4 @@
-#+TITLE: System implementation for OutReach Portal 3.0
+#+TITLE: Test System with Persistence
 #+AUTHOR: VLEAD
 #+DATE: [2016-06-07 Tue]
 #+SETUPFILE: ../../org-templates/level-2.org
@@ -15,12 +15,13 @@ def populate_db():
     pass
 #+END_SRC
 
+
 * Test AddQuestion
 #+NAME: test_add_question
 #+BEGIN_SRC python
 class TestAddQuestion(TestCase):
     TESTING = True
-    persistent_delegate = None
+    persistence_delegate = None
 
     def create_app(self):
         app = create_app(config)
@@ -29,18 +30,18 @@ class TestAddQuestion(TestCase):
     def setUp(self):
         db.create_all()
         System.initialize_system(PersistenceDelegate)
-        self.persistent_delegate = PersistenceDelegate()
+        self.persistence_delegate = PersistenceDelegate()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        self.persistent_delegate = None
+        self.persistence_delegate = None
 
     def test_add_question(self):
         print "test_add_question_in_system_persistence"
         name="how are labs?"
         radio="radio"
-        key = Config.key
+        key = KEY
         session = Session(key=key)
         question = Question(name=name, question_type=radio)
         question1 = System.do("add_question", question=question,
@@ -50,12 +51,13 @@ class TestAddQuestion(TestCase):
             
 #+END_SRC
 
+
 * Test AddAnswer
 #+NAME: test_add_answer
 #+BEGIN_SRC python
 class TestAddAnswer(TestCase):
     TESTING = True
-    persistent_delegate = None
+    persistence_delegate = None
 
     def create_app(self):
         app = create_app(config)
@@ -64,18 +66,18 @@ class TestAddAnswer(TestCase):
     def setUp(self):
         db.create_all()
         System.initialize_system(PersistenceDelegate)
-        self.persistent_delegate = PersistenceDelegate()
+        self.persistence_delegate = PersistenceDelegate()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        self.persistent_delegate = None
+        self.persistence_delegate = None
 
     def test_add_answer(self):
         print "test_add_answer_in_system_persistence"
         ans = "excellent labs"
         answer = Answer(name=ans)
-        key = Config.key
+        key = KEY
         session = Session(key=key)
         answer = System.do("add_answer", answer=answer, session=session)
         answer1 = Answer.get_by_id(1)
@@ -83,12 +85,13 @@ class TestAddAnswer(TestCase):
             
 #+END_SRC
 
+
 * Test AddFeedback
 #+NAME: test_add_feedback
 #+BEGIN_SRC python
 class TestAddFeedback(TestCase):
     TESTING = True
-    persistent_delegate = None
+    persistence_delegate = None
 
     def create_app(self):
         app = create_app(config)
@@ -97,12 +100,12 @@ class TestAddFeedback(TestCase):
     def setUp(self):
         db.create_all()
         System.initialize_system(PersistenceDelegate)
-        self.persistent_delegate = PersistenceDelegate()
+        self.persistence_delegate = PersistenceDelegate()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        self.persistent_delegate = None
+        self.persistence_delegate = None
 
     def test_add_feedback(self):
         print "test_add_feedback_in_system_persistence"
@@ -110,7 +113,7 @@ class TestAddFeedback(TestCase):
         lab_name = "cse01"
         exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
-        key = Config.key
+        key = KEY
         session = Session(key=key)
         feedback = System.do("add_feedback", gateway_ip=gateway_ip,
                                  lab_name=lab_name, exp_name=exp_name,
@@ -125,12 +128,13 @@ class TestAddFeedback(TestCase):
             
 #+END_SRC
 
+
 * Test GetFeedbackUsage
 #+NAME: test_get_feedback_usage
 #+BEGIN_SRC python
 class TestGetFeedbackUsage(TestCase):
     TESTING = True
-    persistent_delegate = None
+    persistence_delegate = None
 
     def create_app(self):
         app = create_app(config)
@@ -139,12 +143,12 @@ class TestGetFeedbackUsage(TestCase):
     def setUp(self):
         db.create_all()
         System.initialize_system(PersistenceDelegate)
-        self.persistent_delegate = PersistenceDelegate()
+        self.persistence_delegate = PersistenceDelegate()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        self.persistent_delegate = None
+        self.persistence_delegate = None
 
     def test_get_feedback_usage(self):
         print "test_get_feedback_usage_in_system_persistence"
@@ -152,7 +156,7 @@ class TestGetFeedbackUsage(TestCase):
         lab_name = "cse01"
         exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
-        key = Config.key
+        key = KEY
         session = Session(key=key)
         feedback = System.do("add_feedback", gateway_ip=gateway_ip,
                                  lab_name=lab_name, exp_name=exp_name,
@@ -168,12 +172,13 @@ class TestGetFeedbackUsage(TestCase):
             
 #+END_SRC
 
+
 * Test GetFeedbackDump
 #+NAME: test_get_feedback_dump
 #+BEGIN_SRC python
 class TestGetFeedbackDump(TestCase):
     TESTING = True
-    persistent_delegate = None
+    persistence_delegate = None
 
     def create_app(self):
         app = create_app(config)
@@ -182,12 +187,12 @@ class TestGetFeedbackDump(TestCase):
     def setUp(self):
         db.create_all()
         System.initialize_system(PersistenceDelegate)
-        self.persistent_delegate = PersistenceDelegate()
+        self.persistence_delegate = PersistenceDelegate()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        self.persistent_delegate = None
+        self.persistence_delegate = None
 
     def test_get_feedback_dump(self):
         print "test_get_feedback_dump_in_system_persistence"
@@ -195,7 +200,7 @@ class TestGetFeedbackDump(TestCase):
         lab_name = "cse01"
         exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
-        key = Config.key
+        key = KEY
         session = Session(key=key)
         feedback = System.do("add_feedback", gateway_ip=gateway_ip,
                                  lab_name=lab_name, exp_name=exp_name,
@@ -207,12 +212,13 @@ class TestGetFeedbackDump(TestCase):
             
 #+END_SRC
 
+
 * Test AddResponsesToFeedback
 #+NAME: test_add_responses_to_feedback
 #+BEGIN_SRC python
 class TestAddResponsesToFeedback(TestCase):
     TESTING = True
-    persistent_delegate = None
+    persistence_delegate = None
 
     def create_app(self):
         app = create_app(config)
@@ -221,12 +227,12 @@ class TestAddResponsesToFeedback(TestCase):
     def setUp(self):
         db.create_all()
         System.initialize_system(PersistenceDelegate)
-        self.persistent_delegate = PersistenceDelegate()
+        self.persistence_delegate = PersistenceDelegate()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        self.persistent_delegate = None
+        self.persistence_delegate = None
 
     def test_add_responses_to_feedback(self):
         print "test_add_responses_to_feedback_in_system_persistence"
@@ -252,7 +258,7 @@ class TestAddResponsesToFeedback(TestCase):
         fb.save()
 
         res = Response(question=question1, answers=[answer1], feedbacks=[fb])
-        key = Config.key
+        key = KEY
         session = Session(key=key)
         fb1 = System.do("add_responses_to_feedback", responses=[res],
                                   fb_id=1,
@@ -268,6 +274,7 @@ class TestAddResponsesToFeedback(TestCase):
 
 #+END_SRC
 
+
 * Infra                                                         :boilerplate:
 ** Tests
 *** Imports 
@@ -279,9 +286,11 @@ class TestAddResponsesToFeedback(TestCase):
 import unittest
 from flask_testing import TestCase
 from runtime.rest.app import create_app
-from runtime.system.persistent_delegate import *
+from runtime.system.persistence_delegate import *
 from runtime.system.system import *
 from runtime.system.populate_db import *
+from runtime.config.system_config import KEY
+
 config = {
          'SQLALCHEMY_DATABASE_URI': ''
          }
@@ -296,6 +305,7 @@ if __name__ == '__main__':
 
 #+END_SRC
 
+
 * Tangling                                                      :boilerplate:
 
 ** source
@@ -303,7 +313,7 @@ if __name__ == '__main__':
 <<populate_db>>
 #+END_SRC
 ** tests
-#+BEGIN_SRC python :tangle test_persistent_system.py :eval no :noweb yes
+#+BEGIN_SRC python :tangle test_persistence_system.py :eval no :noweb yes
 <<imports_for_tests>>
 <<populate_db>>
 <<test_add_question>>

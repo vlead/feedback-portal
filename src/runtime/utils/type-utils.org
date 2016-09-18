@@ -31,6 +31,7 @@ is_dict = is_inst(dict)
 is_list = is_inst(list)
 is_string = is_inst(str)
 is_unicode = is_inst(unicode)
+is_str_or_none = lambda str: is_str(str) or str == None
 
 #+END_SRC
 

@@ -256,6 +256,8 @@ class AddQuestion():
         return question
 
 #+end_src
+
+
 ** =AddAnswer=
 #+NAME: class_addanswer
 #+begin_src python
@@ -283,6 +285,7 @@ class AddAnswer():
         return answer
 
 #+end_src
+
 
 ** =AddFeedback=
 #+NAME: class_addfeedback
@@ -320,6 +323,7 @@ class AddFeedback():
 
 #+end_src
 
+
 ** =GetFeedbackUsage=
 #+NAME: class_get_feedback_usage
 #+begin_src python
@@ -347,6 +351,7 @@ class GetFeedbackUsage():
 
 #+end_src
 
+
 ** =GetFeedbackDump=
 #+NAME: class_get_feedback_dump
 #+begin_src python
@@ -371,6 +376,7 @@ class GetFeedbackDump():
         return feedbacks
 
 #+end_src
+
 
 ** =AddResponsesToFeedBack=
 #+NAME: class_addresponses_to_feedback
@@ -402,11 +408,16 @@ class AddResponsesToFeedback():
 
 #+end_src
 
+
 ** =GetFeedbackForm=
 #+NAME: class_get_feedback_form
 #+begin_src python
 class GetFeedbackForm():
-    arg_types = {"session": is_session}
+    arg_types = {"session": is_session,
+                 "lab_name": is_str,
+                 "exp_name": is_str_or_none,
+                 "user_id": is_str_or_none}
+
     arity_and_type_checks_needed = True
 
     @staticmethod
@@ -421,7 +432,14 @@ class GetFeedbackForm():
 
     @staticmethod
     def action(args):
-        return questions_dict
+        return_val = questions_dict
+        return_val['lab_name'] = args['lab_name']
+        if args['exp_name'] is not None:
+            return_val['exp_name'] = args['exp_name']
+        if args['user_id'] is not None:
+            return_val['user_id'] = args['user_id']
+
+        return return_val
 
 #+end_src
 
@@ -431,11 +449,20 @@ class GetFeedbackForm():
     def test_get_feedback_form(self):
         print "test_get_feedback_form"
         session = Session(key=KEY)
-        question_dict = System.do("get_feedback_form", session=session)
-        print question_dict
+        lab_name = "Data Structures"
+        exp_name = "Binary Search"
+        user_id = "xyz123"
+        questions_dict = System.do("get_feedback_form", 
+                                      session=session,
+                                      lab_name=lab_name,
+                                      exp_name=exp_name,
+                                      user_id=user_id)
+                                      
+        self.assertEqual(questions_dict['user_id'], user_id)  
 
 #+END_SRC
     
+
 ** Operations Table
    Each operation has a corresponding implementation defined as a class.
 
@@ -464,7 +491,7 @@ from runtime.exceptions.custom_exceptions import *
 from runtime.objects.entities import is_str, is_question, is_answer, \
      is_feedback, is_date, is_response, is_session, are_responses, is_int,\
      are_responses_or_empty_list
-
+from runtime.utils.type_utils import is_str_or_none
 from runtime.config.system_config import KEY
 from runtime.config.questions_config import questions_dict
 
@@ -482,7 +509,7 @@ import unittest
 from flask_testing import TestCase
 from runtime.rest.app import create_app
 from runtime.system.system import *
-from runtime.system.persistent_delegate import *
+from runtime.system.persistence_delegate import *
 
 config = {
          'SQLALCHEMY_DATABASE_URI': ''

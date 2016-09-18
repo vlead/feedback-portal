@@ -17,7 +17,10 @@ from flask import Flask, jsonify, make_response
 # from flask.ext.cors import CORS
 
 from runtime.utils.class_persistence_template import db
-from api import api
+from runtime.rest.api import api
+from runtime.system.system_interface import SystemInterface
+from runtime.system.persistence_delegate import PersistenceDelegate
+
 # import config file
 from runtime.config import flask_app_config as config
 from runtime.config.flask_app_config import LOG_FILE_DIRECTORY
@@ -41,8 +44,11 @@ def create_app(config):
     configure_errorhandlers(app)
     #  configure_cors(app)
     # all set; return app object
+    configure_system()
     return app
 
+def configure_system():
+    SystemInterface.initialize(PersistenceDelegate)
 
 # custom error handlers to return JSON errors with appropiate status codes
 def configure_errorhandlers(app):
@@ -63,35 +69,19 @@ def configure_errorhandlers(app):
                 app.logger.error("error = %s" % str(err))
         return resp
 
-    @app.errorhandler(405)
-    def method_not_allowed(err):
-        app.logger.error("error code = %s" % "405")
+    @app.errorhandler(401)
+    def not_authorized(err):
+        app.logger.error("error code = %s" % "401")
         resp = None
         try:
             app.logger.error("error desc = %s" % err.description)
-            resp = make_response(jsonify(error=err.description), 405)
+            resp = make_response(jsonify(error=err.description), 401)
         except Exception:
             try:
                 app.logger.error("error mesg = %s" % err.message)
-                resp = make_response(jsonify(error=err.message), 405)
+                resp = make_response(jsonify(error=err.message), 401)
             except Exception:
-                resp = make_response(jsonify(error=str(err)), 405)
-                app.logger.error("error = %s" % str(err))
-        return resp
-
-    @app.errorhandler(404)
-    def not_found(err):
-        app.logger.error("error code = %s" % "404")
-        resp = None
-        try:
-            app.logger.error("error desc = %s" % err.description)
-            resp = make_response(jsonify(error=err.description), 404)
-        except Exception:
-            try:
-                app.logger.error("error mesg = %s" % err.message)
-                resp = make_response(jsonify(error=err.message), 404)
-            except Exception:
-                resp = make_response(jsonify(error=str(err)), 404)
+                resp = make_response(jsonify(error=str(err)), 401)
                 app.logger.error("error = %s" % str(err))
         return resp
 
@@ -110,7 +100,6 @@ def configure_errorhandlers(app):
                 resp = make_response(jsonify(error=str(err)), 400)
                 app.logger.error("error = %s" % str(err))
         return resp
-
 
 def configure_logging(app):
     import logging
