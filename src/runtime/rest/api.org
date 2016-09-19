@@ -338,6 +338,7 @@ class TestGetFeedbackDump(TestCase):
 
 ** Index HTML
 #+BEGIN_SRC html :tangle ./templates/index.html :eval no :noweb yes
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -345,6 +346,8 @@ class TestGetFeedbackDump(TestCase):
     <!-- Latest compiled and minified CSS -->
     <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity = "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link href = "/static/css/main.css" rel = "stylesheet">
+    
+    
    <style>
     body {
     	font-family:  sans-serif;
@@ -419,22 +422,19 @@ class TestGetFeedbackDump(TestCase):
   	</div>
 </div>
   </body>
+  <script> var data = {{ data|tojson }};
 
+</script>
   <!-- Jquery and Scipts Link -->
-  <script> var sampleData = '{{ questions_data }}' </script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script type="text/javascript" src="/static/js/main.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/main.js"></script> 
 </html>
 
 #+END_SRC
 
-#+BEGIN_SRC html :tangle ./templates/sample_index.html :eval no :noweb yes
-{{ dummy_data }}
-#+END_SRC
-
-
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
+var sampleData = window.data;
 var labelQues, formGroup;
 function renderQuesLabel() {
 	formGroup = document.createElement("div");
