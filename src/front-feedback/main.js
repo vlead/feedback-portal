@@ -1,60 +1,61 @@
 var sampleData = {
 	"lab_name": "Computer Prog Lab",
 	"exp_name": "Array",
-	"user_name": "John", 
+	"user_name": "John",  //user_id should be there.
 	"roll_no": "2016200523", 
 	"year_sem": "2015-16", 
 	"clg_name": "IIT Delhi",
 	"user_id": "user123",
-	"data": "11",
+	"date": "11",
+	"key": "sdsfsdfsdf",
 	"questions":
 		[
 			{
 			"name": "1. Did you do the experiment?",
-			"type": "radioButton",
+			"type": "radio",  //radio not radioButton
 			"options": ["Yes", "No"]
 			},
 
 			{
 			"name": "2. Did the experiment work?",
-			"type": "radioButton",
+			"type": "radio",
 			"options": ["Yes", "No"]
 			},
 
 			{
 			"name": "3. Which of the following course/s covers this concept? ",
-			"type": "checkBox",
+			"type": "checkbox", //checkbox not checkBox
 			"options": ["Computer Science", "Electronics Science", "Physical Science", "Humanities"]
 			},
 
 			{
 			"name": "4. How much did you know about the experiment before doing it in Virtual Labs?",
-			"type": "radioButton",
+			"type": "radio",
 			"options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 			},
 
 			
 			{
 			"name": "5. Is this experiment part of your curriculum?",
-			"type": "radioButton",
+			"type": "radio",
 			"options": ["Yes", "No"]
 			},
 
 			{
 			"name": "6.  Does this help you to perform better in the curriculum?",
-			"type": "radioButton",
+			"type": "radio",
 			"options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 			},
 
 			{
 			"name": "7. Would you recommend it to your fellow students?",
-			"type": "radioButton",
+			"type": "radio",
 			"options": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 			},
 
 			{
 			"name": "Any Comments?",
-			"type": "textArea",
+			"type": "text", //text not textArea
 			}
 		]
 }
@@ -107,7 +108,7 @@ function renderFeedbackform() {
 
 	var quesArray = sampleData.questions.length;
 	for (var i = 0; i < quesArray; i++) {
-		if (sampleData.questions[i].type === "checkBox") {
+		if (sampleData.questions[i].type === "checkbox") {
 			renderQuesLabel();
 			labelQues.innerHTML = sampleData.questions[i].name;
 			var optionsDiv = document.createElement("div");
@@ -130,7 +131,7 @@ function renderFeedbackform() {
 				// console.log("sampleData.questions[i].answers[j] is", sampleData.questions[i].answers[j])
 			}
 		}
-		else if(sampleData.questions[i].type === "radioButton") {
+		else if(sampleData.questions[i].type === "radio") {
 			renderQuesLabel();
 			labelQues.innerHTML = sampleData.questions[i].name;
 
@@ -154,7 +155,7 @@ function renderFeedbackform() {
 				questions_list.appendChild(formGroup);
 			}
 		}
-    else if (sampleData.questions[i].type === "textArea") {
+    else if (sampleData.questions[i].type === "text") {
       var ansTextArea;
 			renderQuesLabel();
 			labelQues.innerHTML = sampleData.questions[i].name;
@@ -180,6 +181,8 @@ function submitFeedback(event) {
     event.preventDefault();
   	var feedback = {}; // the final feedback object
   	feedback.lab_name = sampleData.lab_name;
+  	feedback.key = sampleData.key;
+  	feedback.user_id = sampleData.user_id;
   	feedback.exp_name = sampleData.exp_name;
   	feedback.user_name = sampleData.user_name;
   	feedback.roll_no = sampleData.roll_no;
@@ -192,7 +195,7 @@ function submitFeedback(event) {
 	for (var i = 0; i < quesArray; i++) {
 	  var questionElement = document.getElementById(sampleData.questions[i].name);
 	  var answer = null;
-		if(sampleData.questions[i].type === 'radioButton') {
+		if(sampleData.questions[i].type === 'radio') {
       var children = questionElement.querySelectorAll('input');
 	  		for(var j = 0; j < children.length; j++) {
 	    		var child = children[j];
@@ -204,7 +207,7 @@ function submitFeedback(event) {
 	    		}
 	  		}
 		}
-		else if(sampleData.questions[i].type === 'checkBox') {
+		else if(sampleData.questions[i].type === 'checkbox') {
 	    	answer = [];
         var children = questionElement.querySelectorAll('input');
 	    	for(var j = 0; j < children.length; j++) {
@@ -216,11 +219,11 @@ function submitFeedback(event) {
 	        }
 	      }
 	  }
-		else if(sampleData.questions[i].type === 'textBox') {
+		else if(sampleData.questions[i].type === 'text') {
 	      	var input = questionElement;
 	    	  answer = input.value;
 	  }
-	  else if(sampleData.questions[i].type === 'textArea') {
+	  else if(sampleData.questions[i].type === 'text') {
 	      	var input = questionElement;
 	    	  answer = input.value;
 	  }
