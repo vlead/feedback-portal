@@ -7,12 +7,14 @@
 #+options: ^:nil
 #+LATEX: Literal LaTeX code for export
 
-The requirements of =Feedback Portal/Service= are listed here. 
-questions
+* Introduction 
+  The requirements of =Feedback Portal/Service= are listed here.
+
 * Ability of the user of =Virtual Labs= to provide feedback
   A user is provided with a feedback form with:
   - a set of questions and
   - an ability to answer these questions.
+
 
 :PROPERTIES:
 :CUSTOM_ID: provide_feedback
@@ -38,12 +40,14 @@ questions
    The user either chooses an option or a set a options or types text for the
    questions posed. 
 
+
 ** User Responses
 :PROPERTIES:
 :CUSTOM_ID: responses
 :END: 
    The ability to pair the answer with the question for analysis is provided by
    the feedback service.
+
 
 * Capture =Workshop Usage= via feedback forms
 :PROPERTIES:
@@ -60,4 +64,34 @@ questions
 :END: 
   Provide an API to dump the data from outreach service to an elastic
   search engine
+
+
+* COMMENT Review Comments
+
+Tne virtual labs feedback service has the following main functions:
+
+ - 1. Provides online feedback forms to students doing virtual lab experiments. 
+
+ - 2.  Provide a way for a lab instructor/nodal centre coordinator to access
+   the forms and get informaiton about workshop usage.
+
+ - 3. Provide analytics about feedback (e.g., how many users answered "yes" to
+   a particular question, etc.)
+
+
+The filling of a feedback form by student results in a feedback instance.   The
+instance has the following information: 
+  - 1.  The date and time when the feedback was submitted.
+  - 2.  The IP address of the machine from where feedback was submitted.
+  - 3.  The user id of the user filling the form.
+  - 4.  The name of the lab and the experiment for which feedback is being
+    given.
+
+  - 5.  A set of responses.  Each response is a pair of question and an answer.  
+
+  - 6.  A question  is of the following different types:
+
+        + 1. Multiple choice 
+        + 2. Radio Buttons
+        + 3. Text
   
