@@ -422,7 +422,7 @@ class TestGetFeedbackDump(TestCase):
   	</div>
 </div>
   </body>
-  <script> var data = {{ data|tojson }};
+  <script> var data = {{ questions_data|tojson }};
 
 </script>
   <!-- Jquery and Scipts Link -->
