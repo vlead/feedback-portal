@@ -438,6 +438,7 @@ class GetFeedbackForm():
             return_val['exp_name'] = args['exp_name']
         if args['user_id'] is not None:
             return_val['user_id'] = args['user_id']
+        return_val['key'] = KEY
 
         return return_val
 

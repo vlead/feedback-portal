@@ -114,8 +114,7 @@ class TestGetFeedbackForm(TestCase):
 #+NAME: class_si_add_feedback
 #+begin_src python
     @staticmethod
-    def add_feedback(lab_name, exp_name, new_date, gateway_ip,
-                         responses, key):
+    def add_feedback(lab_name, exp_name, gateway_ip, responses, key):
         try:
             session = Session(key=str(key))
         except Exception as e:
