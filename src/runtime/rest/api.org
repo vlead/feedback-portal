@@ -40,8 +40,11 @@ def get_add_feedback():
                                                          lab_name, 
                                                          exp_name,
                                                          user_id)
-            return render_template('index.html', 
-                                       questions_data=jsonify(response))
+            if request.headers['Content-Type'] == "application/json":
+                return jsonify(response)
+            else:
+                return render_template('index.html', 
+                                        questions_data=jsonify(response))
         except NotAuthorizedError as err:
             abort(401, 'Not Authorized error: %s' % str(err))
         except TypeError as err:
@@ -99,7 +102,7 @@ class TestGetFeedback(TestCase):
         lab_name = "Data Structures"
         exp_name = "binary search"
         user_id = "123user"
-        headers = {'content-type': 'application/json'}
+        headers = {'Content-Type': 'application/json'}
         request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
           % (lab_name, exp_name, user_id, KEY)
 
@@ -117,7 +120,7 @@ class TestGetFeedback(TestCase):
         exp_name = "binary search"
         user_id = "123user"
         key = "jigajiga"
-        headers = {'content-type': 'application/json'}
+        headers = {'Content-Type': 'application/json'}
         request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
           % (lab_name, exp_name, user_id, key)
 
@@ -133,7 +136,7 @@ class TestGetFeedback(TestCase):
         lab_name = ""
         exp_name = "binary search"
         user_id = "123user"
-        headers = {'content-type': 'application/json'}
+        headers = {'Content-Type': 'application/json'}
         request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
           % (lab_name, exp_name, user_id, KEY)
 
