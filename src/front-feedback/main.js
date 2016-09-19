@@ -22,9 +22,9 @@ var sampleData = {
 			},
 
 			{
-			"name": "3. Did you find any bugs in the experiment? ",
-			"type": "radioButton",
-			"options": ["Yes", "No"]
+			"name": "3. Which of the following course/s covers this concept? ",
+			"type": "checkBox",
+			"options": ["Computer Science", "Electronics Science", "Physical Science", "Humanities"]
 			},
 
 			{
