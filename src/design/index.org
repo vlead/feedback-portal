@@ -58,6 +58,7 @@
   - Example:
     [[http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&user_id=temp124&key=defaultkey][example url]]
 
+
 ** Save the feedback form. 
   :PROPERTIES:
   :CUSTOM_ID: save_feedback_form
@@ -71,6 +72,7 @@
      {
         lab_name: 'lab_name',
         exp_name: 'exp_name',
+        user_id: 'user_id',
         questions: [{name: 'question', 
                      answers: [ans1, ...]
        }
@@ -100,7 +102,7 @@
   :PROPERTIES:
   :CUSTOM_ID: get_workshop_usage
   :END:       
-    - URL :: /feedback_usage_by_workshop?ip=:ip&date=:date&key=:key
+    - URL :: /usage_from_feedback?ip=:ip&date=:date&key=:key
 
     - Method :: GET
 
