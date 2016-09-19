@@ -447,7 +447,7 @@ function renderQuesLabel() {
 }
 
 function renderFeedbackform() {
-	var user_name = document.getElementById("user_name");
+/*	var user_name = document.getElementById("user_name");
 	user_name.innerHTML = "Name: ";
 	var user_name_value = document.getElementById("user_name_value");
 	user_name_value.innerHTML = sampleData.user_name;
@@ -470,7 +470,7 @@ function renderFeedbackform() {
 	var row = document.getElementById("row");
 	// <input class="form-control" id="lab_name_value" disabled="true">
 	row.className = "col-sm-10 rowCol";
-
+*/
 
 	var lab_name_label = document.getElementById("lab_name_label");
 	lab_name_label.innerHTML = "Lab Name";
@@ -557,13 +557,15 @@ function submitFeedback(event) {
     event.preventDefault();
   	var feedback = {}; // the final feedback object
   	feedback.lab_name = sampleData.lab_name;
+  	feedback.exp_name = sampleData.exp_name;
   	feedback.key = sampleData.key;
   	feedback.user_id = sampleData.user_id;
-  	feedback.exp_name = sampleData.exp_name;
-  	feedback.user_name = sampleData.user_name;
+
+/*  	feedback.user_name = sampleData.user_name;
   	feedback.roll_no = sampleData.roll_no;
   	feedback.clg_name = sampleData.clg_name;
-  	feedback.year_sem = sampleData.year_sem;
+  	feedback.year_sem = sampleData.year_sem;*/
+
   	feedback.questions = []; // the list of questions and user answers
 	  var quesArray = sampleData.questions.length;
 
