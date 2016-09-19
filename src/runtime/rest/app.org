@@ -6,28 +6,13 @@
 #+EXCLUDE_TAGS: boilerplate
 #+OPTIONS: ^:nil
 
-The application that runs the FLASK web server
+* Introduction
+  The application that runs the FLASK web server
 
+
+* Flask Server
 #+NAME: application
 #+BEGIN_SRC python
-# -*- coding: utf-8 -*-
-import os
-
-from flask import Flask, jsonify, make_response
-# from flask.ext.cors import CORS
-
-from runtime.utils.class_persistence_template import db
-from runtime.rest.api import api
-from runtime.system.system_interface import SystemInterface
-from runtime.system.persistence_delegate import PersistenceDelegate
-
-# import config file
-from runtime.config import flask_app_config as config
-from runtime.config.flask_app_config import LOG_FILE_DIRECTORY
-from runtime.config.flask_app_config import LOG_FILE
-from runtime.config.flask_app_config import LOG_LEVEL
-
-
 def create_app(config):
     # init our app
     app = Flask(__name__)
@@ -47,9 +32,21 @@ def create_app(config):
     configure_system()
     return app
 
+#+END_SRC
+
+
+* Configure System
+#+NAME: configure_system
+#+BEGIN_SRC python
 def configure_system():
     SystemInterface.initialize(PersistenceDelegate)
 
+#+END_SRC
+
+
+* Configure Error Handlers
+#+NAME: configure_error_handlers
+#+BEGIN_SRC python
 # custom error handlers to return JSON errors with appropiate status codes
 def configure_errorhandlers(app):
 
@@ -101,6 +98,12 @@ def configure_errorhandlers(app):
                 app.logger.error("error = %s" % str(err))
         return resp
 
+#+END_SRC
+
+
+* Configre Logging
+#+NAME: configure_logging
+#+BEGIN_SRC python
 def configure_logging(app):
     import logging
     import logging.handlers
@@ -126,6 +129,12 @@ def configure_logging(app):
     app.logger.addHandler(log_handler)
     app.logger.setLevel(log_level)
 
+#+END_SRC
+
+
+* Run Server
+#+BEGIN_SRC python
+#+NAME: run_server
 if __name__ == "__main__":
     app = create_app(config)
     app.run(debug=True, host='0.0.0.0', threaded=True)
@@ -133,9 +142,35 @@ if __name__ == "__main__":
 #+END_SRC
 
 
+* Imports                                                       :boilerplate:
+#+NAME: imports
+#+BEGIN_SRC python
+# -*- coding: utf-8 -*-
+import os
 
-* Tangle                          :boilerplate:
+from flask import Flask, jsonify, make_response
+# from flask.ext.cors import CORS
 
+from runtime.utils.class_persistence_template import db
+from runtime.rest.api import api
+from runtime.system.system_interface import SystemInterface
+from runtime.system.persistence_delegate import PersistenceDelegate
+
+# import config file
+from runtime.config import flask_app_config as config
+from runtime.config.flask_app_config import LOG_FILE_DIRECTORY
+from runtime.config.flask_app_config import LOG_FILE
+from runtime.config.flask_app_config import LOG_LEVEL
+
+#+END_SRC
+
+
+* Tangle                                                        :boilerplate:
 #+BEGIN_SRC python :tangle app.py :eval no :noweb yes
+<<imports>>
+<<configure_logging>>
+<<configure_error_handlers>>
+<<configure_system>>
 <<application>>
+<<run_server>>
 #+END_SRC
