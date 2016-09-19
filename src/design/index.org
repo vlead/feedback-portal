@@ -19,7 +19,9 @@
   :PROPERTIES:
   :CUSTOM_ID: display_feedback_form
   :END:    
-  - URL :: /feedback?lab_name=:lab_name&exp_name=:exp_name&key=:key
+  - URL :: /feedback?lab_name=:lab_name&exp_name=:exp_name&user_id=:user_id&key=:key
+       OR
+       /feedback?lab_name=:lab_name&exp_name=:exp_name&key=:key
        OR
        /feedback?lab_name=:lab_name&key=:key
 
@@ -27,7 +29,7 @@
 
   - URL Params
     Required: lab_name=[string], key=[string]
-    Optional: exp_name=[string]
+    Optional: exp_name=[string], user_id=[string]
 
   - Success Response
     + Code: 200
@@ -36,6 +38,7 @@
       {
        lab_name: 'lab_name',
        exp_name: 'exp_name',
+       user_id: 'user_id',
        questions: [{name: 'question', 
                     type: 'radio | checkbox | textbox',
                     options: 'list of options' | 'size of text'}, ....]
@@ -52,6 +55,8 @@
 
     + Content: { error : "lab name is mandatory and experiment is optional" }
 
+  - Example:
+    [[http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&user_id=temp124&key=defaultkey][example url]]
 
 ** Save the feedback form. 
   :PROPERTIES:

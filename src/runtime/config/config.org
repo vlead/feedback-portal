@@ -40,7 +40,7 @@ questions_dict = {'questions': [
 # postgresql+psycopg2://scott:tiger@localhost/mydatabase
 SQLALCHEMY_DATABASE_URI = 'mysql+oursql://<userid>:<password>@<servername>/<db_name>'
 # example
-# SQLALCHEMY_DATABASE_URI = 'mysql+oursql://root:mysql@localhost/outreach'
+# SQLALCHEMY_DATABASE_URI = 'mysql+oursql://root:root@localhost/feedback'
 
 # Debug from SQLAlchemy
 # Turn this to False on production
@@ -68,7 +68,7 @@ LOG_LEVEL = 10
 #+NAME: system_config
 #+BEGIN_SRC python
 #Fill the value during deployment.  Generate the key. 
-KEY="default key"
+KEY="defaultkey"
 
 #+END_SRC
 

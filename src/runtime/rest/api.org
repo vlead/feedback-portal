@@ -32,7 +32,9 @@ def get_add_feedback():
             user_id = None
         else:
             user_id = str(request.args['user_id'])
-
+            current_app.logger.debug("lab_name = %s, exp_name=%s, user_id=%s, "
+                                      "key=%s" % 
+                                      (lab_name, exp_name, user_id, key))
         try:
             response = SystemInterface.get_feedback_form(key, 
                                                          lab_name, 

@@ -109,7 +109,7 @@ def configure_logging(app):
 
     # Also error can be sent out via email. So we can also have a SMTPHandler?
     log_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                           '..',
+                           '../..',
                            LOG_FILE_DIRECTORY)
 
     if not os.path.exists(log_dir):
@@ -121,11 +121,8 @@ def configure_logging(app):
     log_handler = logging.handlers.RotatingFileHandler(log_file,
                                                        maxBytes=max_size,
                                                        backupCount=10)
-
     log_level = LOG_LEVEL
-    
     log_handler.setFormatter(formatter)
-
     app.logger.addHandler(log_handler)
     app.logger.setLevel(log_level)
 

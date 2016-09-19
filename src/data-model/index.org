@@ -277,6 +277,9 @@ zero, one or more elements of =B=.
 |--------------------------------+-----------|
    
 
+
+* Informal account of the data model
+
 * Abstract Entity Types
   The following are the abstract data types in our system. 
 ** Feedback
