@@ -365,63 +365,53 @@ class TestGetFeedbackDump(TestCase):
     <title>Feedback Portal</title>
     <!-- Latest compiled and minified CSS -->
     <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity = "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link href = "/static/css/main.css" rel = "stylesheet">
-    
-    
-   <style>
-    body {
-    	font-family:  sans-serif;
-    	font-size: 14px;
-    	color: #767676;
-    }
-    #feedback-form {
-      width: 80%;
-      margin-top: 30px;
-    }
-    .headInfo {
-    	margin-left: 0px; 
-    	margin-top: 20px;
-    }
-    .values {
-    	margin-left: 0px;
-    	text-align: left;
-    }
-    .rowCol {
-    	border: 1px solid #ccc
-    	/*margin-top: 2px;*/
-    }
-    .mainrow {
-    	margin-top: 4px;
-    }
-	</style>
+    <link rel = "stylesheet" href = "main.css">
   </head>
 
   <body onload="renderFeedbackform();">
-    <div class="container">
-      <h1> Virtual Labs - Feedback Form </h1>
-      <h4> Please fill in details below and click on submit </h4>
-      <div class="row headInfo">
-      	<div class="row">
-      		<div class = "col-sm-2" id = "user_name"></div>
-      		<div class = "col-sm-4 values" id = "user_name_value"></div>
-
-      		<div class = "col-sm-2" id = "roll_no"></div>
-      		<div class = "col-sm-4 values" id = "roll_no_value"></div>
-
-
-      	</div>
-      	<div class="row">
-      		<div class = "col-sm-2" id = "clg_name"></div>
-      		<div class = "col-sm-4 values" id = "clg_name_value"></div>
-
-      		<div class = "col-sm-2" id = "year_sem"></div>
-      		<div class = "col-sm-4 values" id = "year_sem_value"></div>
-      	</div>
-      	<div class="row mainrow" >
-      		<div id="row" disabed = "true"></div>
-      		
-      	</div>
+  	<header>
+			<!-- Navigation -->
+			<nav class="navbar navbar-default " style="background-color: white !important; margin-bottom: 0px !important;">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+ 				<div class="navbar-header page-scroll">
+        	<button aria-controls="bs-navbar" aria-expanded="true"  type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar #bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar" style="background-color: #77BB41"></span>
+                <span class="icon-bar" style="background-color: #77BB41"></span>
+                <span class="icon-bar" style="background-color: #77BB41"></span>
+          </button>
+          <a class="navbar-brand main-logo-a" href="http://vlabs.ac.in/index.html"><img src="images/logo-new.png" class="img-responsive main-logo" /></a>
+        </div>			
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
+	        <ul class="nav navbar-nav navbar-right menu-ul search-ul" style="position: relative; top: -5px;">
+   	      	<li></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right menu-ul">
+            <li class="page-scroll menu-li " >
+              <a href="http://vlabs.ac.in/" class="menu-a" >HOME</a>
+            </li>
+            <li class="page-scroll menu-li">
+              <a href="http://vlabs.ac.in/labs.html"  class="menu-a " >ALL LABS</a>
+            </li>
+            <li class="page-scroll menu-li " >
+              <a href="http://vlabs.ac.in/#partner" class="menu-a" >PARTNERS</a>
+            </li><li class="page-scroll menu-li " >
+              <a href="http://vlabs.ac.in/#contact" class="menu-a" >CONTACT</a>
+            </li>
+          </ul>
+        </div>
       </div>
+	  </nav>
+  </header>
+	<div class="row">
+		<hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
+  </div>
+  <div class="container">
+    <h1> Virtual Labs Feedback Form </h1>
+    <h4> Please fill in details below and click on submit </h4>
+    
       <form class="form" id="feedback-form" onsubmit="submitFeedback(event)">
         <div class="form-group">
           <label class="" id="lab_name_label"></label>
@@ -437,17 +427,15 @@ class TestGetFeedbackDump(TestCase):
       </form>
     </div>
     <div id="footer">
-	<div class="container">
-    	<p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>
+			<div class="container">
+  			<p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>
+  		</div>
   	</div>
-</div>
   </body>
-  <script> var data = {{ questions_data|tojson }};
 
-</script>
   <!-- Jquery and Scipts Link -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/js/main.js"></script> 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script type="text/javascript" src="main.js"></script>
 </html>
 
 #+END_SRC
@@ -467,119 +455,92 @@ class TestGetFeedbackDump(TestCase):
 
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
-var sampleData = window.data;
 
 var labelQues, formGroup;
 function renderQuesLabel() {
 	formGroup = document.createElement("div");
 	formGroup.className = "form-group"
 	labelQues = document.createElement('label');
-	//labelQues.className = "col-sm-12";
-	document.getElementById("questions_list").appendChild(formGroup);
+	$("#questions_list").append(formGroup);
 	formGroup.appendChild(labelQues);
 }
 
 function renderFeedbackform() {
-/*	var user_name = document.getElementById("user_name");
-	user_name.innerHTML = "Name: ";
-	var user_name_value = document.getElementById("user_name_value");
-	user_name_value.innerHTML = sampleData.user_name;
+	$("#lab_name_label").html("Lab Name");
+	$("#lab_name_value").val(sampleData.lab_name)
 
-	var clg_name = document.getElementById("clg_name");
-	clg_name.innerHTML = "College Name: ";
-	var clg_name_value = document.getElementById("clg_name_value");
-	clg_name_value.innerHTML = sampleData.clg_name;
+	$("#exp_name_label").html("Experiment Name");
+	$("#exp_name_value").val(sampleData.exp_name)
 
-	var year_sem = document.getElementById("year_sem");
-	year_sem.innerHTML = "Year/Sem: ";
-	var year_sem_value = document.getElementById("year_sem_value");
-	year_sem_value.innerHTML = sampleData.year_sem;
-
-	var roll_no = document.getElementById("roll_no");
-	roll_no.innerHTML = "Roll No.: ";
-	var roll_no_value = document.getElementById("roll_no_value");
-	roll_no_value.innerHTML = sampleData.roll_no;
-
-	var row = document.getElementById("row");
-	// <input class="form-control" id="lab_name_value" disabled="true">
-	row.className = "col-sm-10 rowCol";
-*/
-
-	var lab_name_label = document.getElementById("lab_name_label");
-	lab_name_label.innerHTML = "Lab Name";
-	var lab_name_value = document.getElementById("lab_name_value");
-	lab_name_value.value = sampleData.lab_name;
-
-	var exp_name_label = document.getElementById("exp_name_label");
-	exp_name_label.innerHTML= "Experiment Name";
-	var exp_name_value = document.getElementById("exp_name_value");
-	exp_name_value.value = sampleData.exp_name;
-
-	var quesArray = sampleData.questions.length;
+        var quesArray = sampleData.questions.length;
 	for (var i = 0; i < quesArray; i++) {
 		if (sampleData.questions[i].type === "checkbox") {
 			renderQuesLabel();
 			labelQues.innerHTML = sampleData.questions[i].name;
 			var optionsDiv = document.createElement("div");
-			//optionsDiv.className = "col-sm-12";
 			optionsDiv.id = sampleData.questions[i].name;
 			var optionsLength = sampleData.questions[i].options.length;
+
 			for (var j = 0; j < optionsLength; j++) {
 				checkOption = document.createElement('input');
-				ansLabel = document.createElement('label');
 				checkOption.type = "checkbox";
-				//checkOption.className = "col-sm-1";
 				checkOption.value = sampleData.questions[i].options[j];
+
+				ansLabel = document.createElement('label');
 				ansLabel.className = "checkbox-inline"
 				ansLabel.innerHTML = sampleData.questions[i].options[j];
-				//optionsDiv.appendChild(checkOption);
+
 				optionsDiv.appendChild(ansLabel);
-        ansLabel.insertBefore(checkOption, ansLabel.firstChild);
+        		ansLabel.insertBefore(checkOption, ansLabel.firstChild);
 				formGroup.appendChild(optionsDiv);
 				questions_list.appendChild(formGroup);
-				// console.log("sampleData.questions[i].answers[j] is", sampleData.questions[i].answers[j])
 			}
 		}
+
 		else if(sampleData.questions[i].type === "radio") {
 			renderQuesLabel();
 			labelQues.innerHTML = sampleData.questions[i].name;
-
 			var optionsDiv1 = document.createElement("div");
-			//optionsDiv1.className = "col-sm-12";
 			optionsDiv1.id = sampleData.questions[i].name;
 			var optionsLength = sampleData.questions[i].options.length;
+
 			for (var k = 0; k < optionsLength; k++) {
 				radioOption = document.createElement('input');
-				radioLabel = document.createElement('label');
 				radioOption.type = "radio";
 				radioOption.className = "";
-				radioLabel.className = "radio-inline";
 				radioOption.name = sampleData.questions[i].name;
 				radioOption.value = sampleData.questions[i].options[k];
+
+				radioLabel = document.createElement('label');
+				radioLabel.className = "radio-inline";
 				radioLabel.innerHTML = sampleData.questions[i].options[k];
-				//optionsDiv1.appendChild(radioOption);
+
 				optionsDiv1.appendChild(radioLabel);
         		radioLabel.insertBefore(radioOption, radioLabel.firstChild);
 				formGroup.appendChild(optionsDiv1);
 				questions_list.appendChild(formGroup);
 			}
 		}
-    else if (sampleData.questions[i].type === "text") {
-      var ansTextArea;
+    	        else if (sampleData.questions[i].type === "text") {
+      		        var ansTextArea;
 			renderQuesLabel();
 			labelQues.innerHTML = sampleData.questions[i].name;
+
 			ansTextArea = document.createElement("textarea");
 			ansTextArea.className = "form-control"
 			ansTextArea.id = sampleData.questions[i].name;
+
 			formGroup.appendChild(ansTextArea);
-    }
+                }
 		else if(sampleData.questions[i].type === 'textBox') {
-      var ansTextBox;
+      		var ansTextBox;
 			renderQuesLabel();
 			labelQues.innerHTML = sampleData.questions[i].name;
+
 			ansTextBox = document.createElement("input");
 			ansTextBox.className = "form-control"
 			ansTextBox.id = sampleData.questions[i].name;
+
 			formGroup.appendChild(ansTextBox);
 		}
 	}
@@ -591,51 +552,43 @@ function submitFeedback(event) {
   	var feedback = {}; // the final feedback object
   	feedback.lab_name = sampleData.lab_name;
   	feedback.exp_name = sampleData.exp_name;
-  	feedback.key = sampleData.key;
   	feedback.user_id = sampleData.user_id;
-
-/*  	feedback.user_name = sampleData.user_name;
-  	feedback.roll_no = sampleData.roll_no;
-  	feedback.clg_name = sampleData.clg_name;
-  	feedback.year_sem = sampleData.year_sem;*/
-
-  	feedback.questions = []; // the list of questions and user answers
-	  var quesArray = sampleData.questions.length;
-
-    // loop over the questions
+  	feedback.key = sampleData.key;
+  	
+  	feedback.responses = []; // the list of questions and user answers
+	var quesArray = sampleData.questions.length;
+        // loop over the questions
 	for (var i = 0; i < quesArray; i++) {
-	  var questionElement = document.getElementById(sampleData.questions[i].name);
-	  var answer = null;
+		var questionElement = document.getElementById(sampleData.questions[i].name);
+		var answer = null;
 		if(sampleData.questions[i].type === 'radio') {
-      var children = questionElement.querySelectorAll('input');
+         	var children = questionElement.querySelectorAll('input');
 	  		for(var j = 0; j < children.length; j++) {
 	    		var child = children[j];
-          // console.log('child', child, child.type, child.checked);
+        		// console.log('child', child, child.type, child.checked);
 	    		if(child.type === 'radio' && child.checked === true) {
-	      			// console.log('selected', child.value);
 	      			answer = child.value;
-	      			
 	    		}
 	  		}
 		}
 		else if(sampleData.questions[i].type === 'checkbox') {
 	    	answer = [];
-        var children = questionElement.querySelectorAll('input');
+	        var children = questionElement.querySelectorAll('input');
 	    	for(var j = 0; j < children.length; j++) {
 	        var child = children[j];
 	        if(child.checked === true) {
-	          // console.log('selected', child.value);
-	          answer.push(child.value);
-	          
+	            // console.log('selected', child.value);
+	        	answer.push(child.value);
 	        }
 	      }
-	  }
+	    }
 		else if(sampleData.questions[i].type === 'text') {
 	      	var input = questionElement;
-	    	  answer = input.value;
-	  }
-	  else if(sampleData.questions[i].type === 'text') {
+	        answer = input.value;
+	  	}
+	  	else if(sampleData.questions[i].type === 'text') {
 	      	var input = questionElement;
+
 	    	  answer = input.value;
 	  }
     // create an object to insert the current question data
@@ -643,7 +596,7 @@ function submitFeedback(event) {
 	  question.name = sampleData.questions[i].name;
 	  question.type = sampleData.questions[i].type;
 	  question.answer = answer;
-	  feedback.questions.push(question);
+	  feedback.responses.push(question);
 	  }
    // Posting json data to /feedback api
 
@@ -667,6 +620,91 @@ function submitFeedback(event) {
 
 #+END_SRC
 
+** CSS 
+#+BEGIN_SRC css :tangle ./static/css/main.css :eval no :noweb yes
+@import url(https://fonts.googleapis.com/css?family=Raleway:400,300,700,500,600);
+body {
+    font-family:  sans-serif;
+    font-size: 14px;
+    color: #767676;
+}
+
+#feedback-form {
+    width: 80%;
+    margin-top: 30px;
+}
+
+.headInfo {
+    margin-left: 0px; 
+    margin-top: 20px;
+}
+
+.values {
+    margin-left: 0px;
+    text-align: left;
+}
+
+.rowCol {
+    border: 1px solid #ccc
+}
+
+.mainrow {
+    margin-top: 4px;
+}
+
+.navbar-default, .navbar-inverse {
+    border: 0;
+}
+
+.footer-div
+{
+    margin-top:120px;
+}
+
+.main-logo-a {
+    height: auto;
+    overflow: visible;
+    margin-left: 0px !important;
+    padding-bottom: 10px !important;
+    padding-top: 10px !important;
+}
+
+.menu-a {
+    font-size: 14px !important;
+    font-family: 'Raleway' !important;
+    color: #2C99CD !important;
+    padding-left: 10px !important;
+    padding-bottom: 5px !important;
+    padding-top: 5px !important;
+    padding-right: 10px !important;
+}
+
+.menu-a-active {
+    color: white !important;
+}
+
+.menu-li {
+    border-radius: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.menu-li:HOVER {
+    background-color: #77BB41 !important;
+}
+
+.menu-a:HOVER {
+    color: white !important;
+}
+
+.menu-li-active {
+    background-color: #77BB41;
+}
+
+.menu-ul {
+    margin-top: 45px;
+}
+#+END_SRC
 
 * Infra                                                         :boilerplate:
 
