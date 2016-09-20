@@ -555,14 +555,14 @@ function submitFeedback(event) {
   	feedback.user_id = sampleData.user_id;
   	feedback.key = sampleData.key;
   	
-  	feedback.questions = []; // the list of questions and user answers
+  	feedback.responses = []; // the list of questions and user answers
 	var quesArray = sampleData.questions.length;
-    // loop over the questions
+        // loop over the questions
 	for (var i = 0; i < quesArray; i++) {
 		var questionElement = document.getElementById(sampleData.questions[i].name);
 		var answer = null;
 		if(sampleData.questions[i].type === 'radio') {
-      	var children = questionElement.querySelectorAll('input');
+         	var children = questionElement.querySelectorAll('input');
 	  		for(var j = 0; j < children.length; j++) {
 	    		var child = children[j];
         		// console.log('child', child, child.type, child.checked);
@@ -595,7 +595,7 @@ function submitFeedback(event) {
 	  	question.name = sampleData.questions[i].name;
 	  	question.type = sampleData.questions[i].type;
 	  	question.answer = answer;
-	  	feedback.questions.push(question);
+	  	feedback.responses.push(question);
 	}
 	console.log(feedback); // the final object
 	console.log("Submitted feedback");
@@ -688,6 +688,7 @@ body {
     margin-top: 45px;
 }
 #+END_SRC
+
 * Infra                                                         :boilerplate:
 
 ** sources
