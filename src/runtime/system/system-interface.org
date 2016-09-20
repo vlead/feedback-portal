@@ -114,26 +114,20 @@ class TestGetFeedbackForm(TestCase):
 #+NAME: class_si_add_feedback
 #+begin_src python
     @staticmethod
-    def add_feedback(lab_name, exp_name, gateway_ip, responses, key):
-        try:
-            session = Session(key=str(key))
-        except Exception as e:
-            print str(e)
+    def add_feedback(lab_name, exp_name, new_date, responses, gateway_ip, key):
+        session_cls = System.delegate.entities['session']
+        response_cls = System.delegate.entities['response']
+        question_cls = System.delegate.entities['question']
         date = datetime.datetime.strptime(new_date, "%d-%m-%Y").date()
-        try:
-            fb = Feedback(gateway_ip=str(gateway_ip),
-                            lab_name=str(lab_name),
-                            exp_name=str(exp_name),
-                            date=date,
-                            responses=[])
-            fb.save()
-        except Exception as e:
-            print str(e)
+        fb = System.do("add_feedback", gateway_ip=gateway_ip,
+                           lab_name=lab_name, exp_name=exp_name,
+                           date=date, responses=[],
+                           session=session_cls(key=key))
 
         response_list = []
         for response in responses:
             try:
-                question = System.delegate.Question(name=str(response['name']),
+                question = System.delegate.question_cls(name=str(response['name']),
                                         question_type="")
             except Exception as e:
                 print str(e)
@@ -145,7 +139,7 @@ class TestGetFeedbackForm(TestCase):
                     answer_list.append(answer)
                 except Exception as e:
                     print str(e)
-            res = Response(question=question, answers=answer_list,
+            res = response_cls(question=question, answers=answer_list,
                                feedbacks=[fb])
             response_list.append(res)
 
@@ -173,7 +167,6 @@ class TestAddFeedback(TestCase):
 
     def setUp(self):
         db.create_all()
-        SystemInterface.initialize(PersistenceDelegate)
 
     def tearDown(self):
         db.session.remove()
@@ -342,7 +335,7 @@ class TestGetFeedbackDump(TestCase):
 #+BEGIN_SRC python
 # -*- coding: utf-8 -*-
 from runtime.system.system import *
-
+import datetime
 #+end_src
 
 
@@ -381,7 +374,7 @@ if __name__ == '__main__':
 <<imports_for_sources>>
 <<class_system_interface>>
 <<get_feedback_form>>
-#<<class_si_add_feedback>>
+<<class_si_add_feedback>>
 #<<class_si_get_feedback_usage>>
 #<<class_si_get_feedback_dump>>
 #+end_src
@@ -390,7 +383,7 @@ if __name__ == '__main__':
 #+BEGIN_SRC python :tangle test_system_interface.py :eval no :noweb yes
 <<imports_for_tests>>
 <<test_class_get_feedback_form>>
-#<<test_class_si_add_feedback>>
+<<test_class_si_add_feedback>>
 #<<test_class_si_get_feedback_usage>>
 #<<test_class_si_get_feedback_dump>>
 <<run_test_cases>>

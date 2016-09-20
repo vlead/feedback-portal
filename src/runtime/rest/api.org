@@ -82,12 +82,12 @@ def get_add_feedback():
         if 'gateway_ip' not in data_dict:
             gateway_ip = str(request.remote_addr)
         else:
-            gateway_ip = str(request.json['gateway_ip'])
+            gateway_ip = str(data_dict['gateway_ip'])
 
         if 'date' not in data_dict:
             date = str(request.date)
         else:
-            date = str(request.json['date'])
+            date = str(data_dict['date'])
  #       print exp_name, gateway_ip, date
         current_app.logger.debug("exp_name = %s, gateway_ip=%s, date=%s, "
                                      %(exp_name, gateway_ip, date))
