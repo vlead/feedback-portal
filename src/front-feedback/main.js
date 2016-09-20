@@ -154,7 +154,7 @@ function submitFeedback(event) {
   	feedback.user_id = sampleData.user_id;
   	feedback.key = sampleData.key;
   	
-  	feedback.questions = []; // the list of questions and user answers
+  	feedback.responses = []; // the list of questions and user answers
 	var quesArray = sampleData.questions.length;
     // loop over the questions
 	for (var i = 0; i < quesArray; i++) {
@@ -190,11 +190,11 @@ function submitFeedback(event) {
 	    	answer = input.value;
 	  	}
 	  	// create an object to insert the current question data
-	  	var question = {};
-	  	question.name = sampleData.questions[i].name;
-	  	question.type = sampleData.questions[i].type;
-	  	question.answer = answer;
-	  	feedback.questions.push(question);
+	  	var questions = {};
+	  	questions.name = sampleData.questions[i].name;
+	  	questions.type = sampleData.questions[i].type;
+	  	questions.answer = answer;
+	  	feedback.responses.push(questions);
 	}
 	console.log(feedback); // the final object
 	console.log("Submitted feedback");
