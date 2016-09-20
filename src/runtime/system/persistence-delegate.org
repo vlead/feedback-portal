@@ -26,7 +26,7 @@ class PersistenceDelegate():
         self.entities = {'session': Session,
                          'question': Question,
                          'answer': Answer,
-                         'resposne': Response,
+                         'response': Response,
                          'feedback': Feedback
                         }
 

@@ -154,8 +154,8 @@ class TestSystemConstructor(TestCase):
     def type_check(args, arg_types):
         for key, value in args.iteritems():
             if not arg_types[key](value):
-                raise TypeError("type mismatch: argument %s is not of " + 
-                                "type " )   
+                raise TypeError("type mismatch: argument %s is not of "
+                                "type %s" % (value, key))
 
 #+end_src
 
