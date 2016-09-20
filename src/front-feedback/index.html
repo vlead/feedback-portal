@@ -4,62 +4,73 @@
     <title>Feedback Portal</title>
     <!-- Latest compiled and minified CSS -->
     <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity = "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link href = "main.css" rel = "stylesheet">
-   <style>
-    body {
-    	font-family:  sans-serif;
-    	font-size: 14px;
-    	color: #767676;
-    }
-
-    #feedback-form {
-      width: 80%;
-      margin-top: 30px;
-    }
-    .headInfo {
-    	margin-left: 0px; 
-    	margin-top: 20px;
-    }
-    .values {
-    	margin-left: 0px;
-    	text-align: left;
-    }
-    .rowCol {
-    	border: 1px solid #ccc
-    	/*margin-top: 2px;*/
-    }
-    .mainrow {
-    	margin-top: 4px;
-    }
-	</style>
+    <link rel = "stylesheet" href = "main.css">
   </head>
 
   <body onload="renderFeedbackform();">
-    <div class="container">
-      <h1> Virtual Labs - Feedback Form </h1>
-      <h4> Please fill in details below and click on submit </h4>
-      <div class="row headInfo">
-      	<div class="row">
-      		<div class = "col-sm-2" id = "user_name"></div>
-      		<div class = "col-sm-4 values" id = "user_name_value"></div>
-
-      		<div class = "col-sm-2" id = "roll_no"></div>
-      		<div class = "col-sm-4 values" id = "roll_no_value"></div>
-
-
-      	</div>
-      	<div class="row">
-      		<div class = "col-sm-2" id = "clg_name"></div>
-      		<div class = "col-sm-4 values" id = "clg_name_value"></div>
-
-      		<div class = "col-sm-2" id = "year_sem"></div>
-      		<div class = "col-sm-4 values" id = "year_sem_value"></div>
-      	</div>
-      	<div class="row mainrow" >
-      		<div id="row" disabed = "true"></div>
-      		
-      	</div>
+  	<header>
+			<!-- Navigation -->
+			<nav class="navbar navbar-default " style="background-color: white !important; margin-bottom: 0px !important;">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+ 				<div class="navbar-header page-scroll">
+        	<button aria-controls="bs-navbar" aria-expanded="true"  type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar #bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar" style="background-color: #77BB41"></span>
+                <span class="icon-bar" style="background-color: #77BB41"></span>
+                <span class="icon-bar" style="background-color: #77BB41"></span>
+          </button>
+          <a class="navbar-brand main-logo-a" href="http://vlabs.ac.in/index.html"><img src="images/logo-new.png" class="img-responsive main-logo" /></a>
+        </div>			
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
+	        <ul class="nav navbar-nav navbar-right menu-ul search-ul" style="position: relative; top: -5px;">
+   	      	<li></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right menu-ul">
+            <li class="page-scroll menu-li " >
+              <a href="http://vlabs.ac.in/" class="menu-a" >HOME</a>
+            </li>
+            <li class="page-scroll menu-li">
+              <a href="http://vlabs.ac.in/labs.html"  class="menu-a " >ALL LABS</a>
+            </li>
+            <li class="page-scroll menu-li " >
+              <a href="http://vlabs.ac.in/#partner" class="menu-a" >PARTNERS</a>
+            </li><li class="page-scroll menu-li " >
+              <a href="http://vlabs.ac.in/#contact" class="menu-a" >CONTACT</a>
+            </li>
+          </ul>
+        </div>
       </div>
+	  </nav>
+  </header>
+	<div class="row">
+		<hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
+  </div>
+  <div class="container">
+    <h1> Virtual Labs Feedback Form </h1>
+    <h4> Please fill in details below and click on submit </h4>
+    <!-- <div class="row headInfo">
+     	<div class="row">
+     		<div class = "col-sm-2" id = "user_name"></div>
+     		<div class = "col-sm-4 values" id = "user_name_value"></div>
+
+     		<div class = "col-sm-2" id = "roll_no"></div>
+     		<div class = "col-sm-4 values" id = "roll_no_value"></div>
+
+     	</div>
+     	<div class="row">
+     		<div class = "col-sm-2" id = "clg_name"></div>
+     		<div class = "col-sm-4 values" id = "clg_name_value"></div>
+
+     		<div class = "col-sm-2" id = "year_sem"></div>
+     		<div class = "col-sm-4 values" id = "year_sem_value"></div>
+     	</div>
+
+      <div class="row mainrow" >
+      	<div id="row" disabed = "true"></div>
+     	</div>
+      </div> -->
       <form class="form" id="feedback-form" onsubmit="submitFeedback(event)">
         <div class="form-group">
           <label class="" id="lab_name_label"></label>
@@ -75,10 +86,10 @@
       </form>
     </div>
     <div id="footer">
-	<div class="container">
-    	<p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>
+			<div class="container">
+  			<p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>
+  		</div>
   	</div>
-</div>
   </body>
 
   <!-- Jquery and Scipts Link -->

@@ -71,29 +71,29 @@ function renderQuesLabel() {
 }
 
 function renderFeedbackform() {
-	var user_name = document.getElementById("user_name");
-	user_name.innerHTML = "Name: ";
-	var user_name_value = document.getElementById("user_name_value");
-	user_name_value.innerHTML = sampleData.user_name;
+	// var user_name = document.getElementById("user_name");
+	// user_name.innerHTML = "Name: ";
+	// var user_name_value = document.getElementById("user_name_value");
+	// user_name_value.innerHTML = sampleData.user_name;
 
-	var clg_name = document.getElementById("clg_name");
-	clg_name.innerHTML = "College Name: ";
-	var clg_name_value = document.getElementById("clg_name_value");
-	clg_name_value.innerHTML = sampleData.clg_name;
+	// var clg_name = document.getElementById("clg_name");
+	// clg_name.innerHTML = "College Name: ";
+	// var clg_name_value = document.getElementById("clg_name_value");
+	// clg_name_value.innerHTML = sampleData.clg_name;
 
-	var year_sem = document.getElementById("year_sem");
-	year_sem.innerHTML = "Year/Sem: ";
-	var year_sem_value = document.getElementById("year_sem_value");
-	year_sem_value.innerHTML = sampleData.year_sem;
+	// var year_sem = document.getElementById("year_sem");
+	// year_sem.innerHTML = "Year/Sem: ";
+	// var year_sem_value = document.getElementById("year_sem_value");
+	// year_sem_value.innerHTML = sampleData.year_sem;
 
-	var roll_no = document.getElementById("roll_no");
-	roll_no.innerHTML = "Roll No.: ";
-	var roll_no_value = document.getElementById("roll_no_value");
-	roll_no_value.innerHTML = sampleData.roll_no;
+	// var roll_no = document.getElementById("roll_no");
+	// roll_no.innerHTML = "Roll No.: ";
+	// var roll_no_value = document.getElementById("roll_no_value");
+	// roll_no_value.innerHTML = sampleData.roll_no;
 
-	var row = document.getElementById("row");
-	// <input class="form-control" id="lab_name_value" disabled="true">
-	row.className = "col-sm-10 rowCol";
+	// var row = document.getElementById("row");
+	// // <input class="form-control" id="lab_name_value" disabled="true">
+	// row.className = "col-sm-10 rowCol";
 
 
 	var lab_name_label = document.getElementById("lab_name_label");
@@ -184,10 +184,10 @@ function submitFeedback(event) {
   	feedback.key = sampleData.key;
   	feedback.user_id = sampleData.user_id;
   	feedback.exp_name = sampleData.exp_name;
-  	feedback.user_name = sampleData.user_name;
-  	feedback.roll_no = sampleData.roll_no;
-  	feedback.clg_name = sampleData.clg_name;
-  	feedback.year_sem = sampleData.year_sem;
+  	// feedback.user_name = sampleData.user_name;
+  	// feedback.roll_no = sampleData.roll_no;
+  	// feedback.clg_name = sampleData.clg_name;
+  	// feedback.year_sem = sampleData.year_sem;
   	feedback.questions = []; // the list of questions and user answers
 	  var quesArray = sampleData.questions.length;
 
@@ -227,7 +227,7 @@ function submitFeedback(event) {
 	      	var input = questionElement;
 	    	  answer = input.value;
 	  }
-	    // create an object to insert the current question data
+	  // create an object to insert the current question data
 	  var question = {};
 	  question.name = sampleData.questions[i].name;
 	  question.type = sampleData.questions[i].type;
