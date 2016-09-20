@@ -645,8 +645,24 @@ function submitFeedback(event) {
 	  question.answer = answer;
 	  feedback.questions.push(question);
 	  }
-	  console.log(feedback); // the final object
-	  console.log("Submitted feedback");
+   // Posting json data to /feedback api
+
+        $.ajax({
+            url: 'http://localhost:5000/feedback',
+            type: 'POST',
+	    data: JSON.stringify(feedback),
+	    contentType: 'application/json',
+            success: function (data) {
+		alert("Submitted");
+		console.log(data);
+            },
+	    error: function(data){
+		console.log("Error in submitted feedback");
+		console.log(data); 
+	    }
+            
+        });    
+
 }
 
 #+END_SRC
