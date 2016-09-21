@@ -126,18 +126,16 @@ class TestPersistenceDelegate(TestCase):
 #+NAME: persistence_response_exists
 #+BEGIN_SRC python
     def response_exists(self, new_response):
+        ret_val = False
         question = new_response.get("question")
         answers = new_response.get("answers")
         n_responses = self.get_responses(question=question)
         if n_responses:
-            response = filter(lambda x: x.get("answers") == answers,
-                                  n_responses)
-            if response:
-                return True
-            else:
-                return False
-        else:
-            return False
+            if (filter(lambda x: x.get("answers") == answers, n_responses)):
+                ret_val = True
+
+        return ret_val
+
 #+END_SRC
 
 **** Tests
