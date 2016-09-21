@@ -11,6 +11,7 @@
 
 
 * REST
+
 ** Get and Add Feedback
    This is the REST API method for both getting and adding feedback.
 
@@ -59,43 +60,21 @@ def get_add_feedback():
             abort(500, "the request does not contain data in json")
 
         data_dict = json.loads(data_json)
-#        print "data json = %s" % data_json
-#        print "data dict = %s" % data_dict
-#        print "type of data dict = %s" % type(data_dict)
 
         if 'lab_name' not in data_dict or 'key' not in data_dict or \
             'responses' not in data_dict:
             abort(400, 'Either lab name or key or responses are not passed')
         else:
-            lab_name = str(data_dict['lab_name'])
-            key = str(data_dict['key'])
-            responses = data_dict['responses']
-#            print lab_name, key, responses
-            current_app.logger.debug("lab_name = %s, responses=%s, key=%s, "
-                                        %(lab_name, responses, key))
-
-        if 'exp_name' not in data_dict:
-            exp_name = None
-        else:
-            exp_name = str(data_dict['exp_name'])
-
-        if 'gateway_ip' not in data_dict:
             gateway_ip = str(request.remote_addr)
-        else:
-            gateway_ip = str(data_dict['gateway_ip'])
+            current_app.logger.debug("lab_name = %s, responses=%s, key=%s, "
+                                        %(data_dict['lab_name'],
+                                          data_dict['responses'],
+                                          data_dict['key']))
 
-        if 'date' not in data_dict:
-            date = str(request.date)
-        else:
-            date = str(data_dict['date'])
- #       print exp_name, gateway_ip, date
-        current_app.logger.debug("exp_name = %s, gateway_ip=%s, date=%s, "
-                                     %(exp_name, gateway_ip, date))
+            data_dict["gateway_ip"] = gateway_ip
         try:
-            fb = SystemInterface.add_feedback(lab_name, exp_name, date, \
-                                                  gateway_ip, responses, key)
-
-            return "{'status' : 'Success'}"
+            fb = SystemInterface.add_feedback(data_dict)
+            return jsonify({'status' : 'Success'})
 
         except NotAuthorizedError as err:
             abort(401, 'Not Authorized error: %s' % str(err))
@@ -194,16 +173,18 @@ class TestAddFeedback(TestCase):
 
         payload = {'lab_name': 'data structure',
                    'exp_name': 'tuples',
-                   'date': '25-07-2016',
-                   'gateway_ip': '10.4.0.12',
                    'key' : KEY,
                    'responses': [{'name': 'Exp is working',
                                   'answers':['yes', 'no'] }]
                   }
 
         headers = {'Content-Type': 'application/json'}
+        ip_address = {'REMOTE_ADDR': '1.2.3.4'}
+        
         response = self.client.post("/feedback", data=json.dumps(payload),
-                                        headers=headers)
+                                 headers=headers,
+                                 environ_overrides=ip_address)
+        
         self.assertEqual(response.status_code, 200)
 '''
     def test_get_lab_feedback_form_data(self):
@@ -231,6 +212,7 @@ class TestAddFeedback(TestCase):
 '''
  #+END_SRC
 
+
 ** Get Feedback Usage
    This is the REST API method for getting the feedback usage. 
 
@@ -253,6 +235,7 @@ def get_feedback_usage():
                 abort(500)
 
 #+END_SRC
+
 
 ** TestGetFeedbackUsage
 #+NAME: test_get_feedback_usage
@@ -296,6 +279,7 @@ class TestGetFeedbackUsage(TestCase):
 
 #+END_SRC
 
+
 ** Get Feedback Dump
    This is the REST API method for dumping the feedback forms to elastic search. 
 
@@ -319,6 +303,7 @@ def get_feedback_dump():
                 abort(500)
 
 #+END_SRC
+
 
 ** TestGetFeedbackDump
 #+NAME: test_get_feedback_dump
