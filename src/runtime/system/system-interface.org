@@ -114,15 +114,17 @@ class TestGetFeedbackForm(TestCase):
 #+NAME: class_si_add_feedback
 #+begin_src python
     @staticmethod
-    def add_feedback(lab_name, exp_name, new_date, responses, gateway_ip, key):
+    def add_feedback(data_dict):
         session_cls = System.delegate.entities['session']
         response_cls = System.delegate.entities['response']
         question_cls = System.delegate.entities['question']
-        date = datetime.datetime.strptime(new_date, "%d-%m-%Y").date()
-        fb = System.do("add_feedback", gateway_ip=gateway_ip,
-                           lab_name=lab_name, exp_name=exp_name,
-                           date=date, responses=[],
-                           session=session_cls(key=key))
+
+        responses = data_dict['responses']
+        data_dict['responses'] = []
+        data_dict['session'] = session_cls(key=data_dict['key'])
+        del(data_dict['key'])
+        
+        fb = System.do("add_feedback", **data_dict)
 
         response_list = []
         for response in responses:
@@ -175,19 +177,15 @@ class TestAddFeedback(TestCase):
     def test_add_feedback_in_system_interface(self):
         print "test_add_feedback_in_system_interface"
 
-        lab_name = "data structure"
-        exp_name = "lists"
-        date = "25-07-2016"
-        gateway_ip = "10.2.56.65"
-        responses = [{"name": "how are you?", "answers" : ["yes"]},
-                     {"name": "how are the labs?", 
-                     "answers": ["yes", "no", "ok"]}
-                    ]
+        data_dict = {'lab_name': 'data structure',
+                    'exp_name': 'tuples',
+                    'key' : KEY,
+                    'gateway_ip': '10.4.12.24',
+                    'responses': [{'name': 'Exp is working',
+                                    'answers':['yes', 'no'] }]
+                   }
 
-        key = KEY
-
-        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
-                                               gateway_ip, responses, key)
+        fb = SystemInterface.add_feedback(data_dict)
         self.assertEqual(fb.get("lab_name"), lab_name)
         self.assertEqual(fb.get("exp_name"), exp_name)
         self.assertEqual(fb.get("gateway_ip"), gateway_ip)
