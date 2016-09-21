@@ -155,14 +155,14 @@ class TestGetFeedbackForm(TestCase):
                     answer = answer_cls(name=str(answer))
                     answer_list.append(answer)
  
-               res = response_cls(question=question, answers=answer_list,
-                                   feedbacks=[fb])
-               response_list.append(res)
+                res = response_cls(question=question, answers=answer_list,
+                                    feedbacks=[fb])
+                response_list.append(res)
 
             feedback = System.do("add_responses_to_feedback",
-                                  responses=response_list,
-                                  fb_id=fb.id,
-                                  session=data_dict['session'])
+                                    responses=response_list,
+                                    fb_id=fb.id,
+                                    session=data_dict['session'])
             return feedback
         except Exception as e:
             fb.delete()
@@ -361,6 +361,8 @@ class TestGetFeedbackDump(TestCase):
 # -*- coding: utf-8 -*-
 from runtime.system.system import *
 import datetime
+from flask import current_app
+
 #+end_src
 
 
@@ -376,7 +378,7 @@ from sqlalchemy.exc import IntegrityError
 from runtime.utils.class_persistence_template import db
 from runtime.system.system_interface import *
 from runtime.config.system_config import KEY
-
+from flask import current_app
 config = {
          'SQLALCHEMY_DATABASE_URI': ''
          }
