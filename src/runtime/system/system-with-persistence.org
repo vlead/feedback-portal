@@ -107,21 +107,23 @@ class TestAddFeedback(TestCase):
 
     def test_add_feedback(self):
         print "test_add_feedback_in_system_persistence"
-        gateway_ip = "10.100.40.2"
-        lab_name = "cse01"
-        exp_name = "data01"
-        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
-        key = KEY
-        session = Session(key=key)
-        feedback = System.do("add_feedback", gateway_ip=gateway_ip,
-                                 lab_name=lab_name, exp_name=exp_name,
-                                 date=date, responses=[],
-                                 session=session)
-        
+
+        data_dict = {'lab_name': 'data structure',
+                    'exp_name': 'tuples',
+                    'key' : KEY,
+                    'gateway_ip': '10.4.12.24',
+                    'responses': [] 
+                   }
+        session_cls = System.delegate.entities['session']
+        data_dict['session'] = session_cls(key=data_dict['key'])
+        del(data_dict['key'])
+
+        feedback = System.do("add_feedback", **data_dict)
+
         fb = Feedback.get_by_id(1)
-        self.assertEqual(fb.get("gateway_ip"), gateway_ip)
-        self.assertEqual(fb.get("lab_name"), lab_name)
-        self.assertEqual(fb.get("exp_name"), exp_name)
+        self.assertEqual(fb.get("gateway_ip"), '10.4.12.24')
+        self.assertEqual(fb.get("lab_name"), 'data structure')
+        self.assertEqual(fb.get("exp_name"), 'tuples')
         self.assertEqual(fb.get("responses"), [])
             
 #+END_SRC
