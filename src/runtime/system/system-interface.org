@@ -128,11 +128,8 @@ class TestGetFeedbackForm(TestCase):
 
         response_list = []
         for response in responses:
-            try:
-                question = System.delegate.question_cls(name=str(response['name']),
-                                        question_type="")
-            except Exception as e:
-                print str(e)
+            question = question_cls(name=str(response['name']),
+                                            question_type="")
             answers = response['answers']
             answer_list = []
             for answer in answers:

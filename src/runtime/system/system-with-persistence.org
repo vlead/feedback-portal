@@ -99,8 +99,6 @@ class TestAddFeedback(TestCase):
 
     def setUp(self):
         db.create_all()
-        System.initialize_system(PersistenceDelegate)
-        self.persistence_delegate = PersistenceDelegate()
 
     def tearDown(self):
         db.session.remove()
