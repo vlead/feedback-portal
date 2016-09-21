@@ -300,6 +300,8 @@ class AddFeedback():
     def auth_check(args):
         session = args['session']
         if not System.is_session_valid(session):
+            current_app.logger.error("auth error raised, session = %s" % 
+                                        session.to_client())
             raise NotAuthorizedError("Not Authorized to perform this action")
 
     @staticmethod
@@ -311,14 +313,58 @@ class AddFeedback():
         gateway_ip = args["gateway_ip"]
         lab_name = args["lab_name"]
         exp_name = args["exp_name"]
-        date = datetime.datetime.now()
+        date = datetime.datetime.now().date()
         responses = args['responses']
-        feedback = System.delegate.add_feedback(gateway_ip, 
-                                                    lab_name,
-                                                    exp_name,
-                                                    date,
-                                                    responses)
-        return feedback
+        try:
+            feedback = System.delegate.add_feedback(gateway_ip, 
+                                                        lab_name,
+                                                        exp_name,
+                                                        date,
+                                                        responses)
+            return feedback
+        except Exception as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
+
+#+end_src
+
+
+** =AddResponsesToFeedBack=
+#+NAME: class_addresponses_to_feedback
+#+begin_src python
+class AddResponsesToFeedback():
+    arg_types = {"responses": are_responses, "fb_id": is_int, 
+                     "session": is_session}
+    arity_and_type_checks_needed = True
+
+    @staticmethod
+    def auth_check(args):
+        session = args['session']
+        if not System.is_session_valid(session):
+            current_app.logger.error("auth error raised, session = %s" % 
+                                        session.to_client())
+            raise NotAuthorizedError("Not Authorized to perform this action")
+
+    @staticmethod
+    def state_check(args):
+        fb_id = args["fb_id"]
+        if not System.delegate.feedback_exists(fb_id):
+            current_app.logger.error("feedback with id = %d does not exist"
+                                     " in System" % fb_id)
+            raise StateError("feedback with id = %d does not exist in System"
+                                 % fb_id)
+
+    @staticmethod
+    def action(args):
+        fb_id = args["fb_id"]
+        responses = args["responses"]
+        try:
+            feedback = System.delegate.add_responses_to_feedback(fb_id, 
+                                                                 responses)
+            return feedback
+        except Exception as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
 
 #+end_src
 
@@ -373,37 +419,6 @@ class GetFeedbackDump():
         date = args["date"]
         feedbacks = System.delegate.get_feedback_dump(date) 
         return feedbacks
-
-#+end_src
-
-
-** =AddResponsesToFeedBack=
-#+NAME: class_addresponses_to_feedback
-#+begin_src python
-class AddResponsesToFeedback():
-    arg_types = {"responses": are_responses, "fb_id": is_int, 
-                     "session": is_session}
-    arity_and_type_checks_needed = True
-
-    @staticmethod
-    def auth_check(args):
-        session = args['session']
-        if not System.is_session_valid(session):
-            raise NotAuthorizedError("Not Authorized to perform this action")
-
-    @staticmethod
-    def state_check(args):
-        fb_id = args["fb_id"]
-        if not System.delegate.feedback_exists(fb_id):
-            raise StateError("feedback %s does not exist in System"
-                                 % feedback.to_client())
-
-    @staticmethod
-    def action(args):
-        fb_id = args["fb_id"]
-        responses = args["responses"]
-        feedback = System.delegate.add_responses_to_feedback(fb_id, responses)
-        return feedback
 
 #+end_src
 

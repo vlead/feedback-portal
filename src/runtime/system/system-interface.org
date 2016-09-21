@@ -47,6 +47,9 @@ class SystemInterface ():
         except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
             raise err
 
+        except Exception as err:
+            raise err
+
 #+END_SRC
 
 *** Test GerFeedBackForm
@@ -111,7 +114,7 @@ class TestGetFeedbackForm(TestCase):
 
 ** AddFeedback
 
-#+NAME: class_si_add_feedback
+#+NAME: class_add_feedback
 #+begin_src python
     @staticmethod
     def add_feedback(data_dict):
@@ -120,44 +123,56 @@ class TestGetFeedbackForm(TestCase):
         question_cls = System.delegate.entities['question']
         answer_cls = System.delegate.entities['answer']
 
+        if len(data_dict['lab_name']) == 0:
+            data_dict['lab_name'] = None
+
         responses = data_dict['responses']
         data_dict['responses'] = []
         data_dict['session'] = session_cls(key=data_dict['key'])
         del(data_dict['key'])
-        
-        fb = System.do("add_feedback", **data_dict)
+
+        fb = None
+        try:
+            fb = System.do("add_feedback", **data_dict)
+
+        except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
+
+        except Exception as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
+
 
         response_list = []
-        for response in responses:
-            question = question_cls(name=str(response['name']),
-                                            question_type="")
-            answers = response['answers']
-            answer_list = []
-            for answer in answers:
-                try:
+        try:
+            for response in responses:
+                question = question_cls(name=str(response['name']),
+                                        question_type="")
+                answers = response['answers']
+                answer_list = []
+                for answer in answers:
                     answer = answer_cls(name=str(answer))
                     answer_list.append(answer)
-                except Exception as e:
-                    print str(e)
-            res = response_cls(question=question, answers=answer_list,
-                               feedbacks=[fb])
-            response_list.append(res)
+ 
+               res = response_cls(question=question, answers=answer_list,
+                                   feedbacks=[fb])
+               response_list.append(res)
 
-            fb_id = fb.id
-
-            try:
-                feedback = System.do("add_responses_to_feedback",
-                                         responses=response_list,
-                                         fb_id=fb_id,
-                                         session=data_dict['session'])
-                return feedback
-            except Exception as e:
-                print str(e)
+            feedback = System.do("add_responses_to_feedback",
+                                  responses=response_list,
+                                  fb_id=fb.id,
+                                  session=data_dict['session'])
+            return feedback
+        except Exception as e:
+            fb.delete()
+            current_app.logger.error("Exception = %s" % str(e))
+            raise e
 
 #+end_src
 
 *** TestAddFeedback
- #+NAME: test_class_si_add_feedback
+ #+NAME: test_class_add_feedback
  #+BEGIN_SRC python
 class TestAddFeedback(TestCase):
     TESTING = True
@@ -185,11 +200,24 @@ class TestAddFeedback(TestCase):
 
         fb = SystemInterface.add_feedback(data_dict)
 
-        self.assertEqual(fb.get("lab_name"), 'data structure')
-        self.assertEqual(fb.get("exp_name"), 'tuples')
-        self.assertEqual(fb.get("gateway_ip"), '10.4.12.24')
-        self.assertEqual(fb.get("responses")[0].get("question").get("name"),
-                             'Exp is working')
+        self.assertEqual(fb.get("lab_name"), data_dict['lab_name'])
+        self.assertEqual(fb.get("exp_name"), data_dict['exp_name'])
+        self.assertEqual(fb.get("gateway_ip"), data_dict['gateway_ip'])
+        self.assertEqual(fb.get("responses")[0].get("question").get("name"), 
+                                "Exp is working")
+
+    def test_add_feedback_raises_type_error_in_system_interface(self):
+        print "test_add_feedback_raises_type_error_in_system_interface"
+
+        data_dict = {'lab_name': 'data structure',
+                    'exp_name': 'tuples',
+                    'key' : KEY,
+                    'gateway_ip': '10.4.12.24',
+                    'responses': "hello"
+                   }
+
+        with self.assertRaises(TypeError):
+            SystemInterface.add_feedback(data_dict)
 
  #+END_SRC
 
@@ -371,16 +399,17 @@ if __name__ == '__main__':
 <<imports_for_sources>>
 <<class_system_interface>>
 <<get_feedback_form>>
-<<class_si_add_feedback>>
+<<class_add_feedback>>
 #<<class_si_get_feedback_usage>>
 #<<class_si_get_feedback_dump>>
 #+end_src
+
 
 ** tests
 #+BEGIN_SRC python :tangle test_system_interface.py :eval no :noweb yes
 <<imports_for_tests>>
 <<test_class_get_feedback_form>>
-<<test_class_si_add_feedback>>
+<<test_class_add_feedback>>
 #<<test_class_si_get_feedback_usage>>
 #<<test_class_si_get_feedback_dump>>
 <<run_test_cases>>
