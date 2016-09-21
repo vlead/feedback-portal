@@ -358,86 +358,87 @@ class TestGetFeedbackDump(TestCase):
 
 ** Index HTML
 #+BEGIN_SRC html :tangle ./templates/index.html :eval no :noweb yes
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Feedback Portal</title>
-    <!-- Latest compiled and minified CSS -->
-    <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity = "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel = "stylesheet" href = "main.css">
-  </head>
-
-  <body onload="renderFeedbackform();">
-  	<header>
-			<!-- Navigation -->
-			<nav class="navbar navbar-default " style="background-color: white !important; margin-bottom: 0px !important;">
-			<div class="container-fluid">
-				<!-- Brand and toggle get grouped for better mobile display -->
- 				<div class="navbar-header page-scroll">
-        	<button aria-controls="bs-navbar" aria-expanded="true"  type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar #bs-example-navbar-collapse-1">
+  
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Feedback Portal</title>
+      <!-- Latest compiled and minified CSS -->
+      <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity = "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+      <link rel = "stylesheet" href = "/static/css/main.css">
+    </head>
+    
+    <body onload="renderFeedbackform();">
+      <header>
+        <!-- Navigation -->
+        <nav class="navbar navbar-default " style="background-color: white !important; margin-bottom: 0px !important;">
+          <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+              <button aria-controls="bs-navbar" aria-expanded="true"  type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar #bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar" style="background-color: #77BB41"></span>
                 <span class="icon-bar" style="background-color: #77BB41"></span>
                 <span class="icon-bar" style="background-color: #77BB41"></span>
-          </button>
-          <a class="navbar-brand main-logo-a" href="http://vlabs.ac.in/index.html"><img src="images/logo-new.png" class="img-responsive main-logo" /></a>
-        </div>			
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
-	        <ul class="nav navbar-nav navbar-right menu-ul search-ul" style="position: relative; top: -5px;">
-   	      	<li></li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right menu-ul">
-            <li class="page-scroll menu-li " >
-              <a href="http://vlabs.ac.in/" class="menu-a" >HOME</a>
-            </li>
-            <li class="page-scroll menu-li">
-              <a href="http://vlabs.ac.in/labs.html"  class="menu-a " >ALL LABS</a>
-            </li>
-            <li class="page-scroll menu-li " >
-              <a href="http://vlabs.ac.in/#partner" class="menu-a" >PARTNERS</a>
-            </li><li class="page-scroll menu-li " >
-              <a href="http://vlabs.ac.in/#contact" class="menu-a" >CONTACT</a>
-            </li>
-          </ul>
+              </button>
+              <a class="navbar-brand main-logo-a" href="http://vlabs.ac.in/index.html"><img src="/static/images/logo-new.png" class="img-responsive main-logo" /></a>
+            </div>                  
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
+              <ul class="nav navbar-nav navbar-right menu-ul search-ul" style="position: relative; top: -5px;">
+                <li></li>
+              </ul>
+              <ul class="nav navbar-nav navbar-right menu-ul">
+                <li class="page-scroll menu-li " >
+                  <a href="http://vlabs.ac.in/" class="menu-a" >HOME</a>
+                </li>
+                <li class="page-scroll menu-li">
+                  <a href="http://vlabs.ac.in/labs.html"  class="menu-a " >ALL LABS</a>
+                </li>
+                <li class="page-scroll menu-li " >
+                  <a href="http://vlabs.ac.in/#partner" class="menu-a" >PARTNERS</a>
+                </li><li class="page-scroll menu-li " >
+                  <a href="http://vlabs.ac.in/#contact" class="menu-a" >CONTACT</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      </header>
+      <div class="row">
+        <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
+      </div>
+      <div class="container">
+        <h1> Virtual Labs Feedback Form </h1>
+        <h4> Please fill in details below and click on submit </h4>
+        
+        <form class="form" id="feedback-form" onsubmit="submitFeedback(event)">
+          <div class="form-group">
+            <label class="" id="lab_name_label"></label>
+            <input class="form-control" id="lab_name_value" disabled="true">
+          </div>
+          
+          <div class="form-group">
+            <label class="" id="exp_name_label"></label>
+            <input class="form-control" id="exp_name_value" disabled="true">
+          </div>
+          <div class="form-group" id="questions_list"></div>
+          <button class="btn btn-primary" >Submit</button>
+        </form>
+      </div>
+      <div id="footer">
+        <div class="container">
+          <p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>
         </div>
       </div>
-	  </nav>
-  </header>
-	<div class="row">
-		<hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
-  </div>
-  <div class="container">
-    <h1> Virtual Labs Feedback Form </h1>
-    <h4> Please fill in details below and click on submit </h4>
+    </body>
     
-      <form class="form" id="feedback-form" onsubmit="submitFeedback(event)">
-        <div class="form-group">
-          <label class="" id="lab_name_label"></label>
-          <input class="form-control" id="lab_name_value" disabled="true">
-        </div>
-
-        <div class="form-group">
-          <label class="" id="exp_name_label"></label>
-          <input class="form-control" id="exp_name_value" disabled="true">
-        </div>
-  		  <div class="form-group" id="questions_list"></div>
-        <button class="btn btn-primary" >Submit</button>
-      </form>
-    </div>
-    <div id="footer">
-			<div class="container">
-  			<p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>
-  		</div>
-  	</div>
-  </body>
-
-  <!-- Jquery and Scipts Link -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script type="text/javascript" src="main.js"></script>
-</html>
-
+    <!-- Jquery and Scipts Link -->
+    <script> var data = {{ questions_data|tojson }};</script> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/main.js"></script>
+  </html>
+  
 #+END_SRC
 ** Error Page Template
 #+BEGIN_SRC html :tangle ./templates/error.html :eval no :noweb yes
@@ -455,169 +456,169 @@ class TestGetFeedbackDump(TestCase):
 
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
-
-var labelQues, formGroup;
-function renderQuesLabel() {
-	formGroup = document.createElement("div");
-	formGroup.className = "form-group"
-	labelQues = document.createElement('label');
-	$("#questions_list").append(formGroup);
-	formGroup.appendChild(labelQues);
-}
-
-function renderFeedbackform() {
-	$("#lab_name_label").html("Lab Name");
-	$("#lab_name_value").val(sampleData.lab_name)
-
-	$("#exp_name_label").html("Experiment Name");
-	$("#exp_name_value").val(sampleData.exp_name)
-
-        var quesArray = sampleData.questions.length;
-	for (var i = 0; i < quesArray; i++) {
-		if (sampleData.questions[i].type === "checkbox") {
-			renderQuesLabel();
-			labelQues.innerHTML = sampleData.questions[i].name;
-			var optionsDiv = document.createElement("div");
-			optionsDiv.id = sampleData.questions[i].name;
-			var optionsLength = sampleData.questions[i].options.length;
-
-			for (var j = 0; j < optionsLength; j++) {
-				checkOption = document.createElement('input');
-				checkOption.type = "checkbox";
-				checkOption.value = sampleData.questions[i].options[j];
-
-				ansLabel = document.createElement('label');
-				ansLabel.className = "checkbox-inline"
-				ansLabel.innerHTML = sampleData.questions[i].options[j];
-
-				optionsDiv.appendChild(ansLabel);
-        		ansLabel.insertBefore(checkOption, ansLabel.firstChild);
-				formGroup.appendChild(optionsDiv);
-				questions_list.appendChild(formGroup);
-			}
-		}
-
-		else if(sampleData.questions[i].type === "radio") {
-			renderQuesLabel();
-			labelQues.innerHTML = sampleData.questions[i].name;
-			var optionsDiv1 = document.createElement("div");
-			optionsDiv1.id = sampleData.questions[i].name;
-			var optionsLength = sampleData.questions[i].options.length;
-
-			for (var k = 0; k < optionsLength; k++) {
-				radioOption = document.createElement('input');
-				radioOption.type = "radio";
-				radioOption.className = "";
-				radioOption.name = sampleData.questions[i].name;
-				radioOption.value = sampleData.questions[i].options[k];
-
-				radioLabel = document.createElement('label');
-				radioLabel.className = "radio-inline";
-				radioLabel.innerHTML = sampleData.questions[i].options[k];
-
-				optionsDiv1.appendChild(radioLabel);
-        		radioLabel.insertBefore(radioOption, radioLabel.firstChild);
-				formGroup.appendChild(optionsDiv1);
-				questions_list.appendChild(formGroup);
-			}
-		}
-    	        else if (sampleData.questions[i].type === "text") {
-      		        var ansTextArea;
-			renderQuesLabel();
-			labelQues.innerHTML = sampleData.questions[i].name;
-
-			ansTextArea = document.createElement("textarea");
-			ansTextArea.className = "form-control"
-			ansTextArea.id = sampleData.questions[i].name;
-
-			formGroup.appendChild(ansTextArea);
-                }
-		else if(sampleData.questions[i].type === 'textBox') {
-      		var ansTextBox;
-			renderQuesLabel();
-			labelQues.innerHTML = sampleData.questions[i].name;
-
-			ansTextBox = document.createElement("input");
-			ansTextBox.className = "form-control"
-			ansTextBox.id = sampleData.questions[i].name;
-
-			formGroup.appendChild(ansTextBox);
-		}
-	}
-}
-
-function submitFeedback(event) {
-
-    event.preventDefault();
-  	var feedback = {}; // the final feedback object
-  	feedback.lab_name = sampleData.lab_name;
-  	feedback.exp_name = sampleData.exp_name;
-  	feedback.user_id = sampleData.user_id;
-  	feedback.key = sampleData.key;
-  	
-  	feedback.responses = []; // the list of questions and user answers
-	var quesArray = sampleData.questions.length;
-        // loop over the questions
-	for (var i = 0; i < quesArray; i++) {
-		var questionElement = document.getElementById(sampleData.questions[i].name);
-		var answer = null;
-		if(sampleData.questions[i].type === 'radio') {
-         	var children = questionElement.querySelectorAll('input');
-	  		for(var j = 0; j < children.length; j++) {
-	    		var child = children[j];
-        		// console.log('child', child, child.type, child.checked);
-	    		if(child.type === 'radio' && child.checked === true) {
-	      			answer = child.value;
-	    		}
-	  		}
-		}
-		else if(sampleData.questions[i].type === 'checkbox') {
-	    	answer = [];
-	        var children = questionElement.querySelectorAll('input');
-	    	for(var j = 0; j < children.length; j++) {
-	        var child = children[j];
-	        if(child.checked === true) {
-	            // console.log('selected', child.value);
-	        	answer.push(child.value);
-	        }
-	      }
-	    }
-		else if(sampleData.questions[i].type === 'text') {
-	      	var input = questionElement;
-	        answer = input.value;
-	  	}
-	  	else if(sampleData.questions[i].type === 'text') {
-	      	var input = questionElement;
-
-	    	  answer = input.value;
-	  }
-    // create an object to insert the current question data
-	  var question = {};
-	  question.name = sampleData.questions[i].name;
-	  question.type = sampleData.questions[i].type;
-	  question.answer = answer;
-	  feedback.responses.push(question);
-	  }
-   // Posting json data to /feedback api
-
-        $.ajax({
-            url: 'http://localhost:5000/feedback',
-            type: 'POST',
-	    data: JSON.stringify(feedback),
-	    contentType: 'application/json',
-            success: function (data) {
-		alert("Submitted");
-		console.log(data);
-            },
-	    error: function(data){
-		console.log("Error in submitted feedback");
-		console.log(data); 
-	    }
-            
-        });    
-
-}
-
+  var sampleData = window.data;
+  var labelQues, formGroup;
+  function renderQuesLabel() {
+      formGroup = document.createElement("div");
+      formGroup.className = "form-group"
+      labelQues = document.createElement('label');
+      $("#questions_list").append(formGroup);
+      formGroup.appendChild(labelQues);
+  }
+  
+  function renderFeedbackform() {
+      $("#lab_name_label").html("Lab Name");
+      $("#lab_name_value").val(sampleData.lab_name)
+      
+      $("#exp_name_label").html("Experiment Name");
+      $("#exp_name_value").val(sampleData.exp_name)
+      
+      var quesArray = sampleData.questions.length;
+      for (var i = 0; i < quesArray; i++) {
+          if (sampleData.questions[i].type === "checkbox") {
+              renderQuesLabel();
+              labelQues.innerHTML = sampleData.questions[i].name;
+              var optionsDiv = document.createElement("div");
+              optionsDiv.id = sampleData.questions[i].name;
+              var optionsLength = sampleData.questions[i].options.length;
+              
+              for (var j = 0; j < optionsLength; j++) {
+                  checkOption = document.createElement('input');
+                  checkOption.type = "checkbox";
+                  checkOption.value = sampleData.questions[i].options[j];
+                  
+                  ansLabel = document.createElement('label');
+                  ansLabel.className = "checkbox-inline"
+                  ansLabel.innerHTML = sampleData.questions[i].options[j];
+                  
+                  optionsDiv.appendChild(ansLabel);
+                  ansLabel.insertBefore(checkOption, ansLabel.firstChild);
+                  formGroup.appendChild(optionsDiv);
+                  questions_list.appendChild(formGroup);
+              }
+          }
+          
+          else if(sampleData.questions[i].type === "radio") {
+              renderQuesLabel();
+              labelQues.innerHTML = sampleData.questions[i].name;
+              var optionsDiv1 = document.createElement("div");
+              optionsDiv1.id = sampleData.questions[i].name;
+              var optionsLength = sampleData.questions[i].options.length;
+              
+              for (var k = 0; k < optionsLength; k++) {
+                  radioOption = document.createElement('input');
+                  radioOption.type = "radio";
+                  radioOption.className = "";
+                  radioOption.name = sampleData.questions[i].name;
+                  radioOption.value = sampleData.questions[i].options[k];
+                  
+                  radioLabel = document.createElement('label');
+                  radioLabel.className = "radio-inline";
+                  radioLabel.innerHTML = sampleData.questions[i].options[k];
+                  
+                  optionsDiv1.appendChild(radioLabel);
+                  radioLabel.insertBefore(radioOption, radioLabel.firstChild);
+                  formGroup.appendChild(optionsDiv1);
+                  questions_list.appendChild(formGroup);
+              }
+          }
+          else if (sampleData.questions[i].type === "text") {
+              var ansTextArea;
+              renderQuesLabel();
+              labelQues.innerHTML = sampleData.questions[i].name;
+              
+              ansTextArea = document.createElement("textarea");
+              ansTextArea.className = "form-control"
+              ansTextArea.id = sampleData.questions[i].name;
+              
+              formGroup.appendChild(ansTextArea);
+          }
+          else if(sampleData.questions[i].type === 'textBox') {
+              var ansTextBox;
+              renderQuesLabel();
+              labelQues.innerHTML = sampleData.questions[i].name;
+              
+              ansTextBox = document.createElement("input");
+              ansTextBox.className = "form-control"
+              ansTextBox.id = sampleData.questions[i].name;
+              
+              formGroup.appendChild(ansTextBox);
+          }
+      }
+  }
+  
+  function submitFeedback(event) {
+      
+      event.preventDefault();
+      var feedback = {}; // the final feedback object
+      feedback.lab_name = sampleData.lab_name;
+      feedback.exp_name = sampleData.exp_name;
+      feedback.user_id = sampleData.user_id;
+      feedback.key = sampleData.key;
+      
+      feedback.responses = []; // the list of questions and user answers
+      var quesArray = sampleData.questions.length;
+      // loop over the questions
+      for (var i = 0; i < quesArray; i++) {
+          var questionElement = document.getElementById(sampleData.questions[i].name);
+          var answer = null;
+          if(sampleData.questions[i].type === 'radio') {
+              var children = questionElement.querySelectorAll('input');
+              for(var j = 0; j < children.length; j++) {
+                  var child = children[j];
+                  // console.log('child', child, child.type, child.checked);
+                  if(child.type === 'radio' && child.checked === true) {
+                      answer = child.value;
+                  }
+              }
+          }
+          else if(sampleData.questions[i].type === 'checkbox') {
+              answer = [];
+              var children = questionElement.querySelectorAll('input');
+              for(var j = 0; j < children.length; j++) {
+                  var child = children[j];
+                  if(child.checked === true) {
+                      // console.log('selected', child.value);
+                      answer.push(child.value);
+                  }
+              }
+          }
+          else if(sampleData.questions[i].type === 'text') {
+              var input = questionElement;
+              answer = input.value;
+          }
+          else if(sampleData.questions[i].type === 'text') {
+              var input = questionElement;
+              
+              answer = input.value;
+          }
+          // create an object to insert the current question data
+          var question = {};
+          question.name = sampleData.questions[i].name;
+          question.type = sampleData.questions[i].type;
+          question.answer = answer;
+          feedback.responses.push(question);
+      }
+      // Posting json data to /feedback api
+      
+      $.ajax({
+          url: 'http://localhost:5000/feedback',
+          type: 'POST',
+          data: JSON.stringify(feedback),
+          contentType: 'application/json',
+          success: function (data) {
+              alert("Submitted");
+              console.log(data);
+          },
+          error: function(data){
+              console.log("Error in submitted feedback");
+              console.log(data); 
+          }
+          
+      });    
+      
+  }
+  
 #+END_SRC
 
 ** CSS 
@@ -705,6 +706,7 @@ body {
     margin-top: 45px;
 }
 #+END_SRC
+
 
 * Infra                                                         :boilerplate:
 
