@@ -338,10 +338,16 @@ class TestPersistenceDelegate(TestCase):
     def add_responses_to_feedback(self, fb_id, new_responses):
         try:
             feedback = self.get_feedback_by_id(fb_id)
-            responses = feedback.get("responses")
+            responses_list = []
             for response in new_responses:
-                responses.append(response)
-            
+                answers = response.get("answers")
+                if not (self.response_exists(response)):
+                    for answer in answers:
+                        if not (self.answer_exists(answer)):
+                            answer.save()
+                    response.save()
+                responses_list.append(response)
+
             return feedback
         except Exception as err:
             current_app.logger.error("Exception = %s" % str(err))
@@ -349,7 +355,7 @@ class TestPersistenceDelegate(TestCase):
         
 #+END_SRC
 
-**** COMMENT Tests
+****  Tests
 #+NAME: test_persistence_add_responses_to_feedback
 #+BEGIN_SRC python
     def test_add_responses_to_feedback(self):
