@@ -48,8 +48,6 @@ build: init write-version
 
 
 ign:
-	rsync -a ${SRC_DIR}/implementation/web/templates ${BUILD_DIR}/code/src/templates
-	rsync -a ${SRC_DIR}/implementation/web/static ${BUILD_DIR}/code/src/static
 	rsync -a ${SRC_DIR}/${ORG_DIR} ${BUILD_DIR}/docs
 	rsync -a ${SRC_DIR}/${STYLE_DIR} ${BUILD_DIR}/docs
 	rm -f ${BUILD_DIR}/docs/*.html~
