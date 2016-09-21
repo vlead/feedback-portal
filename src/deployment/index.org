@@ -226,7 +226,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 service apache2 restart
-
+export PYTHONPATH="/var/www"
 setup_db
 exit 0;
 #+END_SRC
