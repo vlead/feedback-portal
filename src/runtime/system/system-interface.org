@@ -118,6 +118,7 @@ class TestGetFeedbackForm(TestCase):
         session_cls = System.delegate.entities['session']
         response_cls = System.delegate.entities['response']
         question_cls = System.delegate.entities['question']
+        answer_cls = System.delegate.entities['answer']
 
         responses = data_dict['responses']
         data_dict['responses'] = []
@@ -134,7 +135,7 @@ class TestGetFeedbackForm(TestCase):
             answer_list = []
             for answer in answers:
                 try:
-                    answer = Answer(name=str(answer))
+                    answer = answer_cls(name=str(answer))
                     answer_list.append(answer)
                 except Exception as e:
                     print str(e)
@@ -148,7 +149,7 @@ class TestGetFeedbackForm(TestCase):
                 feedback = System.do("add_responses_to_feedback",
                                          responses=response_list,
                                          fb_id=fb_id,
-                                         session=session)
+                                         session=data_dict['session'])
                 return feedback
             except Exception as e:
                 print str(e)
@@ -183,11 +184,12 @@ class TestAddFeedback(TestCase):
                    }
 
         fb = SystemInterface.add_feedback(data_dict)
-        self.assertEqual(fb.get("lab_name"), lab_name)
-        self.assertEqual(fb.get("exp_name"), exp_name)
-        self.assertEqual(fb.get("gateway_ip"), gateway_ip)
-        self.assertEqual(responses[0]['name'], 
-                         fb.get("responses")[0].get("question").get("name"))
+
+        self.assertEqual(fb.get("lab_name"), 'data structure')
+        self.assertEqual(fb.get("exp_name"), 'tuples')
+        self.assertEqual(fb.get("gateway_ip"), '10.4.12.24')
+        self.assertEqual(fb.get("responses")[0].get("question").get("name"),
+                             'Exp is working')
 
  #+END_SRC
 
