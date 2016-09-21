@@ -143,10 +143,10 @@ fi
 ABS_PATH_DS=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 update_app_config () {
-  CONFIG_FILE="src/config.py"
+  CONFIG_FILE="runtime/config/flask_app_config.py"
   DB_USER="root"
   DB_PASS=$(cat db_pass.txt)
-  DB_NAME="userdirectory"
+  DB_NAME="feedback"
   DB_SERVER="localhost"
 
   # the list of white-listed IPs for POST/PUT requests to data service
@@ -174,8 +174,8 @@ update_app_config () {
 }
 
 update_apache_config() {
-  PROC_NAME="userdirectory"
-  WSGI_SCRIPT="userdirectory.wsgi"
+  PROC_NAME="feedback"
+  WSGI_SCRIPT="feedback.wsgi"
   APACHE_VHOST_FILE="/etc/apache2/sites-available/default"
 
   sed -i "/<\/VirtualHost>/i \
@@ -208,7 +208,7 @@ setup_db() {
 
 update_app_config
 if [[ $? -ne 0 ]]; then
-  echo "FATAL: Failed to update application config.py"
+  echo "FATAL: Failed to update application flask_app_config.py"
   exit 1;
 fi
 update_apache_config
@@ -224,6 +224,22 @@ exit 0;
 #+END_SRC
 
 
+* Deploying the application
+
+#+BEGIN_SRC python :tangle feedback.wsgi :eval no
+
+import sys, os
+
+BASE_DIR = BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+
+sys.path.insert(0, BASE_DIR)
+
+from runtime.rest.app import create_app
+from runtime.config import flask_app_config as config
+
+application = create_app(config)
+
+#+END_SRC
 
 * Tangle                                       :boilerplate:
 #+BEGIN_SRC python :eval no :tangle __init__.py
