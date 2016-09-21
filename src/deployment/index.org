@@ -27,7 +27,7 @@ requires = [
 ]
 
 setup(
-    name='userdirectory',
+    name='feedback',
     version='2.0',
     install_requires=requires
 )
@@ -222,7 +222,6 @@ service apache2 restart
 setup_db
 exit 0;
 #+END_SRC
-
 
 * Deploying the application
 
