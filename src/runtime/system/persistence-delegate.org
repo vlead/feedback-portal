@@ -125,13 +125,13 @@ class TestPersistenceDelegate(TestCase):
     This function checks if response is already in the System.
 #+NAME: persistence_response_exists
 #+BEGIN_SRC python
-    def response_exists(self, new_response):
+    def response_exists(self, response):
         ret_val = False
-        question = new_response.get("question")
-        answers = new_response.get("answers")
-        n_responses = self.get_responses(question=question)
-        if n_responses:
-            if (filter(lambda x: x.get("answers") == answers, n_responses)):
+        question = response.get("question")
+        answers = response.get("answers")
+        responses = self.get_responses(question=question)
+        if responses:
+            if (filter(lambda x: x.get("answers") == answers, responses)):
                 ret_val = True
 
         return ret_val
@@ -335,17 +335,23 @@ class TestPersistenceDelegate(TestCase):
     This function adds responses to a given feedback.
 #+NAME: persistence_add_responses_to_feedback
 #+BEGIN_SRC python
-    def add_responses_to_feedback(self, fb_id, new_responses):
+    def add_responses_to_feedback(self, fb_id, responses):
         try:
             feedback = self.get_feedback_by_id(fb_id)
             responses_list = []
-            for response in new_responses:
+            for response in responses:
                 answers = response.get("answers")
                 if not (self.response_exists(response)):
                     for answer in answers:
                         if not (self.answer_exists(answer)):
                             answer.save()
+                        else:
+                            answer = self.get_answer(name=answer.get("name"))
+                    question = response.get("question")
+                    question = self.get_question(name=question.get("name"))
                     response.save()
+                else:
+                    response = self.get_response(
                 responses_list.append(response)
 
             return feedback
@@ -558,8 +564,8 @@ class TestPersistenceDelegate(TestCase):
 
 
 ***  Get Responses
-    This function returns responses if present in the database.  If the response is
-    not present, =None= type is returned.
+    This function returns responses if present in the database.  If a response
+    is not present, =None= type is returned.
 #+NAME: persistence_get_responses
 #+BEGIN_SRC python
     def get_responses(self, **kwargs):
@@ -613,6 +619,87 @@ class TestPersistenceDelegate(TestCase):
 
 #+END_SRC
 
+
+
+***  Get Response
+    This function returns response if present in the database.  If the response is
+    not present, =None= type is returned.  The arguments should contain both
+    question and answers. 
+#+NAME: persistence_get_response
+#+BEGIN_SRC python
+    def get_response(self, **args):
+        ret_val = None
+        if "question" in args.keys() and "answers" in args.keys():
+            question = args["question"]
+            answers = args["answers"]
+            responses = self.get_responses(question=question)
+            if responses:
+                filtered_responses = filter(lambda response: \
+                                            sorted(response.get("answers")) \
+                                            == sorted(answers), responses)
+
+                if filtered_responses:
+                    ret_val = filtered_responses[0]
+
+        return ret_val
+
+#+END_SRC
+
+****  Tests
+#+NAME: test_persistence_get_response
+#+BEGIN_SRC python
+    def test_get_response(self):
+         print "test_get_response"
+
+         name = "how are labs?"
+         q_type = "radio"
+         question1 = Question(name=name, question_type=q_type)
+         question1.save()
+
+         ans1 = Answer(name="excellent")
+         ans1.save()
+         ans2 = Answer(name="good")
+         ans2.save()
+
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         res1 = Response(question=question1, answers=[ans1], feedbacks=[fb])
+         res1.save()
+         res2 = Response(question=question1, answers=[ans1, ans2], 
+                             feedbacks=[fb])
+         res2.save()
+     
+         res3 = Response(question=question1, answers=[ans2], feedbacks=[fb])
+         res3.save()
+         
+         response_obj = self.persistence_delegate.get_response(\
+                question=question1, answers=[ans1, ans2])
+         self.assertEqual(response_obj.get("question").get("name"),
+                              question1.get("name"))
+         self.assertEqual(response_obj.get("answers")[0].get("name"),
+                              ans1.get("name"))
+         self.assertEqual(response_obj.get("answers")[1].get("name"),
+                              ans2.get("name"))
+
+         response_obj = self.persistence_delegate.get_response(\
+                question=question1, answers=[ans1])
+         self.assertEqual(response_obj.get("question").get("name"),
+                              question1.get("name"))
+         self.assertEqual(response_obj.get("answers")[0].get("name"),
+                              ans1.get("name"))
+                              
+
+#+END_SRC
 
 
 ***  Get Feedbacks
@@ -769,6 +856,7 @@ if __name__ == '__main__':
 <<persistence_get_question>>
 <<persistence_get_answer>>
 <<persistence_get_responses>>
+<<persistence_get_response>>
 <<persistence_question_exists>>
 <<persistence_answer_exists>>
 <<persistence_feedback_exists>>
@@ -780,9 +868,10 @@ if __name__ == '__main__':
 <<persistence_get_feedback_by_id>>
 <<persistence_get_feedback_usage>>
 <<persistence_get_feedback_dump>>
-<<persistence_add_responses_to_feedback>>
+#<<persistence_add_responses_to_feedback>>
 
 #+end_src
+
 
 ** tests
 #+BEGIN_SRC python :tangle test_persistence_delegate.py :eval no :noweb yes
@@ -792,6 +881,7 @@ if __name__ == '__main__':
 <<tes_persistence_get_question>>
 <<test_persistence_get_answer>>
 <<test_persistence_get_responses>>
+<<test_persistence_get_response>>
 <<test_persistence_question_exists>>
 <<test_persistence_answer_exists>>
 <<test_persistence_feedback_exists>>
@@ -803,7 +893,7 @@ if __name__ == '__main__':
 <<test_persistence_get_feedback_by_id>>
 <<test_persistence_get_feedback_usage>>
 <<test_persistence_get_feedback_dump>>
-<<test_persistence_add_responses_to_feedback>>
+#<<test_persistence_add_responses_to_feedback>>
 <<run_test_cases>>
 
 #+end_src

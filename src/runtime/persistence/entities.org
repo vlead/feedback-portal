@@ -185,7 +185,7 @@ args = {"__tablename__": "response",
         "id": db.Column(db.Integer, primary_key=True),
         "question_id": db.Column(db.Integer, 
                                       db.ForeignKey('question.id'), 
-                                      unique=True, nullable=True),
+                                      unique=False, nullable=True),
 
         "feedbacks": db.relationship('Feedback',
                                        secondary=responses_feedbacks, 
