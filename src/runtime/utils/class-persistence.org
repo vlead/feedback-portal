@@ -311,7 +311,7 @@ from type_utils import *
 from class_templates import *
 from class_persistence_template import *
 from runtime.rest.app import create_app
-from runtime.objects.entities import Name
+from runtime.objects.entities import Answer as Name
 
 config = {
     'SQLALCHEMY_DATABASE_URI': ''
