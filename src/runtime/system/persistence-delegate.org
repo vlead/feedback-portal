@@ -127,14 +127,14 @@ class TestPersistenceDelegate(TestCase):
 #+BEGIN_SRC python
     def response_exists(self, response):
         ret_val = False
+        
         question = response.get("question")
         answers = response.get("answers")
-        responses = self.get_responses(question=question)
-        if responses:
-            if (filter(lambda x: x.get("answers") == answers, responses)):
-                ret_val = True
+        if self.get_response(question=question, answers=answers) is not None:
+            ret_val = True
 
         return ret_val
+
 
 #+END_SRC
 
@@ -143,45 +143,43 @@ class TestPersistenceDelegate(TestCase):
 #+BEGIN_SRC python
     def test_response_exists(self):
         print "test_response_exists"
-        
-        name1 = "how are labs?"
-        q_type1 = "radio"
-        question1 = Question(name=name1, question_type=q_type1)
+
+        name = "how are labs?"
+        q_type = "radio"
+        question1 = Question(name=name, question_type=q_type)
         question1.save()
 
-        name2 = "how are experiments?"
-        q_type2 = "radio"
-        question2 = Question(name=name2, question_type=q_type2)
-        question2.save()
+        ans1 = Answer(name="excellent")
+        ans1.save()
+        ans2 = Answer(name="good")
+        ans2.save()
         
-        ans1 = "excellent labs"
-        answer1 = Answer(name=ans1)
-        answer1.save()
+        gateway_ip = "10.100.40.2"
+        lab_name = "cse01"
+        exp_name = "data01"
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
-        ans2 = "good"
-        answer2 = Answer(name=ans2)
-        answer2.save()
+        fb = Feedback(gateway_ip=gateway_ip,
+                       lab_name=lab_name,
+                       exp_name=exp_name,
+                       date=date,
+                       responses=[])
+        fb.save()
 
-        gateway_ip1 = "10.100.40.2"
-        lab_name1 = "cse01"
-        exp_name1 = "data01"
-        date1 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
-        fb1 = Feedback(gateway_ip=gateway_ip1,
-                        lab_name=lab_name1,
-                        exp_name=exp_name1,
-                        date=date1,
-                        responses=[])
-        fb1.save()
-
-        res1 = Response(question=question1, answers=[answer1], feedbacks=[fb1])
+        res1 = Response(question=question1, answers=[ans1], feedbacks=[fb])
         res1.save()
+        res2 = Response(question=question1, answers=[ans1, ans2], 
+                            feedbacks=[fb])
+        res2.save()
 
-        res2 = Response(question=question2, answers=[answer2], feedbacks=[fb1])
+        res3 = Response(question=question1, answers=[ans2], feedbacks=[fb])
 
         self.assertEqual(self.persistence_delegate.response_exists(res1),
-                            True)
+                             True)
         self.assertEqual(self.persistence_delegate.response_exists(res2),
-                            False)
+                             True)
+        self.assertEqual(self.persistence_delegate.response_exists(res3),
+                             False)
 
 #+END_SRC
 
@@ -336,44 +334,57 @@ class TestPersistenceDelegate(TestCase):
 #+NAME: persistence_add_responses_to_feedback
 #+BEGIN_SRC python
     def add_responses_to_feedback(self, fb_id, responses):
-        try:
-            feedback = self.get_feedback_by_id(fb_id)
-            responses_list = []
-            for response in responses:
-                answers = response.get("answers")
-                if not (self.response_exists(response)):
-                    for answer in answers:
-                        if not (self.answer_exists(answer)):
-                            answer.save()
-                        else:
-                            answer = self.get_answer(name=answer.get("name"))
-                    question = response.get("question")
-                    question = self.get_question(name=question.get("name"))
-                    response.save()
-                else:
-                    response = self.get_response(
-                responses_list.append(response)
+        feedback = self.get_feedback_by_id(fb_id)
+        response_list = []
+        for response in responses:
+            answers = response.get("answers")
+            if self.response_exists(response):
+                response = self.get_response(question=response.question, 
+                                             answers=response.answers)
+            else:
+                for answer in answers:
+                    if self.answer_exists(answer):
+                        answer = self.get_answer(name=answer.get("name"))
+                    else:
+                        answer.save()
+                question = response.get("question")
+                question = self.get_question(name=question.get("name"))
+                response.save()
 
-            return feedback
-        except Exception as err:
-            current_app.logger.error("Exception = %s" % str(err))
-            raise err
-        
+            response_list.append(response)
+            
+        feedback.set(responses=response_list)
+        return feedback
+
 #+END_SRC
 
 ****  Tests
 #+NAME: test_persistence_add_responses_to_feedback
 #+BEGIN_SRC python
-    def test_add_responses_to_feedback(self):
-         print "test_add_responses_to_feedback"
+    def test_add_saved_responses_to_feedback(self):
+         print "test_add_saved_responses_to_feedback"
 
-         name = "how are labs?"
          q_type = "radio"
-         question1 = Question(name=name, question_type=q_type)
+         question1 = Question(name="How is your breakfast?", 
+                                  question_type=q_type)
+         question2 = Question(name="How is your lunch?", question_type=q_type)
+         question3 = Question(name="How is your dinner?", question_type=q_type)
+
+
+         answer1 = Answer(name="Good")
+         answer2 = Answer(name="Bad")
+         answer3 = Answer(name="Excellent")
+         answer4 = Answer(name="Fair")
+
          question1.save()
-         ans = "excellent labs"
-         answer1 = Answer(name=ans)
+         question2.save()
+         question3.save()
+
          answer1.save()
+         answer2.save()
+         answer3.save()
+         answer4.save()
+
          gateway_ip = "10.100.40.2"
          lab_name = "cse01"
          exp_name = "data01"
@@ -385,19 +396,190 @@ class TestPersistenceDelegate(TestCase):
                         date=date,
                         responses=[])
          fb.save()
-         res = Response(question=question1, answers=[answer1], feedbacks=[fb])
 
-         try:
-            feedback = self.persistence_delegate.add_responses_to_feedback(1,
-                                                                        [res])
-         except:
-             self.assertEqual(True, False)
+         res1 = Response(question=question1, answers=[answer1], feedbacks=[fb])
+         res2 = Response(question=question2, answers=[answer2, answer3], 
+                             feedbacks=[fb])
+         res3 = Response(question=question3, answers=[answer3], feedbacks=[fb])
+         res4 = Response(question=question3, 
+                             answers=[answer1, answer2, answer3, answer4], 
+                             feedbacks=[fb])
 
-         self.assertEqual(feedback.get("lab_name"), lab_name)
-         self.assertEqual(feedback.get("responses")[0].get("question").\
-                              get("name"), question1.get("name"))
-         self.assertEqual(feedback.get("responses")[0].get("answers")[0].\
-                              get("name"), answer1.get("name"))
+         res1.save()
+         res2.save()
+         res3.save()
+         res4.save()
+
+         feedback = self.persistence_delegate.add_responses_to_feedback(1, 
+                                                  [res1, res2, res3, res4])
+         self.assertEqual(len(feedback.get("responses")), 4)
+         self.assertEqual(feedback.get("responses")[0], res1)
+         self.assertEqual(feedback.get("responses")[1], res2)
+         self.assertEqual(feedback.get("responses")[2], res3)
+         self.assertEqual(feedback.get("responses")[3], res4)
+
+
+    def test_add_unsaved_responses_with_saved_answers_to_feedback(self):
+         print "test_add_unsaved_responses_with_saved_answers_to_feedback"
+
+         q_type = "radio"
+         question1 = Question(name="How is your breakfast?", 
+                                  question_type=q_type)
+         question2 = Question(name="How is your lunch?", question_type=q_type)
+         question3 = Question(name="How is your dinner?", question_type=q_type)
+
+
+         answer1 = Answer(name="Good")
+         answer2 = Answer(name="Bad")
+         answer3 = Answer(name="Excellent")
+         answer4 = Answer(name="Fair")
+
+         question1.save()
+         question2.save()
+         question3.save()
+
+         answer1.save()
+         answer2.save()
+         answer3.save()
+         answer4.save()
+
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         res1 = Response(question=question1, answers=[answer1], feedbacks=[fb])
+         res2 = Response(question=question2, answers=[answer2, answer3], 
+                             feedbacks=[fb])
+         res3 = Response(question=question3, answers=[answer3], feedbacks=[fb])
+         res4 = Response(question=question3, 
+                             answers=[answer1, answer2, answer3, answer4], 
+                             feedbacks=[fb])
+
+
+         feedback = self.persistence_delegate.add_responses_to_feedback(1, 
+                                                  [res1, res2, res3, res4])
+
+         self.assertEqual(len(feedback.get("responses")), 4)
+         self.assertEqual(feedback.get("responses")[0], res1)
+         self.assertEqual(feedback.get("responses")[1], res2)
+         self.assertEqual(feedback.get("responses")[2], res3)
+         self.assertEqual(feedback.get("responses")[3], res4)
+
+
+    def test_add_unsaved_responses_with_unsaved_answers_to_feedback(self):
+         print "test_add_unsaved_responses_with_saved_answers_to_feedback"
+
+         q_type = "radio"
+         question1 = Question(name="How is your breakfast?", 
+                                  question_type=q_type)
+         question2 = Question(name="How is your lunch?", question_type=q_type)
+         question3 = Question(name="How is your dinner?", question_type=q_type)
+
+
+         answer1 = Answer(name="Good")
+         answer2 = Answer(name="Bad")
+         answer3 = Answer(name="Excellent")
+         answer4 = Answer(name="Fair")
+
+         question1.save()
+         question2.save()
+         question3.save()
+
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         res1 = Response(question=question1, answers=[answer1], feedbacks=[fb])
+         res2 = Response(question=question2, answers=[answer2, answer3], 
+                             feedbacks=[fb])
+         res3 = Response(question=question3, answers=[answer3], feedbacks=[fb])
+         res4 = Response(question=question3, 
+                             answers=[answer1, answer2, answer3, answer4], 
+                             feedbacks=[fb])
+
+
+         feedback = self.persistence_delegate.add_responses_to_feedback(1, 
+                                                  [res1, res2, res3, res4])
+
+         self.assertEqual(len(feedback.get("responses")), 4)
+         self.assertEqual(feedback.get("responses")[0], res1)
+         self.assertEqual(feedback.get("responses")[1], res2)
+         self.assertEqual(feedback.get("responses")[2], res3)
+         self.assertEqual(feedback.get("responses")[3], res4)
+
+    def test_add_p_saved_responses_with_p_saved_answers_to_feedback(self):
+         print "test_add_p_saved_responses_with_p_saved_answers_to_feedback"
+         print "p refers to partially saved"
+
+         q_type = "radio"
+         question1 = Question(name="How is your breakfast?", 
+                                  question_type=q_type)
+         question2 = Question(name="How is your lunch?", question_type=q_type)
+         question3 = Question(name="How is your dinner?", question_type=q_type)
+
+
+         answer1 = Answer(name="Good")
+         answer2 = Answer(name="Bad")
+         answer3 = Answer(name="Excellent")
+         answer4 = Answer(name="Fair")
+
+         answer1.save()
+         answer2.save()
+
+         question1.save()
+         question2.save()
+         question3.save()
+
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         res1 = Response(question=question1, answers=[answer1], feedbacks=[fb])
+         res2 = Response(question=question2, answers=[answer2, answer1], 
+                             feedbacks=[fb])
+         res3 = Response(question=question3, answers=[answer3], feedbacks=[fb])
+         res4 = Response(question=question3, 
+                             answers=[answer1, answer2, answer3, answer4], 
+                             feedbacks=[fb])
+
+         res1.save()
+         res2.save()
+
+         feedback = self.persistence_delegate.add_responses_to_feedback(1, 
+                                                  [res1, res2, res3, res4])
+
+         self.assertEqual(len(feedback.get("responses")), 4)
+         self.assertEqual(feedback.get("responses")[0], res1)
+         self.assertEqual(feedback.get("responses")[1], res2)
+         self.assertEqual(feedback.get("responses")[2], res3)
+         self.assertEqual(feedback.get("responses")[3], res4)
+         self.assertEqual(len(Answer.get_all()), 4)
+         self.assertEqual(len(Question.get_all()), 3)
+         self.assertEqual(len(Response.get_all()), 4)
 
 #+END_SRC
 
@@ -565,15 +747,17 @@ class TestPersistenceDelegate(TestCase):
 
 ***  Get Responses
     This function returns responses if present in the database.  If a response
-    is not present, =None= type is returned.
+    is not present, =None= type is returned.  The argument passed is only
+    question. 
 #+NAME: persistence_get_responses
 #+BEGIN_SRC python
     def get_responses(self, **kwargs):
         ret_val = None
-        try:
-            ret_val = Response.apply_filters(**kwargs)
-        except NotFoundError as e:
-            ret_val = None
+        if "question" in kwargs.keys() and len(kwargs.keys()) == 1:
+            try:
+                ret_val = Response.apply_filters(**kwargs)
+            except NotFoundError as e:
+                ret_val = None
         
         return ret_val
 
@@ -616,6 +800,11 @@ class TestPersistenceDelegate(TestCase):
                               res.get("question").get("name"))
          self.assertEqual(response_obj[0].get("answers")[0].get("name"),
                               res.get("answers")[0].get("name"))
+
+         response_obj = self.persistence_delegate.get_responses(\
+                                                            question=question, 
+                                                            answers=['t', 'k'])
+         self.assertEqual(response_obj, None)
 
 #+END_SRC
 
@@ -868,7 +1057,7 @@ if __name__ == '__main__':
 <<persistence_get_feedback_by_id>>
 <<persistence_get_feedback_usage>>
 <<persistence_get_feedback_dump>>
-#<<persistence_add_responses_to_feedback>>
+<<persistence_add_responses_to_feedback>>
 
 #+end_src
 
@@ -893,7 +1082,7 @@ if __name__ == '__main__':
 <<test_persistence_get_feedback_by_id>>
 <<test_persistence_get_feedback_usage>>
 <<test_persistence_get_feedback_dump>>
-#<<test_persistence_add_responses_to_feedback>>
+<<test_persistence_add_responses_to_feedback>>
 <<run_test_cases>>
 
 #+end_src
