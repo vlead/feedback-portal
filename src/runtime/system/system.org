@@ -496,6 +496,7 @@ ops_table = {'add_question' : AddQuestion,
 
     
 * Infra                                                         :boilerplate:
+
 ** sources
 *** Imports 
 #+name: imports_for_sources
@@ -510,6 +511,8 @@ from runtime.utils.type_utils import is_str_or_none
 from runtime.config.system_config import KEY
 from runtime.config.questions_config import questions_dict
 import datetime
+from flask import current_app
+
 #+end_src
 
 

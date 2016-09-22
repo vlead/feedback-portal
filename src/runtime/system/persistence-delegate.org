@@ -339,20 +339,23 @@ class TestPersistenceDelegate(TestCase):
         for response in responses:
             answers = response.get("answers")
             if self.response_exists(response):
-                response = self.get_response(question=response.question, 
+                response = self.get_response(question=response.question,
                                              answers=response.answers)
             else:
+                answer_list = []
                 for answer in answers:
                     if self.answer_exists(answer):
                         answer = self.get_answer(name=answer.get("name"))
                     else:
                         answer.save()
+                    answer_list.append(answer)
                 question = response.get("question")
                 question = self.get_question(name=question.get("name"))
-                response.save()
+                response.set(question=question, answers=answer_list,
+                                 feedbacks=[feedback])
 
             response_list.append(response)
-            
+
         feedback.set(responses=response_list)
         return feedback
 
@@ -1003,8 +1006,10 @@ class TestPersistenceDelegate(TestCase):
 # -*- coding: utf-8 -*-
 from runtime.persistence.entities import *
 from runtime.exceptions.custom_exceptions import *
+from flask import current_app
 
 #+end_src
+
 
 ** Tests
 *** Imports 

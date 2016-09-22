@@ -182,7 +182,8 @@ class TestAddResponsesToFeedback(TestCase):
                       responses=[])
         fb.save()
 
-        res = response_cls(question=question1, answers=[answer1], feedbacks=[fb])
+        res = response_cls(question=question1, answers=[answer1], 
+                           feedbacks=[fb])
         key = KEY
         session = session_cls(key=key)
         fb1 = System.do("add_responses_to_feedback", responses=[res],
