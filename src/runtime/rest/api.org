@@ -16,96 +16,96 @@
 
 #+NAME: add_feedback
 #+BEGIN_SRC python
-  @api.route('/feedback', methods=['GET', 'POST'])
-  def get_add_feedback():
-      if request.method == 'GET':
-          if 'lab_name' not in request.args or 'key' not in request.args:
-              error_message = 'Either lab_name or key or both arguments are not passed' 
-              """
-              if request.headers['Content-Type'] == "application/json":
-                  abort(400, error_message)
-              else:
-              """
-              return render_template('error.html', 
-                                     data=error_message)
-          else:
-              lab_name = str(request.args['lab_name'])
-              key = str(request.args['key'])
-          if 'exp_name' not in request.args:
-              exp_name = None
-          else:
-              exp_name = str(request.args['exp_name'])
-          if 'user_id' not in request.args:
-              user_id = None
-          else:
-              user_id = str(request.args['user_id'])
-              current_app.logger.debug("lab_name = %s, exp_name=%s, user_id=%s, "
-                                        "key=%s" % 
-                                        (lab_name, exp_name, user_id, key))
-          try:
-              response = SystemInterface.get_feedback_form(key, 
-                                                           lab_name, 
-                                                           exp_name,
-                                                           user_id)
-              """
-              if request.headers['Content-Type'] == "application/json":
-                  return jsonify(response)
-              else:
-              """
-              return render_template('index.html', 
-                                     questions_data=response)
-          except NotAuthorizedError as err:
-              error_message =  'Not Authorized error: %s' % str(err)
-              if request.headers['Content-Type'] == "application/json":
-                  abort(401, error_message)
-              else:
-                  return render_template('error.html', 
-                                          data=error_message)
-          except TypeError as err:
-              error_message = 'Malformed arguments, error: %s' % str(err)
-              """
-              if request.headers['Content-Type'] == "application/json":
-                  abort(400, error_message)
-              else:
-              """
-              return render_template('error.html', 
-                                     data=error_message)
-          except Exception as err:
-              error_message = 'error: %s' % str(err)
-              """
-              if request.headers['Content-Type'] == "application/json":
-                  abort(400, error_message)
-              else:
-              """
-              return render_template('error.html', 
-                                     data=error_message)
-  
-  
-      if request.method == 'POST':
-          if not request.json or not 'lab_name' in request.json or not \
-            'exp_name' in request.json or not 'responses' in request.json \
-            or not 'key' in request.json:
-              abort(400)
-          else:
-              lab_name = request.json['lab_name']
-              exp_name = request.json['exp_name']
-              responses = request.json['responses']
-              key = request.json['key']
-              if not 'gateway_ip' in request.json['gateway_ip']:
-                  gateway_ip = str(request.remote_addr)
-              else:
-                  gateway_ip = str(request.json['gateway_ip'])
-              date = request.json['date']
-              try:
-                  fb = SystemInterface.add_feedback(lab_name, exp_name, date, \
-                                                  gateway_ip, responses, key)
-  
-  
-                  return "{'status' : 'Success'}"
-  
-              except Exception, e:
-                  abort(500)
-    
+@api.route('/feedback', methods=['GET', 'POST'])
+def get_add_feedback():
+  if request.method == 'GET':
+      if 'lab_name' not in request.args or 'key' not in request.args:
+	  error_message = 'Either lab_name or key or both arguments are not passed' 
+	  """
+	  if request.headers['Content-Type'] == "application/json":
+	      abort(400, error_message)
+	  else:
+	  """
+	  return render_template('error.html', 
+				 data=error_message)
+      else:
+	  lab_name = str(request.args['lab_name'])
+	  key = str(request.args['key'])
+      if 'exp_name' not in request.args:
+	  exp_name = None
+      else:
+	  exp_name = str(request.args['exp_name'])
+      if 'user_id' not in request.args:
+	  user_id = None
+      else:
+	  user_id = str(request.args['user_id'])
+	  current_app.logger.debug("lab_name = %s, exp_name=%s, user_id=%s, "
+				    "key=%s" % 
+				    (lab_name, exp_name, user_id, key))
+      try:
+	  response = SystemInterface.get_feedback_form(key, 
+						       lab_name, 
+						       exp_name,
+						       user_id)
+	  """
+	  if request.headers['Content-Type'] == "application/json":
+	      return jsonify(response)
+	  else:
+	  """
+	  return render_template('index.html', 
+				 questions_data=response)
+      except NotAuthorizedError as err:
+	  error_message =  'Not Authorized error: %s' % str(err)
+	  if request.headers['Content-Type'] == "application/json":
+	      abort(401, error_message)
+	  else:
+	      return render_template('error.html', 
+				      data=error_message)
+      except TypeError as err:
+	  error_message = 'Malformed arguments, error: %s' % str(err)
+	  """
+	  if request.headers['Content-Type'] == "application/json":
+	      abort(400, error_message)
+	  else:
+	  """
+	  return render_template('error.html', 
+				 data=error_message)
+      except Exception as err:
+	  error_message = 'error: %s' % str(err)
+	  """
+	  if request.headers['Content-Type'] == "application/json":
+	      abort(400, error_message)
+	  else:
+	  """
+	  return render_template('error.html', 
+				 data=error_message)
+
+
+  if request.method == 'POST':
+      if not request.json or not 'lab_name' in request.json or not \
+	'exp_name' in request.json or not 'responses' in request.json \
+	or not 'key' in request.json:
+	  abort(400)
+      else:
+	  lab_name = request.json['lab_name']
+	  exp_name = request.json['exp_name']
+	  responses = request.json['responses']
+	  key = request.json['key']
+	  if not 'gateway_ip' in request.json['gateway_ip']:
+	      gateway_ip = str(request.remote_addr)
+	  else:
+	      gateway_ip = str(request.json['gateway_ip'])
+	  date = request.json['date']
+	  try:
+	      fb = SystemInterface.add_feedback(lab_name, exp_name, date, \
+					      gateway_ip, responses, key)
+
+
+	      return "{'status' : 'Success'}"
+
+	  except Exception, e:
+	      abort(500)
+
 #+End_SRC
 
 *** TestGetFeedback
