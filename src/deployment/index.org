@@ -23,7 +23,8 @@ requires = [
     'oursql',
     'flask-cors',
     'flask-testing',
-    'requests'
+    'requests',
+    'pyyaml'
 ]
 
 setup(
@@ -113,7 +114,7 @@ echo "Installing dependencies.."
 #export http_proxy=$PROXY
 #export https_proxy=$PROXY
 #python setup.py install
-pip install Flask Flask-SQLAlchemy oursql requests flask-cors flask-testing
+pip install Flask Flask-SQLAlchemy oursql requests flask-cors flask-testing pyyaml
 if [[ $? -ne 0 ]]; then
   echo "FATAL: Installation failed!"
   exit 1;
