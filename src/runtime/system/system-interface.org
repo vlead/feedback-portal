@@ -7,7 +7,9 @@
 #+OPTIONS: ^:nil
 
 * Introduction
-** Structure of each operation class
+  System Interface is the glue that between the =rest= and =system=.  The world
+  of =rest= uses =json= and the world of =system= uses objects.  System
+  Interface is allows these two worlds to talk to each other. 
 
 
 * The =SystemInterface= class
@@ -45,6 +47,9 @@ class SystemInterface ():
             return questions_dict
 
         except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
+            raise err
+
+        except Exception as err:
             raise err
 
 #+END_SRC
@@ -111,59 +116,64 @@ class TestGetFeedbackForm(TestCase):
 
 ** AddFeedback
 
-#+NAME: class_si_add_feedback
+#+NAME: class_add_feedback
 #+begin_src python
     @staticmethod
-    def add_feedback(lab_name, exp_name, gateway_ip, responses, key):
+    def add_feedback(data_dict):
+        session_cls = System.delegate.entities['session']
+        response_cls = System.delegate.entities['response']
+        question_cls = System.delegate.entities['question']
+        answer_cls = System.delegate.entities['answer']
+
+        if len(data_dict['lab_name']) == 0:
+            data_dict['lab_name'] = None
+
+        responses = data_dict['responses']
+        data_dict['responses'] = []
+        data_dict['session'] = session_cls(key=data_dict['key'])
+        del(data_dict['key'])
+
+        fb = None
         try:
-            session = Session(key=str(key))
-        except Exception as e:
-            print str(e)
-        date = datetime.datetime.strptime(new_date, "%d-%m-%Y").date()
-        try:
-            fb = Feedback(gateway_ip=str(gateway_ip),
-                            lab_name=str(lab_name),
-                            exp_name=str(exp_name),
-                            date=date,
-                            responses=[])
-            fb.save()
-        except Exception as e:
-            print str(e)
+            fb = System.do("add_feedback", **data_dict)
+
+        except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
+
+        except Exception as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
 
         response_list = []
-        for response in responses:
-            try:
-                question = System.delegate.Question(name=str(response['name']),
+        try:
+            for response in responses:
+                question = question_cls(name=str(response['name']),
                                         question_type="")
-            except Exception as e:
-                print str(e)
-            answers = response['answers']
-            answer_list = []
-            for answer in answers:
-                try:
-                    answer = Answer(name=str(answer))
+                answers = response['answers']
+                answer_list = []
+                for answer in answers:
+                    answer = answer_cls(name=str(answer))
                     answer_list.append(answer)
-                except Exception as e:
-                    print str(e)
-            res = Response(question=question, answers=answer_list,
-                               feedbacks=[fb])
-            response_list.append(res)
+ 
+                res = response_cls(question=question, answers=answer_list,
+                                    feedbacks=[fb])
+                response_list.append(res)
 
-            fb_id = fb.id
-
-            try:
-                feedback = System.do("add_responses_to_feedback",
-                                         responses=response_list,
-                                         fb_id=fb_id,
-                                         session=session)
-                return feedback
-            except Exception as e:
-                print str(e)
+            feedback = System.do("add_responses_to_feedback",
+                                    responses=response_list,
+                                    fb_id=int(fb.id),
+                                    session=data_dict['session'])
+            return feedback
+        except Exception as e:
+            fb.delete()
+            current_app.logger.error("Exception = %s" % str(e))
+            raise e
 
 #+end_src
 
 *** TestAddFeedback
- #+NAME: test_class_si_add_feedback
+ #+NAME: test_class_add_feedback
  #+BEGIN_SRC python
 class TestAddFeedback(TestCase):
     TESTING = True
@@ -173,7 +183,19 @@ class TestAddFeedback(TestCase):
 
     def setUp(self):
         db.create_all()
-        SystemInterface.initialize(PersistenceDelegate)
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
 
     def tearDown(self):
         db.session.remove()
@@ -182,24 +204,35 @@ class TestAddFeedback(TestCase):
     def test_add_feedback_in_system_interface(self):
         print "test_add_feedback_in_system_interface"
 
-        lab_name = "data structure"
-        exp_name = "lists"
-        date = "25-07-2016"
-        gateway_ip = "10.2.56.65"
-        responses = [{"name": "how are you?", "answers" : ["yes"]},
-                     {"name": "how are the labs?", 
-                     "answers": ["yes", "no", "ok"]}
-                    ]
+        data_dict = {'lab_name': 'data structure',
+                    'exp_name': 'tuples',
+                    'key' : KEY,
+                    'gateway_ip': '10.4.12.24',
+                    'responses': [{'name': 'How is your breakfast?',
+                                    'answers':['yes', 'no'] }]
+                   }
 
-        key = KEY
+        fb = SystemInterface.add_feedback(data_dict)
 
-        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
-                                               gateway_ip, responses, key)
-        self.assertEqual(fb.get("lab_name"), lab_name)
-        self.assertEqual(fb.get("exp_name"), exp_name)
-        self.assertEqual(fb.get("gateway_ip"), gateway_ip)
-        self.assertEqual(responses[0]['name'], 
-                         fb.get("responses")[0].get("question").get("name"))
+        self.assertEqual(fb.get("lab_name"), data_dict['lab_name'])
+        self.assertEqual(fb.get("exp_name"), data_dict['exp_name'])
+        self.assertEqual(fb.get("gateway_ip"), data_dict['gateway_ip'])
+        self.assertEqual(fb.get("responses")[0].get("question").get("name"),
+                             'How is your breakfast?')
+
+
+    def test_add_feedback_raises_type_error_in_system_interface(self):
+        print "test_add_feedback_raises_type_error_in_system_interface"
+
+        data_dict = {'lab_name': 'data structure',
+                    'exp_name': 'tuples',
+                    'key' : KEY,
+                    'gateway_ip': '10.4.12.24',
+                    'responses': "hello"
+                   }
+
+        with self.assertRaises(TypeError):
+            SystemInterface.add_feedback(data_dict)
 
  #+END_SRC
 
@@ -211,7 +244,8 @@ class TestAddFeedback(TestCase):
     @staticmethod
     def get_feedback_usage(gateway_ip, new_date, key):
         try:
-            session = Session(key=str(key))
+            session_cls = System.delegate.entities['session']
+            session = session_cls(key=str(key))
         except Exception as e:
             print str(e)
         date = datetime.datetime.strptime(new_date, "%d-%m-%Y").date()
@@ -239,32 +273,43 @@ class TestGetFeedbackUsage(TestCase):
 
     def setUp(self):
         db.create_all()
-        SystemInterface.initialize(PersistenceDelegate)
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
 
-    def test_add_feedback_in_system_interface(self):
+    def test_get_feedback_usage_in_system_interface(self):
         print "test_get_feedback_usage_in_system_interface"
 
-        lab_name = "data structure"
-        exp_name = "lists"
-        date = "25-07-2016"
-        gateway_ip = "10.2.56.65"
-        responses = [{"name": "how are you?", "answers" : ["yes"]},
-                     {"name": "how are the labs?", 
-                     "answers": ["yes", "no", "ok"]}
-                    ]
 
+        data_dict = {'lab_name': 'data structure',
+                    'exp_name': 'tuples',
+                    'key' : KEY,
+                    'gateway_ip': '10.4.12.24',
+                    'responses': [{'name': 'How is your breakfast?',
+                                    'answers':['yes', 'no'] }]
+                   }
+
+        feedback = SystemInterface.add_feedback(data_dict)
+
+        date_obj = datetime.datetime.now().date()
+        date = date_obj.strftime('%d-%m-%Y')
+
+        gateway_ip = "10.4.12.24"
         key = KEY
-
-        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
-                                               gateway_ip, responses, key)
-
-        date = "25-07-2016"
-        gateway_ip = "10.2.56.65"
-        key = Config.key
         usage = SystemInterface.get_feedback_usage(gateway_ip, date, key)
         self.assertEqual(usage, 1)
 
@@ -278,7 +323,8 @@ class TestGetFeedbackUsage(TestCase):
     @staticmethod
     def get_feedback_dump(new_date, key):
         try:
-            session = Session(key=str(key))
+            session_cls = System.delegate.entities['session']
+            session = session_cls(key=str(key))
         except Exception as e:
             print str(e)
         date = datetime.datetime.strptime(new_date, "%d-%m-%Y").date()
@@ -304,7 +350,19 @@ class TestGetFeedbackDump(TestCase):
 
     def setUp(self):
         db.create_all()
-        SystemInterface.initialize(PersistenceDelegate)
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
 
     def tearDown(self):
         db.session.remove()
@@ -313,22 +371,24 @@ class TestGetFeedbackDump(TestCase):
     def test_add_feedback_dump_in_system_interface(self):
         print "test_get_feedback_dump_in_system_interface"
 
-        lab_name = "data structure"
-        exp_name = "lists"
-        date = "25-07-2016"
-        gateway_ip = "10.2.56.65"
-        responses = [{"name": "how are you?", "answers" : ["yes"]},
-                     {"name": "how are the labs?", 
-                     "answers": ["yes", "no", "ok"]}
-                    ]
+        data_dict = {'lab_name': 'data structure',
+                    'exp_name': 'tuples',
+                    'key' : KEY,
+                    'gateway_ip': '10.4.12.24',
+                    'responses': [{'name': 'How is your breakfast?',
+                                    'answers':['yes', 'no'] }]
+                   }
 
-        key = Config.key
+        feedback = SystemInterface.add_feedback(data_dict)
 
-        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
-                                               gateway_ip, responses, key)
-        key = Config.key
+        date_obj = datetime.datetime.now().date()
+        date = date_obj.strftime('%d-%m-%Y')
+
+        key = KEY
+
         feedbacks = SystemInterface.get_feedback_dump(date, key)
         date_1 = datetime.datetime.strptime(date, "%d-%m-%Y").date()
+
         self.assertEqual(feedbacks[0].date, date_1)
 
  #+END_SRC
@@ -342,6 +402,8 @@ class TestGetFeedbackDump(TestCase):
 #+BEGIN_SRC python
 # -*- coding: utf-8 -*-
 from runtime.system.system import *
+import datetime
+from flask import current_app
 
 #+end_src
 
@@ -358,7 +420,7 @@ from sqlalchemy.exc import IntegrityError
 from runtime.utils.class_persistence_template import db
 from runtime.system.system_interface import *
 from runtime.config.system_config import KEY
-
+from flask import current_app
 config = {
          'SQLALCHEMY_DATABASE_URI': ''
          }
@@ -381,17 +443,18 @@ if __name__ == '__main__':
 <<imports_for_sources>>
 <<class_system_interface>>
 <<get_feedback_form>>
-#<<class_si_add_feedback>>
-#<<class_si_get_feedback_usage>>
-#<<class_si_get_feedback_dump>>
+<<class_add_feedback>>
+<<class_si_get_feedback_usage>>
+<<class_si_get_feedback_dump>>
 #+end_src
+
 
 ** tests
 #+BEGIN_SRC python :tangle test_system_interface.py :eval no :noweb yes
 <<imports_for_tests>>
 <<test_class_get_feedback_form>>
-#<<test_class_si_add_feedback>>
-#<<test_class_si_get_feedback_usage>>
-#<<test_class_si_get_feedback_dump>>
+<<test_class_add_feedback>>
+<<test_class_si_get_feedback_usage>>
+<<test_class_si_get_feedback_dump>>
 <<run_test_cases>>
 #+end_src

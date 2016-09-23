@@ -26,7 +26,7 @@ class PersistenceDelegate():
         self.entities = {'session': Session,
                          'question': Question,
                          'answer': Answer,
-                         'resposne': Response,
+                         'response': Response,
                          'feedback': Feedback
                         }
 
@@ -125,19 +125,17 @@ class TestPersistenceDelegate(TestCase):
     This function checks if response is already in the System.
 #+NAME: persistence_response_exists
 #+BEGIN_SRC python
-    def response_exists(self, new_response):
-        question = new_response.get("question")
-        answers = new_response.get("answers")
-        n_responses = self.get_responses(question=question)
-        if n_responses:
-            response = filter(lambda x: x.get("answers") == answers,
-                                  n_responses)
-            if response:
-                return True
-            else:
-                return False
-        else:
-            return False
+    def response_exists(self, response):
+        ret_val = False
+        
+        question = response.get("question")
+        answers = response.get("answers")
+        if self.get_response(question=question, answers=answers) is not None:
+            ret_val = True
+
+        return ret_val
+
+
 #+END_SRC
 
 **** Tests
@@ -145,45 +143,43 @@ class TestPersistenceDelegate(TestCase):
 #+BEGIN_SRC python
     def test_response_exists(self):
         print "test_response_exists"
-        
-        name1 = "how are labs?"
-        q_type1 = "radio"
-        question1 = Question(name=name1, question_type=q_type1)
+
+        name = "how are labs?"
+        q_type = "radio"
+        question1 = Question(name=name, question_type=q_type)
         question1.save()
 
-        name2 = "how are experiments?"
-        q_type2 = "radio"
-        question2 = Question(name=name2, question_type=q_type2)
-        question2.save()
+        ans1 = Answer(name="excellent")
+        ans1.save()
+        ans2 = Answer(name="good")
+        ans2.save()
         
-        ans1 = "excellent labs"
-        answer1 = Answer(name=ans1)
-        answer1.save()
+        gateway_ip = "10.100.40.2"
+        lab_name = "cse01"
+        exp_name = "data01"
+        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
-        ans2 = "good"
-        answer2 = Answer(name=ans2)
-        answer2.save()
+        fb = Feedback(gateway_ip=gateway_ip,
+                       lab_name=lab_name,
+                       exp_name=exp_name,
+                       date=date,
+                       responses=[])
+        fb.save()
 
-        gateway_ip1 = "10.100.40.2"
-        lab_name1 = "cse01"
-        exp_name1 = "data01"
-        date1 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
-        fb1 = Feedback(gateway_ip=gateway_ip1,
-                        lab_name=lab_name1,
-                        exp_name=exp_name1,
-                        date=date1,
-                        responses=[])
-        fb1.save()
-
-        res1 = Response(question=question1, answers=[answer1], feedbacks=[fb1])
+        res1 = Response(question=question1, answers=[ans1], feedbacks=[fb])
         res1.save()
+        res2 = Response(question=question1, answers=[ans1, ans2], 
+                            feedbacks=[fb])
+        res2.save()
 
-        res2 = Response(question=question2, answers=[answer2], feedbacks=[fb1])
+        res3 = Response(question=question1, answers=[ans2], feedbacks=[fb])
 
         self.assertEqual(self.persistence_delegate.response_exists(res1),
-                            True)
+                             True)
         self.assertEqual(self.persistence_delegate.response_exists(res2),
-                            False)
+                             True)
+        self.assertEqual(self.persistence_delegate.response_exists(res3),
+                             False)
 
 #+END_SRC
 
@@ -290,13 +286,17 @@ class TestPersistenceDelegate(TestCase):
 #+NAME: persistence_add_feedback
 #+BEGIN_SRC python
     def add_feedback(self, gateway_ip, lab_name, exp_name, date, responses):
-        new_feedback = Feedback(gateway_ip=gateway_ip,
-                                lab_name=lab_name,
-                                exp_name=exp_name,
-                                date=date,
-                                responses=responses)
-        new_feedback.save()
-        return new_feedback
+        try:
+            new_feedback = Feedback(gateway_ip=gateway_ip,
+                                    lab_name=lab_name,
+                                    exp_name=exp_name,
+                                    date=date,
+                                    responses=responses)
+            new_feedback.save()
+            return new_feedback
+        except Exception as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
 
 #+END_SRC
 
@@ -310,14 +310,279 @@ class TestPersistenceDelegate(TestCase):
          exp_name = "data01"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
          responses = []
-         fb1 = self.persistence_delegate.add_feedback(gateway_ip, lab_name,
-                                                        exp_name, date,
-                                                        responses)
+
+         try:
+            fb1 = self.persistence_delegate.add_feedback(gateway_ip, lab_name,
+                                                         exp_name, date,
+                                                         responses)
+         except Exception as err:
+             self.assertEqual(True, False)
+
          feedback = Feedback.get_by_id(1)
+
          self.assertEqual(feedback.get("gateway_ip"), gateway_ip)
          self.assertEqual(feedback.get("lab_name"), lab_name)
          self.assertEqual(feedback.get("exp_name"), exp_name)
          self.assertEqual(feedback.get("responses"), [])
+         self.assertEqual(feedback.get("date"), date)
+
+#+END_SRC
+
+
+***  Add responses to a Feedback
+    This function adds responses to a given feedback.
+#+NAME: persistence_add_responses_to_feedback
+#+BEGIN_SRC python
+    def add_responses_to_feedback(self, fb_id, responses):
+        feedback = self.get_feedback_by_id(fb_id)
+        response_list = []
+        for response in responses:
+            answers = response.get("answers")
+            if self.response_exists(response):
+                response = self.get_response(question=response.question,
+                                             answers=response.answers)
+            else:
+                answer_list = []
+                for answer in answers:
+                    if self.answer_exists(answer):
+                        answer = self.get_answer(name=answer.get("name"))
+                    else:
+                        answer.save()
+                    answer_list.append(answer)
+                question = response.get("question")
+                question = self.get_question(name=question.get("name"))
+                response.set(question=question, answers=answer_list,
+                                 feedbacks=[feedback])
+
+            response_list.append(response)
+
+        feedback.set(responses=response_list)
+        return feedback
+
+#+END_SRC
+
+****  Tests
+#+NAME: test_persistence_add_responses_to_feedback
+#+BEGIN_SRC python
+    def test_add_saved_responses_to_feedback(self):
+         print "test_add_saved_responses_to_feedback"
+
+         q_type = "radio"
+         question1 = Question(name="How is your breakfast?", 
+                                  question_type=q_type)
+         question2 = Question(name="How is your lunch?", question_type=q_type)
+         question3 = Question(name="How is your dinner?", question_type=q_type)
+
+
+         answer1 = Answer(name="Good")
+         answer2 = Answer(name="Bad")
+         answer3 = Answer(name="Excellent")
+         answer4 = Answer(name="Fair")
+
+         question1.save()
+         question2.save()
+         question3.save()
+
+         answer1.save()
+         answer2.save()
+         answer3.save()
+         answer4.save()
+
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         res1 = Response(question=question1, answers=[answer1], feedbacks=[fb])
+         res2 = Response(question=question2, answers=[answer2, answer3], 
+                             feedbacks=[fb])
+         res3 = Response(question=question3, answers=[answer3], feedbacks=[fb])
+         res4 = Response(question=question3, 
+                             answers=[answer1, answer2, answer3, answer4], 
+                             feedbacks=[fb])
+
+         res1.save()
+         res2.save()
+         res3.save()
+         res4.save()
+
+         feedback = self.persistence_delegate.add_responses_to_feedback(1, 
+                                                  [res1, res2, res3, res4])
+         self.assertEqual(len(feedback.get("responses")), 4)
+         self.assertEqual(feedback.get("responses")[0], res1)
+         self.assertEqual(feedback.get("responses")[1], res2)
+         self.assertEqual(feedback.get("responses")[2], res3)
+         self.assertEqual(feedback.get("responses")[3], res4)
+
+
+    def test_add_unsaved_responses_with_saved_answers_to_feedback(self):
+         print "test_add_unsaved_responses_with_saved_answers_to_feedback"
+
+         q_type = "radio"
+         question1 = Question(name="How is your breakfast?", 
+                                  question_type=q_type)
+         question2 = Question(name="How is your lunch?", question_type=q_type)
+         question3 = Question(name="How is your dinner?", question_type=q_type)
+
+
+         answer1 = Answer(name="Good")
+         answer2 = Answer(name="Bad")
+         answer3 = Answer(name="Excellent")
+         answer4 = Answer(name="Fair")
+
+         question1.save()
+         question2.save()
+         question3.save()
+
+         answer1.save()
+         answer2.save()
+         answer3.save()
+         answer4.save()
+
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         res1 = Response(question=question1, answers=[answer1], feedbacks=[fb])
+         res2 = Response(question=question2, answers=[answer2, answer3], 
+                             feedbacks=[fb])
+         res3 = Response(question=question3, answers=[answer3], feedbacks=[fb])
+         res4 = Response(question=question3, 
+                             answers=[answer1, answer2, answer3, answer4], 
+                             feedbacks=[fb])
+
+
+         feedback = self.persistence_delegate.add_responses_to_feedback(1, 
+                                                  [res1, res2, res3, res4])
+
+         self.assertEqual(len(feedback.get("responses")), 4)
+         self.assertEqual(feedback.get("responses")[0], res1)
+         self.assertEqual(feedback.get("responses")[1], res2)
+         self.assertEqual(feedback.get("responses")[2], res3)
+         self.assertEqual(feedback.get("responses")[3], res4)
+
+
+    def test_add_unsaved_responses_with_unsaved_answers_to_feedback(self):
+         print "test_add_unsaved_responses_with_saved_answers_to_feedback"
+
+         q_type = "radio"
+         question1 = Question(name="How is your breakfast?", 
+                                  question_type=q_type)
+         question2 = Question(name="How is your lunch?", question_type=q_type)
+         question3 = Question(name="How is your dinner?", question_type=q_type)
+
+
+         answer1 = Answer(name="Good")
+         answer2 = Answer(name="Bad")
+         answer3 = Answer(name="Excellent")
+         answer4 = Answer(name="Fair")
+
+         question1.save()
+         question2.save()
+         question3.save()
+
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         res1 = Response(question=question1, answers=[answer1], feedbacks=[fb])
+         res2 = Response(question=question2, answers=[answer2, answer3], 
+                             feedbacks=[fb])
+         res3 = Response(question=question3, answers=[answer3], feedbacks=[fb])
+         res4 = Response(question=question3, 
+                             answers=[answer1, answer2, answer3, answer4], 
+                             feedbacks=[fb])
+
+
+         feedback = self.persistence_delegate.add_responses_to_feedback(1, 
+                                                  [res1, res2, res3, res4])
+
+         self.assertEqual(len(feedback.get("responses")), 4)
+         self.assertEqual(feedback.get("responses")[0], res1)
+         self.assertEqual(feedback.get("responses")[1], res2)
+         self.assertEqual(feedback.get("responses")[2], res3)
+         self.assertEqual(feedback.get("responses")[3], res4)
+
+    def test_add_p_saved_responses_with_p_saved_answers_to_feedback(self):
+         print "test_add_p_saved_responses_with_p_saved_answers_to_feedback"
+         print "p refers to partially saved"
+
+         q_type = "radio"
+         question1 = Question(name="How is your breakfast?", 
+                                  question_type=q_type)
+         question2 = Question(name="How is your lunch?", question_type=q_type)
+         question3 = Question(name="How is your dinner?", question_type=q_type)
+
+
+         answer1 = Answer(name="Good")
+         answer2 = Answer(name="Bad")
+         answer3 = Answer(name="Excellent")
+         answer4 = Answer(name="Fair")
+
+         answer1.save()
+         answer2.save()
+
+         question1.save()
+         question2.save()
+         question3.save()
+
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         res1 = Response(question=question1, answers=[answer1], feedbacks=[fb])
+         res2 = Response(question=question2, answers=[answer2, answer1], 
+                             feedbacks=[fb])
+         res3 = Response(question=question3, answers=[answer3], feedbacks=[fb])
+         res4 = Response(question=question3, 
+                             answers=[answer1, answer2, answer3, answer4], 
+                             feedbacks=[fb])
+
+         res1.save()
+         res2.save()
+
+         feedback = self.persistence_delegate.add_responses_to_feedback(1, 
+                                                  [res1, res2, res3, res4])
+
+         self.assertEqual(len(feedback.get("responses")), 4)
+         self.assertEqual(feedback.get("responses")[0], res1)
+         self.assertEqual(feedback.get("responses")[1], res2)
+         self.assertEqual(feedback.get("responses")[2], res3)
+         self.assertEqual(feedback.get("responses")[3], res4)
+         self.assertEqual(len(Answer.get_all()), 4)
+         self.assertEqual(len(Question.get_all()), 3)
+         self.assertEqual(len(Response.get_all()), 4)
 
 #+END_SRC
 
@@ -408,56 +673,6 @@ class TestPersistenceDelegate(TestCase):
 #+END_SRC
 
 
-***  Add response to the system
-    This function adds responses to the system.
-#+NAME: persistence_add_responses_to_feedback
-#+BEGIN_SRC python
-    def add_responses_to_feedback(self, fb_id, new_responses):
-        feedback = Feedback.get_by_id(fb_id)
-        responses = feedback.get("responses")
-        for response in new_responses:
-            responses.append(response)
-        return feedback
-        
-#+END_SRC
-
-**** Tests
-#+NAME: test_persistence_add_responses_to_feedback
-#+BEGIN_SRC python
-    def test_add_responses_to_feedback(self):
-         print "test_add_responses_to_feedback"
-
-         name = "how are labs?"
-         q_type = "radio"
-         question1 = Question(name=name, question_type=q_type)
-         question1.save()
-         ans = "excellent labs"
-         answer1 = Answer(name=ans)
-         answer1.save()
-         gateway_ip = "10.100.40.2"
-         lab_name = "cse01"
-         exp_name = "data01"
-         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
-
-         fb = Feedback(gateway_ip=gateway_ip,
-                        lab_name=lab_name,
-                        exp_name=exp_name,
-                        date=date,
-                        responses=[])
-         fb.save()
-         res = Response(question=question1, answers=[answer1], feedbacks=[fb])
-         feedback = self.persistence_delegate.add_responses_to_feedback(1,
-                                                                        [res])
-
-         self.assertEqual(feedback.get("lab_name"), lab_name)
-         self.assertEqual(feedback.get("responses")[0].get("question").\
-                              get("name"), question1.get("name"))
-         self.assertEqual(feedback.get("responses")[0].get("answers")[0].\
-                              get("name"), answer1.get("name"))
-
-#+END_SRC
-
-
 ***  Get an object
     A generic function to find an object of type =cls= matching a given a criteria
 
@@ -534,16 +749,18 @@ class TestPersistenceDelegate(TestCase):
 
 
 ***  Get Responses
-    This function returns responses if present in the database.  If the response is
-    not present, =None= type is returned.
+    This function returns responses if present in the database.  If a response
+    is not present, =None= type is returned.  The argument passed is only
+    question. 
 #+NAME: persistence_get_responses
 #+BEGIN_SRC python
     def get_responses(self, **kwargs):
         ret_val = None
-        try:
-            ret_val = Response.apply_filters(**kwargs)
-        except NotFoundError as e:
-            ret_val = None
+        if "question" in kwargs.keys() and len(kwargs.keys()) == 1:
+            try:
+                ret_val = Response.apply_filters(**kwargs)
+            except NotFoundError as e:
+                ret_val = None
         
         return ret_val
 
@@ -587,8 +804,94 @@ class TestPersistenceDelegate(TestCase):
          self.assertEqual(response_obj[0].get("answers")[0].get("name"),
                               res.get("answers")[0].get("name"))
 
+         response_obj = self.persistence_delegate.get_responses(\
+                                                            question=question, 
+                                                            answers=['t', 'k'])
+         self.assertEqual(response_obj, None)
+
 #+END_SRC
 
+
+
+***  Get Response
+    This function returns response if present in the database.  If the response is
+    not present, =None= type is returned.  The arguments should contain both
+    question and answers. 
+#+NAME: persistence_get_response
+#+BEGIN_SRC python
+    def get_response(self, **args):
+        ret_val = None
+        if "question" in args.keys() and "answers" in args.keys():
+            question = args["question"]
+            answers = args["answers"]
+            responses = self.get_responses(question=question)
+            if responses:
+                filtered_responses = filter(lambda response: \
+                                            sorted(response.get("answers")) \
+                                            == sorted(answers), responses)
+
+                if filtered_responses:
+                    ret_val = filtered_responses[0]
+
+        return ret_val
+
+#+END_SRC
+
+****  Tests
+#+NAME: test_persistence_get_response
+#+BEGIN_SRC python
+    def test_get_response(self):
+         print "test_get_response"
+
+         name = "how are labs?"
+         q_type = "radio"
+         question1 = Question(name=name, question_type=q_type)
+         question1.save()
+
+         ans1 = Answer(name="excellent")
+         ans1.save()
+         ans2 = Answer(name="good")
+         ans2.save()
+
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         res1 = Response(question=question1, answers=[ans1], feedbacks=[fb])
+         res1.save()
+         res2 = Response(question=question1, answers=[ans1, ans2], 
+                             feedbacks=[fb])
+         res2.save()
+     
+         res3 = Response(question=question1, answers=[ans2], feedbacks=[fb])
+         res3.save()
+         
+         response_obj = self.persistence_delegate.get_response(\
+                question=question1, answers=[ans1, ans2])
+         self.assertEqual(response_obj.get("question").get("name"),
+                              question1.get("name"))
+         self.assertEqual(response_obj.get("answers")[0].get("name"),
+                              ans1.get("name"))
+         self.assertEqual(response_obj.get("answers")[1].get("name"),
+                              ans2.get("name"))
+
+         response_obj = self.persistence_delegate.get_response(\
+                question=question1, answers=[ans1])
+         self.assertEqual(response_obj.get("question").get("name"),
+                              question1.get("name"))
+         self.assertEqual(response_obj.get("answers")[0].get("name"),
+                              ans1.get("name"))
+                              
+
+#+END_SRC
 
 
 ***  Get Feedbacks
@@ -608,10 +911,10 @@ class TestPersistenceDelegate(TestCase):
 #+END_SRC
 
 ****  Tests
-#+NAME: test_persistence_get_feedback
+#+NAME: test_persistence_get_feedbacks
 #+BEGIN_SRC python
     def test_get_feedbacks(self):
-         print "test_get_feedbacks"
+         print "test_persistence_get_feedbacks"
 
          name = "how are labs?"
          q_type = "radio"
@@ -642,6 +945,57 @@ class TestPersistenceDelegate(TestCase):
 
 
 
+***  Get Feedback By ID
+    This function returns a feedback object by an ID if present in database,
+    otherwise, =None= type is returned.
+#+NAME: persistence_get_feedback_by_id
+#+BEGIN_SRC python
+    def get_feedback_by_id(self, id):
+        ret_val = None
+        try:
+            ret_val = Feedback.get_by_id(id)
+        except Exception as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            ret_val = None
+        
+        return ret_val
+
+#+END_SRC
+
+****  Tests
+#+NAME: test_persistence_get_feedback_by_id
+#+BEGIN_SRC python
+    def test_get_feedback_by_id(self):
+         print "test_persistence_get_feedback_by_id"
+
+         name = "how are labs?"
+         q_type = "radio"
+         question1 = Question(name=name, question_type=q_type)
+         question1.save()
+         ans = "excellent labs"
+         answer1 = Answer(name=ans)
+         answer1.save()
+         gateway_ip = "10.100.40.2"
+         lab_name = "cse01"
+         exp_name = "data01"
+         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+
+         fb = Feedback(gateway_ip=gateway_ip,
+                        lab_name=lab_name,
+                        exp_name=exp_name,
+                        date=date,
+                        responses=[])
+         fb.save()
+
+         feedback_obj = self.persistence_delegate.get_feedback_by_id(1)
+         self.assertEqual(feedback_obj.get("gateway_ip"),
+                              gateway_ip)
+         self.assertEqual(feedback_obj.get("date"), date)
+
+#+END_SRC
+
+
+
 * Infra                                                         :boilerplate:
 
 ** sources
@@ -652,8 +1006,10 @@ class TestPersistenceDelegate(TestCase):
 # -*- coding: utf-8 -*-
 from runtime.persistence.entities import *
 from runtime.exceptions.custom_exceptions import *
+from flask import current_app
 
 #+end_src
+
 
 ** Tests
 *** Imports 
@@ -694,6 +1050,7 @@ if __name__ == '__main__':
 <<persistence_get_question>>
 <<persistence_get_answer>>
 <<persistence_get_responses>>
+<<persistence_get_response>>
 <<persistence_question_exists>>
 <<persistence_answer_exists>>
 <<persistence_feedback_exists>>
@@ -702,11 +1059,13 @@ if __name__ == '__main__':
 <<persistence_add_answer>>
 <<persistence_add_feedback>>
 <<persistence_get_feedbacks>>
+<<persistence_get_feedback_by_id>>
 <<persistence_get_feedback_usage>>
 <<persistence_get_feedback_dump>>
 <<persistence_add_responses_to_feedback>>
 
 #+end_src
+
 
 ** tests
 #+BEGIN_SRC python :tangle test_persistence_delegate.py :eval no :noweb yes
@@ -716,6 +1075,7 @@ if __name__ == '__main__':
 <<tes_persistence_get_question>>
 <<test_persistence_get_answer>>
 <<test_persistence_get_responses>>
+<<test_persistence_get_response>>
 <<test_persistence_question_exists>>
 <<test_persistence_answer_exists>>
 <<test_persistence_feedback_exists>>
@@ -723,7 +1083,8 @@ if __name__ == '__main__':
 <<test_persistence_add_question>>
 <<test_persistence_add_answer>>
 <<test_persistence_add_feedback>>
-<<test_persistence_get_feedback>>
+<<test_persistence_get_feedbacks>>
+<<test_persistence_get_feedback_by_id>>
 <<test_persistence_get_feedback_usage>>
 <<test_persistence_get_feedback_dump>>
 <<test_persistence_add_responses_to_feedback>>
