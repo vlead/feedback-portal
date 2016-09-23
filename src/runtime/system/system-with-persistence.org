@@ -226,21 +226,24 @@ class TestGetFeedbackUsage(TestCase):
         answer_cls = System.delegate.entities['answer']
         feedback_cls = System.delegate.entities['feedback']
 
+
+        data_dict = {'lab_name': 'data structure',
+                    'exp_name': 'tuples',
+                    'key' : KEY,
+                    'gateway_ip': '10.4.12.24',
+                    'responses': [] 
+                   }
+        data_dict['session'] = session_cls(key=data_dict['key'])
+        del(data_dict['key'])
         gateway_ip = "10.100.40.2"
-        lab_name = "cse01"
-        exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
-        key = KEY
-        session = session_cls(key=key)
-        feedback = System.do("add_feedback", gateway_ip=gateway_ip,
-                                 lab_name=lab_name, exp_name=exp_name,
-                                 date=date, responses=[],
-                                 session=session)
+
+        feedback = System.do("add_feedback", **data_dict)
 
         feedback_usage = System.do("get_feedback_usage",
                                        gateway_ip=gateway_ip, 
                                        date=date, 
-                                       session=session)
+                                       session=data_dict['session'])
         
         self.assertEqual(feedback_usage, 1)
             
