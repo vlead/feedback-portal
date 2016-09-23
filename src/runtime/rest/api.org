@@ -261,7 +261,19 @@ class TestGetFeedbackUsage(TestCase):
 
     def setUp(self):
         db.create_all()
-        SystemInterface(PersistenceDelegate)
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
 
     def tearDown(self):
         db.session.remove()
@@ -270,20 +282,25 @@ class TestGetFeedbackUsage(TestCase):
     def test_get_feedback_usage(self):
         print "test_get_feedback_usage"
 
-        lab_name = "data structure"
-        exp_name = "lists"
-        date = "25-07-2016"
-        gateway_ip = "10.2.56.65"
-        responses = [{"name": "how are you?", "answers" : ["yes"]},
-                     {"name": "how are the labs?", 
-                     "answers": ["yes", "no", "ok"]}
-                    ]
-#        key = Config.key
-        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
-                                               gateway_ip, responses, key)
+        payload = {'lab_name': 'data structure',
+            'exp_name': 'tuples',
+            'key' : KEY,
+            'responses': [{'name': 'How is your breakfast?',
+                            'answers':['yes', 'no'] }]
+           }
+
+        headers = {'Content-Type': 'application/json'}
+        ip_address = {'REMOTE_ADDR': '1.2.3.4'}
+        
+        response = self.client.post("/feedback", data=json.dumps(payload),
+                                 headers=headers,
+                                 environ_overrides=ip_address)
 
         headers = {'content-type': 'application/json'}
-        url = "/feedback_usage_by_workshop?gateway_ip=10.2.56.65&date=25-07-2016&key=some alphanumeric string"
+        date_obj = datetime.datetime.now().date()
+        date_str = date_obj.strftime('%d-%m-%Y')
+        url = "/feedback_usage_by_workshop?gateway_ip=1.2.3.4&date="+date_str+"&key=defaultkey"
+  
         response = self.client.get(url, headers=headers)
         result = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
@@ -679,7 +696,7 @@ from runtime.rest.app import create_app
 from runtime.config.system_config import KEY
 from runtime.rest.api import *
 from runtime.system.system import System
-
+import datetime
 config = {
          'SQLALCHEMY_DATABASE_URI': ''
          }
@@ -710,7 +727,7 @@ if __name__ == '__main__':
 <<imports_for_tests>>
 <<test_get_feedback>>
 <<test_add_feedback>>
-#<<test_get_feedback_usage>>
+<<test_get_feedback_usage>>
 #<<test_get_feedback_dump>>
 <<run_test_cases>>
 #+end_src

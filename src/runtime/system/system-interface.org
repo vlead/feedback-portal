@@ -305,7 +305,9 @@ class TestGetFeedbackUsage(TestCase):
 
         feedback = SystemInterface.add_feedback(data_dict)
 
-        date = "23-09-2016"
+        date_obj = datetime.datetime.now().date()
+        date = date_obj.strftime('%d-%m-%Y')
+
         gateway_ip = "10.4.12.24"
         key = KEY
         usage = SystemInterface.get_feedback_usage(gateway_ip, date, key)
