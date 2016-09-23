@@ -7,7 +7,9 @@
 #+OPTIONS: ^:nil
 
 * Introduction
-** Structure of each operation class
+  System Interface is the glue that between the =rest= and =system=.  The world
+  of =rest= uses =json= and the world of =system= uses objects.  System
+  Interface is allows these two worlds to talk to each other. 
 
 
 * The =SystemInterface= class

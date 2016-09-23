@@ -455,6 +455,7 @@ class TestGetFeedbackDump(TestCase):
 
 #+END_SRC
 
+
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
 var sampleData = window.data;
@@ -695,6 +696,7 @@ if __name__ == '__main__':
 
 
 * Tangle                                                        :boilerplate:
+
 ** sources
 #+BEGIN_SRC python :tangle api.py :eval no :noweb yes
 <<imports_for_sources>>
@@ -702,6 +704,7 @@ if __name__ == '__main__':
 <<get_feedback_usage>>
 <<get_feedback_dump>>
 #+END_SRC
+
 ** tests
 #+BEGIN_SRC python :tangle test_api.py :eval no :noweb yes
 <<imports_for_tests>>
