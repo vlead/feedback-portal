@@ -260,7 +260,7 @@ class TestAddFeedback(TestCase):
 
 #+NAME: get_feedback_usage
 #+BEGIN_SRC python
-@api.route('/feedback_usage_by_workshop', methods=['GET'])
+@api.route('/usage_from_feedback', methods=['GET'])
 def get_feedback_usage():
     if request.method == 'GET':
         if 'gateway_ip' in request.args and 'date' in request.args and 'key'\
@@ -328,7 +328,7 @@ class TestGetFeedbackUsage(TestCase):
         headers = {'content-type': 'application/json'}
         date_obj = datetime.datetime.now().date()
         date_str = date_obj.strftime('%d-%m-%Y')
-        url = "/feedback_usage_by_workshop?gateway_ip=1.2.3.4&date="+date_str+"&key=defaultkey"
+        url = "/usage_from_feedback?gateway_ip=1.2.3.4&date="+date_str+"&key=defaultkey"
   
         response = self.client.get(url, headers=headers)
         result = json.loads(response.data)
