@@ -235,8 +235,8 @@ class TestGetFeedbackUsage(TestCase):
                    }
         data_dict['session'] = session_cls(key=data_dict['key'])
         del(data_dict['key'])
-        gateway_ip = "10.100.40.2"
-        date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        gateway_ip = "10.4.12.24"
+        date = datetime.datetime.now().date()
 
         feedback = System.do("add_feedback", **data_dict)
 
