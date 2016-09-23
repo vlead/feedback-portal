@@ -162,7 +162,7 @@ class TestGetFeedbackForm(TestCase):
 
             feedback = System.do("add_responses_to_feedback",
                                     responses=response_list,
-                                    fb_id=fb.id,
+                                    fb_id=int(fb.id),
                                     session=data_dict['session'])
             return feedback
         except Exception as e:
