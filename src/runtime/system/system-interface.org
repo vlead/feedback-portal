@@ -244,13 +244,13 @@ class TestAddFeedback(TestCase):
     @staticmethod
     def get_feedback_usage(gateway_ip, new_date, key):
         try:
-            session = Session(key=str(key))
+            session_cls = System.delegate.entities['session']
+            session = session_cls(key=str(key))
         except Exception as e:
             print str(e)
         date = datetime.datetime.strptime(new_date, "%d-%m-%Y").date()
         gateway_ip = str(gateway_ip)
         try:
-            print "++++++++++++++++++++++"
             usage = System.do("get_feedback_usage",
                                      gateway_ip=gateway_ip,
                                      date=date,
@@ -273,32 +273,41 @@ class TestGetFeedbackUsage(TestCase):
 
     def setUp(self):
         db.create_all()
-        SystemInterface.initialize(PersistenceDelegate)
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
 
-    def test_add_feedback_in_system_interface(self):
+    def test_get_feedback_usage_in_system_interface(self):
         print "test_get_feedback_usage_in_system_interface"
 
-        lab_name = "data structure"
-        exp_name = "lists"
-        date = "25-07-2016"
-        gateway_ip = "10.2.56.65"
-        responses = [{"name": "how are you?", "answers" : ["yes"]},
-                     {"name": "how are the labs?", 
-                     "answers": ["yes", "no", "ok"]}
-                    ]
 
+        data_dict = {'lab_name': 'data structure',
+                    'exp_name': 'tuples',
+                    'key' : KEY,
+                    'gateway_ip': '10.4.12.24',
+                    'responses': [{'name': 'How is your breakfast?',
+                                    'answers':['yes', 'no'] }]
+                   }
+
+        feedback = SystemInterface.add_feedback(data_dict)
+
+        date = "23-09-2016"
+        gateway_ip = "10.4.12.24"
         key = KEY
-
-        fb = SystemInterface.add_feedback(lab_name, exp_name, date,
-                                               gateway_ip, responses, key)
-
-        date = "25-07-2016"
-        gateway_ip = "10.2.56.65"
-        key = Config.key
         usage = SystemInterface.get_feedback_usage(gateway_ip, date, key)
         self.assertEqual(usage, 1)
 
@@ -418,7 +427,7 @@ if __name__ == '__main__':
 <<class_system_interface>>
 <<get_feedback_form>>
 <<class_add_feedback>>
-#<<class_si_get_feedback_usage>>
+<<class_si_get_feedback_usage>>
 #<<class_si_get_feedback_dump>>
 #+end_src
 
@@ -428,7 +437,7 @@ if __name__ == '__main__':
 <<imports_for_tests>>
 <<test_class_get_feedback_form>>
 <<test_class_add_feedback>>
-#<<test_class_si_get_feedback_usage>>
+<<test_class_si_get_feedback_usage>>
 #<<test_class_si_get_feedback_dump>>
 <<run_test_cases>>
 #+end_src
