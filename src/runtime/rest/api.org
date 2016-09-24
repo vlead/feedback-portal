@@ -270,12 +270,38 @@ def get_feedback_usage():
             key = request.args['key']
             try:
                 usage_count = SystemInterface.get_feedback_usage(gateway_ip,\
-                                                                     date, key)
+                                                                 date, key)
                 usage = {'usage': usage_count}
                 return jsonify(usage)
-            except Exception, e:
-                abort(500)
+            except NotAuthorizedError as err:
+                error_message =  'Not Authorized error: %s' % str(err)
+                """
+                if request.headers['Content-Type'] == "application/json":
+                    abort(401, error_message)
+                else:
+                """
+                return render_template('error.html', 
+                                       data=error_message)
+            except TypeError as err:
+                error_message = 'Malformed arguments, error: %s' % str(err)
+                """
+                if request.headers['Content-Type'] == "application/json":
+                abort(400, error_message)
+                else:
+                """
+                return render_template('error.html', 
+                                       data=error_message)
+            except Exception as err:
+                error_message = 'error: %s' % str(err)
+                """
+                if request.headers['Content-Type'] == "application/json":
+                abort(400, error_message)
+                else:
+                """
+                return render_template('error.html', 
+                                    data=error_message)
 
+            
 #+END_SRC
 
 
@@ -350,18 +376,39 @@ def get_feedback_dump():
         if 'date' in request.args and 'key' in request.args:
             date  = request.args['date']
             key = request.args['key']
+            
             try:
                 feedbacks = SystemInterface.get_feedback_dump(date, key)
-                feedback_list=[]
-                for feedback in feedbacks:
-                    feedback_list.append(feedback)
-#                print feedback_list
-#                print type(feedback_list)
-#                return feedback_list
-                return jsonify({'status' : 'Success'})
-
-            except Exception, e:
-                abort(500)
+                return jsonify_list([i.to_client() for i in feedbacks])
+                
+            except NotAuthorizedError as err:
+                error_message =  'Not Authorized error: %s' % str(err)
+                """
+                if request.headers['Content-Type'] == "application/json":
+                    abort(401, error_message)
+                else:
+                """
+                return render_template('error.html', 
+                                       data=error_message)
+            except TypeError as err:
+                error_message = 'Malformed arguments, error: %s' % str(err)
+                """
+                if request.headers['Content-Type'] == "application/json":
+                abort(400, error_message)
+                else:
+                """
+                return render_template('error.html', 
+                                       data=error_message)
+            except Exception as err:
+                error_message = 'error: %s' % str(err)
+                """
+                if request.headers['Content-Type'] == "application/json":
+                abort(400, error_message)
+                else:
+                """
+                return render_template('error.html', 
+                                       data=error_message)
+            
 
 #+END_SRC
 
@@ -418,8 +465,6 @@ class TestGetFeedbackDump(TestCase):
 
         url = "/feedback_dump?date="+date_str+"&key=defaultkey"
 
-
-        print url
         response = self.client.get(url, headers=headers)
         self.assertEqual(response.status_code, 200)
 #        date_1 = datetime.datetime.strptime(date_str, "%d-%m-%Y").date()
