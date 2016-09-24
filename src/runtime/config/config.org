@@ -19,12 +19,14 @@ This holds the application's configuration parameters.
   feedback form is requested. 
 #+NAME: questions_config
 #+BEGIN_SRC python
+
+
 questions_dict = {'questions': [
-    {'name':'how are labs', 'type':'radio', 
+    {'name':'How is your breakfast?', 'type':'radio', 
          'options':['excellent', 'good', 'average', 'bad']},
-    {'name':'which all courses has this lab?', 'type':'checkbox', 
+    {'name':'How is your lunch?', 'type':'radio', 
          'options': ['excellent', 'good', 'average', 'bad']},
-    {'name': 'any other comments?', 'type': 'text', 'options': []}
+    {'name': 'How is your dinner?', 'type': 'radio', 'options': ["yes", "no"]}
     ]}
 
 #+END_SRC
