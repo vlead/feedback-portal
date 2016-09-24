@@ -41,10 +41,25 @@ setup(
 from runtime.rest.app import create_app
 from runtime.config import flask_app_config as config
 from runtime.utils.class_persistence_template import db
+from runtime.system.system import System
+
+def populate():
+    q_type = "radio"
+    question_cls = System.delegate.entities['question']
+    question1 = question_cls(name="How is your breakfast?", 
+                             question_type=q_type)
+    question2 = question_cls(name="How is your lunch?", 
+                             question_type=q_type)
+    question3 = question_cls(name="How is your dinner?", 
+                             question_type=q_type)
+    
+    question1.save()
+    question2.save()
+    question3.save()
 
 if __name__ == "__main__":
     db.create_all(app=create_app(config))
-
+    populate()
 #+END_SRC
 
 * Install all dependencies and setup the software

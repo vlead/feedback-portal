@@ -532,6 +532,7 @@ class TestGetFeedbackDump(TestCase):
 
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
+
   var sampleData = window.data;
   var labelQues, formGroup;
   function renderQuesLabel() {
@@ -629,7 +630,7 @@ class TestGetFeedbackDump(TestCase):
       var feedback = {}; // the final feedback object
       feedback.lab_name = sampleData.lab_name;
       feedback.exp_name = sampleData.exp_name;
-      feedback.user_id = sampleData.user_id;
+      //feedback.user_id = sampleData.user_id;
       feedback.key = sampleData.key;
       
       feedback.responses = []; // the list of questions and user answers
@@ -639,12 +640,14 @@ class TestGetFeedbackDump(TestCase):
           var questionElement = document.getElementById(sampleData.questions[i].name);
           var answer = null;
           if(sampleData.questions[i].type === 'radio') {
+	      answer = []
               var children = questionElement.querySelectorAll('input');
               for(var j = 0; j < children.length; j++) {
                   var child = children[j];
                   // console.log('child', child, child.type, child.checked);
                   if(child.type === 'radio' && child.checked === true) {
-                      answer = child.value;
+                      answer.push(child.value);
+
                   }
               }
           }
@@ -671,12 +674,12 @@ class TestGetFeedbackDump(TestCase):
           // create an object to insert the current question data
           var question = {};
           question.name = sampleData.questions[i].name;
-          question.type = sampleData.questions[i].type;
-          question.answer = answer;
+          //question.type = sampleData.questions[i].type;
+          question.answers = answer;
           feedback.responses.push(question);
       }
       // Posting json data to /feedback api
-      
+      console.log(feedback);
       $.ajax({
           url: 'http://localhost:5000/feedback',
           type: 'POST',
