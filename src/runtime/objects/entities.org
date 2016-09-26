@@ -83,7 +83,7 @@ check_response = check_pred(is_response)
 
 def are_responses_or_empty_list(responses):
     ret_val = True
-    if is_list(responses):
+    if is_list(responses): #or responses.__class__.__name__ == 'InstrumentedList':
         for res in responses:
             if not is_response(res):
                 ret_val = False
@@ -245,6 +245,7 @@ class TestResponse(TestCase):
                       responses=[])
 
         res = Response(question=question1, answers=[answer1], feedbacks=[fb])
+        fb.set(responses=[res])
 
         self.assertEqual(res.get("question").get("name"), 
                              question1.get("name"))
