@@ -175,7 +175,7 @@ class ClassTemplate():
         # args is a dictionary
         def fn(obj, **args): 
             check_dict(args)
-
+            obj.__level__ = 1
             # match arg keys with state_vars list
             check_pred(lambda a: sorted(a.keys()) == \
                            sorted(cls.sorted_state_vars))(args)
@@ -248,13 +248,19 @@ class ClassTemplate():
         def fn(obj):
             to_client_var = {}
             for key, value in obj.state.iteritems():
-                if is_list(value) or \
-                   value.__class__.__name__ is 'InstrumentedList':
+                if (is_list(value) or \
+                   value.__class__.__name__ is 'InstrumentedList') and \
+                    obj.__level__ <= 2:
                     to_client_var[key] = []
                     for item in value:
+                        item.__level__ += 1
                         to_client_var[key].append(item.to_client())
                         
+                elif obj.__level__ > 2:
+                    return "Value already present"
+                        
                 elif hasattr(value, 'to_client'):
+                    value.__level__ += 1
                     to_client_var[key] = value.to_client()
                 else:
                     to_client_var[key] = value
