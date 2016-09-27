@@ -22,11 +22,24 @@ This holds the application's configuration parameters.
 
 
 questions_dict = {'questions': [
-    {'name':'How is your breakfast?', 'type':'radio', 
-         'options':['excellent', 'good', 'average', 'bad']},
-    {'name':'How is your lunch?', 'type':'radio', 
-         'options': ['excellent', 'good', 'average', 'bad']},
-    {'name': 'How is your dinner?', 'type': 'radio', 'options': ["yes", "no"]}
+    {'name':'Did you do the experiment?', 'type':'radio', 
+         'options':['Yes', 'No']},
+    {'name':'Did the experiment work?', 'type':'radio', 
+         'options': ['Yes', 'No']},
+    {'name': 'Did you find any bugs in the experiment?', 'type': 'radio', 
+     'options': ["ys", "No"]},
+    {'name': 'How much did you know about the experiment before doing it in Virtual Labs?', 'type': 'radio', 
+     'options': ["Yes", "No"]},
+    {'name': 'Is this experiment part of your curriculum?', 'type': 'radio', 
+     'options': ["Yes", "No"]},
+    {'name': 'Does this help you to perform better in the curriculum?', 'type': 'radio', 
+     'options': ["Yes", "No"]},
+    {'name': 'If you had to do this experiment physically do you think this experiment prepares to do it better physically?', 'type': 'radio', 
+     'options': ["Yes", "No"]},
+    {'name': 'Would you recommend it to your fellow students?', 'type': 'radio', 
+     'options': ["Yes", "No"]},
+    {'name': 'Additional Comments', 'type': 'text', 
+     'options': ["Yes"]}
     ]}
 
 #+END_SRC

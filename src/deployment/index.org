@@ -45,17 +45,46 @@ from runtime.system.system import System
 
 def populate():
     q_type = "radio"
+    
     question_cls = System.delegate.entities['question']
-    question1 = question_cls(name="How is your breakfast?", 
+    
+    question1 = question_cls(name="Did you do the experiment?", 
                              question_type=q_type)
-    question2 = question_cls(name="How is your lunch?", 
+    
+    question2 = question_cls(name="Did the experiment work?", 
                              question_type=q_type)
-    question3 = question_cls(name="How is your dinner?", 
+    
+    question3 = question_cls(name="Did you find any bugs in the experiment?", 
+                             question_type=q_type)
+
+    question4 = question_cls(name="How much did you know about the experiment before doing it in Virtual Labs?", 
+                             question_type=q_type)
+
+    question5 = question_cls(name="Is this experiment part of your curriculum?", 
+                             question_type=q_type)
+
+    question6 = question_cls(name="Does this help you to perform better in the curriculum?", 
+                             question_type=q_type)
+
+    question7 = question_cls(name="If you had to do this experiment physically do you think this experiment prepares to do it better physically?", 
+                             question_type=q_type)
+
+    question8 = question_cls(name="Would you recommend it to your fellow students?", 
+                             question_type=q_type)
+    
+    q_type = "text"
+    question9 = question_cls(name="Additional Comments", 
                              question_type=q_type)
     
     question1.save()
     question2.save()
     question3.save()
+    question4.save()
+    question5.save()
+    question6.save()
+    question7.save()
+    question8.save()
+    question9.save()
 
 if __name__ == "__main__":
     db.create_all(app=create_app(config))
