@@ -731,10 +731,12 @@ class TestGetFeedbackDump(TestCase):
           data: JSON.stringify(feedback),
           contentType: 'application/json',
           success: function (data) {
-              alert("Submitted");
+              window.history.back();
+              //alert("Submitted");
               console.log(data);
           },
           error: function(data){
+             
               console.log("Error in submitted feedback");
               console.log(data); 
           }

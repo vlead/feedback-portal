@@ -20,27 +20,27 @@ This holds the application's configuration parameters.
 #+NAME: questions_config
 #+BEGIN_SRC python
 
-
 questions_dict = {'questions': [
-    {'name':'Did you do the experiment?', 'type':'radio', 
-         'options':['Yes', 'No']},
-    {'name':'Did the experiment work?', 'type':'radio', 
-         'options': ['Yes', 'No']},
-    {'name': 'Did you find any bugs in the experiment?', 'type': 'radio', 
-     'options': ["ys", "No"]},
-    {'name': 'How much did you know about the experiment before doing it in Virtual Labs?', 'type': 'radio', 
-     'options': ["Yes", "No"]},
-    {'name': 'Is this experiment part of your curriculum?', 'type': 'radio', 
-     'options': ["Yes", "No"]},
-    {'name': 'Does this help you to perform better in the curriculum?', 'type': 'radio', 
-     'options': ["Yes", "No"]},
-    {'name': 'If you had to do this experiment physically do you think this experiment prepares to do it better physically?', 'type': 'radio', 
-     'options': ["Yes", "No"]},
-    {'name': 'Would you recommend it to your fellow students?', 'type': 'radio', 
-     'options': ["Yes", "No"]},
-    {'name': 'Additional Comments', 'type': 'text', 
-     'options': ["Yes"]}
-    ]}
+        {'No' : '1', 'name':'Did you do the experiment?', 'type':'radio',
+                  'options':['Yes', 'No']},
+        {'No' : '2', 'name':'Did the experiment work?', 'type':'radio',
+                  'options': ['Yes', 'No']},
+        {'No' : '3','name': 'Did you find any bugs in the experiment?', 'type': 'radio',
+              'options': ["Yes", "No"]},
+        {'No' : '4','name': 'How much did you know about the experiment before doing it in Virtual Labs?', 'type': 'radio',
+              'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
+        {'No' : '5','name': 'Is this experiment part of your curriculum?', 'type': 'radio',
+              'options': ["Yes", "No"]},
+        {'No' : '6','name': 'Does this help you to perform better in the curriculum?', 'type': 'radio',
+              'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
+        {'No' : '7','name': 'If you had to do this experiment physically do you think this experiment prepares to do it better physically?', 'type': 'radio',
+              'options': ["Yes", "No"]},
+        {'No' : '8','name': 'Would you recommend it to your fellow students?', 'type': 'radio',
+              'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
+        {'No' : '9','name': 'Additional Comments', 'type': 'text',
+              'options': ["Yes"]}
+        ]}
+
 
 #+END_SRC
 
