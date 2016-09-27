@@ -375,7 +375,19 @@ class TestGetFeedbackUsage(TestCase):
             feedbacks = System.do("get_feedback_dump",
                                      date=date,
                                      session=session)
-            return feedbacks
+            feedback_dict_list = []
+            for feedback in feedbacks:
+                fb_c = feedback.to_client()
+                for response in fb_c['responses']:
+                    del(response['feedbacks'])
+
+                date_obj = fb_c['date'] 
+                date_str = date_obj.strftime('%d-%m-%Y')
+                fb_c['date'] = date_str
+                feedback_dict_list.append(fb_c)
+
+            return  feedback_dict_list
+            
         except Exception as e:
             print str(e)
 

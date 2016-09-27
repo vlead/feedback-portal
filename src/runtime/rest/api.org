@@ -379,7 +379,7 @@ def get_feedback_dump():
             
             try:
                 feedbacks = SystemInterface.get_feedback_dump(date, key)
-                return jsonify_list([i.to_client() for i in feedbacks])
+                return jsonify_list(feedbacks)
                 
             except NotAuthorizedError as err:
                 error_message =  'Not Authorized error: %s' % str(err)
@@ -412,7 +412,7 @@ def get_feedback_dump():
 
 #+END_SRC
 
-
+   
 ** TestGetFeedbackDump
 #+NAME: test_get_feedback_dump
 #+BEGIN_SRC python
