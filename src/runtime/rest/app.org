@@ -9,7 +9,7 @@
 * Introduction
   The application that runs the FLASK web server
 
-
+  
 * Flask Server
 #+NAME: application
 #+BEGIN_SRC python
@@ -19,7 +19,7 @@ def create_app(config):
     app.secret_key = 'djfjsdkjXXS7979dfdfd'
     # load config values from the config file
     app.config.from_object(config)
-
+    cors = CORS(app, resources={r"/*": {"origins": "*"}})
     # init sqlalchemy db instance
     db.init_app(app)
     db.app = app
@@ -149,7 +149,7 @@ if __name__ == "__main__":
 import os
 
 from flask import Flask, jsonify, make_response
-# from flask.ext.cors import CORS
+from flask.ext.cors import CORS
 
 from runtime.utils.class_persistence_template import db
 from runtime.rest.api import api
