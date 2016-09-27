@@ -9,7 +9,7 @@
 * Introduction 
   This document illustrates building of the REST API.
 
-
+  
 * REST
 
 ** Get and Add Feedback
@@ -725,25 +725,39 @@ class TestGetFeedbackDump(TestCase):
       }
       // Posting json data to /feedback api
       console.log(feedback);
-      $.ajax({
-          url: 'http://localhost:5000/feedback',
-          type: 'POST',
-          data: JSON.stringify(feedback),
-          contentType: 'application/json',
-          success: function (data) {
-              window.history.back();
-              //alert("Submitted");
-              console.log(data);
-          },
-          error: function(data){
-             
-              console.log("Error in submitted feedback");
-              console.log(data); 
-          }
-          
-      });    
+      function add_feedback(){
+	  $.ajax({
+              url: 'http://localhost:5000/feedback',
+              type: 'POST',
+              data: JSON.stringify(feedback),
+              contentType: 'application/json',
+              success: function (data) {
+		  window.history.back();
+		  //alert("Submitted");
+		  console.log(data);
+              },
+              error: function(data){
+		  
+		  console.log("Error in submitted feedback");
+		  console.log(data); 
+              }
+              
+	  });  
+      }
+      var count=0;
+      for(var i=0;i<feedback.responses.length;i++){
+	  if(feedback.responses[i].answers!= ""){
+	      count=count+1;
+	      }
+      }
+      if(count == feedback.responses.length){
+	  add_feedback();
+      }
+      else{alert("Please do fill the total feedback");}
+      
       
   }
+  
   
 #+END_SRC
 
