@@ -446,7 +446,7 @@ class GetFeedbackForm():
 
     @staticmethod
     def action(args):
-        return_val = questions_dict
+        return_val = feedback_forms[0]
         return_val['lab_name'] = args['lab_name']
         if args['exp_name'] is not None:
             return_val['exp_name'] = args['exp_name']
@@ -509,7 +509,7 @@ from runtime.objects.entities import is_str, is_question, is_answer, \
      are_responses_or_empty_list
 from runtime.utils.type_utils import is_str_or_none
 from runtime.config.system_config import KEY
-from runtime.config.questions_config import questions_dict
+from runtime.config.feedback_forms import feedback_forms
 import datetime
 from flask import current_app
 

@@ -106,9 +106,9 @@ KEY="defaultkey"
 
 
 * Tangling                                                      :boilerplate:
-** questions_config
-#+BEGIN_SRC python :tangle questions_config.py :eval no :noweb yes
-<<questions_config>>
+** feedback_forms
+#+BEGIN_SRC python :tangle feedback_forms.py :eval no :noweb yes
+<<feedback_forms>>
 #+end_src
 
 
