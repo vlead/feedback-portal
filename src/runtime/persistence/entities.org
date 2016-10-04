@@ -112,6 +112,7 @@ args = {"__tablename__": "feedback",
         "gateway_ip" : db.Column(db.String(255), nullable=False),
         "lab_name" : db.Column(db.String(255), nullable=False),
         "exp_name" : db.Column(db.String(255), nullable=False),
+        "version" : db.Column(db.String(255), nullable=False),
         "date": db.Column(db.Date, nullable=False)
         }
 
@@ -143,16 +144,19 @@ class TestPersistenceFeedback(TestCase):
         lab_name = "cse01"
         exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        version = "open-edx-virtual-labs-v2.0"
         fb = Feedback(gateway_ip=gateway_ip,
                       lab_name=lab_name,
                       exp_name=exp_name,
                       date=date,
+                      version=version,
                       responses=[])
         fb.save()
 
         self.assertEqual(fb.get("gateway_ip"), gateway_ip)
         self.assertEqual(fb.get("lab_name"), lab_name)
         self.assertEqual(fb.get("exp_name"), exp_name)
+        self.assertEqual(fb.get("version"), version)
         self.assertEqual(fb.get("responses"), [])
 
  #+END_SRC
@@ -233,12 +237,14 @@ class TestPersistenceResponse(TestCase):
         gateway_ip = "10.100.40.2"
         lab_name = "cse01"
         exp_name = "data01"
+        version = "open-edx-virtual-labs-v2.0"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
         fb = Feedback(gateway_ip=gateway_ip,
                       lab_name=lab_name,
                       exp_name=exp_name,
                       date=date,
+                      version=version,
                       responses=[])
         fb.save()
 
