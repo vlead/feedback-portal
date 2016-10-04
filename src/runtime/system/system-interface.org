@@ -208,11 +208,12 @@ class TestAddFeedback(TestCase):
     def test_add_feedback_in_system_interface(self):
         print "test_add_feedback_in_system_interface"
 
-
+        version = "open-edx-virtual-labs-v2.0"
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
+                    'version': version,
                     'responses': [{'name': 'How is your breakfast?',
                                     'answers':['yes', 'no'] }]
                    }
@@ -234,10 +235,12 @@ class TestAddFeedback(TestCase):
         answer_cls = System.delegate.entities['answer']
         answer = answer_cls(name='yes')
         answer.save()
+        version = "open-edx-virtual-labs-v2.0"
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
+                    'version': version,
                     'responses': [{'name': 'How is your breakfast?',
                                     'answers':['yes', 'no'] }]
                    }
@@ -248,6 +251,7 @@ class TestAddFeedback(TestCase):
             'exp_name': "DFA",
             'key' : KEY,
             'gateway_ip': 'X.X.X.X',
+            'version': version,
             'responses': [{'name': 'How is your breakfast?',
                             'answers':['yes', 'no'] }]
            }
@@ -264,17 +268,19 @@ class TestAddFeedback(TestCase):
         self.assertEqual(fb.get("lab_name"), data_dict1['lab_name'])
         self.assertEqual(fb.get("exp_name"), data_dict1['exp_name'])
         self.assertEqual(fb.get("gateway_ip"), data_dict1['gateway_ip'])
+        self.assertEqual(fb.get("version"), data_dict1['version'])
         self.assertEqual(fb.get("responses")[0].get("question").get("name"),
                              'How is your breakfast?')
 
 
     def test_add_feedback_raises_type_error_in_system_interface(self):
         print "test_add_feedback_raises_type_error_in_system_interface"
-
+        version = "open-edx-virtual-labs-v2.0"
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
+                    'version': version,
                     'responses': "hello"
                    }
 
@@ -341,11 +347,12 @@ class TestGetFeedbackUsage(TestCase):
     def test_get_feedback_usage_in_system_interface(self):
         print "test_get_feedback_usage_in_system_interface"
 
-
+        version = "open-edx-virtual-labs-v2.0"
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
+                    'version': version,
                     'responses': [{'name': 'How is your breakfast?',
                                     'answers':['yes', 'no'] }]
                    }
@@ -430,10 +437,12 @@ class TestGetFeedbackDump(TestCase):
     def test_add_feedback_dump_in_system_interface(self):
         print "test_get_feedback_dump_in_system_interface"
 
+        version = "open-edx-virtual-labs-v2.0"
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
+                    'version': version,
                     'responses': [{'name': 'How is your breakfast?',
                                     'answers':['yes', 'no'] }]
                    }
