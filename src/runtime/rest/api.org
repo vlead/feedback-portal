@@ -924,7 +924,7 @@ class TestGetFeedbackDump(TestCase):
       console.log(feedback);
       function add_feedback(){
 	  $.ajax({
-              url: 'http://localhost:5000/feedback',
+              url: 'http://fp-edx-demo.vlabs.ac.in/feedback',
               type: 'POST',
               data: JSON.stringify(feedback),
               contentType: 'application/json',
