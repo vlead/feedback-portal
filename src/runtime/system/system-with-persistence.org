@@ -127,7 +127,6 @@ class TestAddFeedback(TestCase):
                    }
         data_dict['session'] = session_cls(key=data_dict['key'])
         del(data_dict['key'])
-        print len(data_dict)
         feedback = System.do("add_feedback", **data_dict)
 
         fb = feedback_cls.get_by_id(1)

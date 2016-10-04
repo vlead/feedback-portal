@@ -101,13 +101,16 @@ def get_add_feedback():
 	    abort(500, "the request does not contain data in json")
 
 	if 'lab_name' not in data_dict or 'key' not in data_dict or \
-	    'responses' not in data_dict:
-	    abort(400, 'Either lab name or key or responses are not passed')
+	    'responses' not in data_dict or 'version' not in data_dict:
+	    abort(400, 'Either lab name or key or version or responses' 
+                             ' are not passed')
 	else:
 	    gateway_ip = str(request.remote_addr)
-	    current_app.logger.debug("lab_name = %s, responses=%s, key=%s, "
+	    current_app.logger.debug("lab_name = %s, responses=%s, "
+                                 "version=%s, key=%s, "
 					%(data_dict['lab_name'],
 					  data_dict['responses'],
+					  data_dict['version'],                      
 					  data_dict['key']))
 
 	    data_dict["gateway_ip"] = gateway_ip
@@ -221,10 +224,11 @@ class TestAddFeedback(TestCase):
 
     def test_add_feedback(self):
         print "test_add_feedback"
-
+        version = "open-edx-virtual-labs-v2.0"
         payload = {'lab_name': 'data structure',
             'exp_name': 'tuples',
             'key' : KEY,
+            'version': version,
             'responses': [{'name': 'How is your breakfast?',
                             'answers':['yes', 'no'] }]
            }
@@ -346,9 +350,11 @@ class TestGetFeedbackUsage(TestCase):
     def test_get_feedback_usage(self):
         print "test_get_feedback_usage"
 
+        version = "open-edx-virtual-labs-v2.0"
         payload = {'lab_name': 'data structure',
             'exp_name': 'tuples',
             'key' : KEY,
+            'version': version,
             'responses': [{'name': 'How is your breakfast?',
                             'answers':['yes', 'no'] }]
            }
@@ -455,9 +461,11 @@ class TestGetFeedbackDump(TestCase):
     def test_get_feedback_dump(self):
         print "test_get_feedback_dump"
 
+        version = "open-edx-virtual-labs-v2.0"
         payload = {'lab_name': 'data structure',
             'exp_name': 'tuples',
             'key' : KEY,
+            'version': version,
             'responses': [{'name': 'How is your breakfast?',
                             'answers':['yes', 'no'] }]
            }
