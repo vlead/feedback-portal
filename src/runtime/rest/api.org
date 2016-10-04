@@ -489,7 +489,7 @@ class TestGetFeedbackDump(TestCase):
 def get_gateway_ip():
     try:
         gateway_ip = str(request.remote_addr)
-        return gateway_ip 
+        return jsonify({'gateway_ip': gateway_ip}) 
     except Exception as e:
         return "Error in getting the gateway_ip"
   
