@@ -42,6 +42,12 @@ def get_add_feedback():
 	    exp_name = None
 	else:
 	    exp_name = str(request.args['exp_name'])
+
+	if 'date' not in request.args:
+	    date = None
+	else:
+	    date = str(request.args['date'])
+
 	if 'user_id' not in request.args:
 	    user_id = None
 	else:

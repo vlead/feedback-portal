@@ -115,10 +115,13 @@ class TestAddFeedback(TestCase):
         answer_cls = System.delegate.entities['answer']
         feedback_cls = System.delegate.entities['feedback']
 
+        date = datetime.datetime.now().date()
+
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
+                    'date': date,
                     'responses': [] 
                    }
         data_dict['session'] = session_cls(key=data_dict['key'])
@@ -226,11 +229,12 @@ class TestGetFeedbackUsage(TestCase):
         answer_cls = System.delegate.entities['answer']
         feedback_cls = System.delegate.entities['feedback']
 
-
+        date = datetime.datetime.now().date()
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
+                    'date': date,
                     'responses': [] 
                    }
         data_dict['session'] = session_cls(key=data_dict['key'])
@@ -275,17 +279,17 @@ class TestGetFeedbackDump(TestCase):
         answer_cls = System.delegate.entities['answer']
         feedback_cls = System.delegate.entities['feedback']
 
+        date = datetime.datetime.now().date()
 
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
+                    'date': date,
                     'responses': [] 
                    }
         data_dict['session'] = session_cls(key=data_dict['key'])
         del(data_dict['key'])
-
-        date = datetime.datetime.now().date()
 
         feedback = System.do("add_feedback", **data_dict)
 
