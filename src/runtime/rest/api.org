@@ -479,6 +479,164 @@ class TestGetFeedbackDump(TestCase):
 
 #+END_SRC
 
+
+** Get Gateway IP
+   This is the REST API method for getting the Gateway IP.
+
+#+NAME: get_gateway_ip
+#+BEGIN_SRC python
+@api.route('/get_gateway_ip', methods=['GET'])
+def get_gateway_ip():
+    try:
+        gateway_ip = str(request.remote_addr)
+        return gateway_ip 
+    except Exception as e:
+        return "Error in getting the gateway_ip"
+  
+#+END_SRC
+
+
+*** TestGetFeedback
+ #+NAME: test_get_feedback
+ #+BEGIN_SRC python
+class TestGetFeedback(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_lab_feedback_form_data(self):
+        print "test_get_lab_feedback_form_data"
+
+        lab_name = "Data Structures"
+        exp_name = "binary search"
+        user_id = "123user"
+        headers = {'Content-Type': 'application/json'}
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
+          % (lab_name, exp_name, user_id, KEY)
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(result['lab_name'], lab_name)
+
+    def test_get_lab_feedback_with_401_error(self):
+        print "test_get_lab_feedback_with_401_error"
+        print "test not authorized error"
+
+        lab_name = "Data Structures"
+        exp_name = "binary search"
+        user_id = "123user"
+        key = "jigajiga"
+        headers = {'Content-Type': 'application/json'}
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
+          % (lab_name, exp_name, user_id, key)
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 401)
+
+    def test_get_lab_feedback_with_400_error(self):
+        print "test_get_lab_feedback_with_401_error"
+        print "test bad request"
+
+        lab_name = ""
+        exp_name = "binary search"
+        user_id = "123user"
+        headers = {'Content-Type': 'application/json'}
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
+          % (lab_name, exp_name, user_id, KEY)
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 400)
+
+ #+END_SRC
+
+
+*** TestAddFeedback
+ #+NAME: test_add_feedback
+ #+BEGIN_SRC python
+class TestAddFeedback(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_add_feedback(self):
+        print "test_add_feedback"
+
+        payload = {'lab_name': 'data structure',
+            'exp_name': 'tuples',
+            'key' : KEY,
+            'responses': [{'name': 'How is your breakfast?',
+                            'answers':['yes', 'no'] }]
+           }
+
+        headers = {'Content-Type': 'application/json'}
+        ip_address = {'REMOTE_ADDR': '1.2.3.4'}
+        
+        response = self.client.post("/feedback", data=json.dumps(payload),
+                                 headers=headers,
+                                 environ_overrides=ip_address)
+        
+        self.assertEqual(response.status_code, 200)
+'''
+    def test_get_lab_feedback_form_data(self):
+        print "test_get_lab_feedback_form_data"
+
+        headers = {'content-type': 'application/json'}
+        response = self.client.get("/feedback?lab_name=data structure&key=some"
+                                       " alphanumeric string",
+                                        headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(result['lab_name'], "data structure")
+
+    def test_get_exp_feedback_form_data(self):
+        print "test_get_exp_feedback_form_data"
+
+        headers = {'content-type': 'application/json'}
+        response = self.client.get("/feedback?lab_name=data structure&exp_name"
+                                       "=tuples&key=some alphanumeric string",
+                                        headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(result['lab_name'], "data structure")
+        self.assertEqual(result['exp_name'], "tuples")
+'''
+ #+END_SRC
+
    
 * WebApp
 
@@ -1157,6 +1315,7 @@ if __name__ == '__main__':
 <<add_feedback>>
 <<get_feedback_usage>>
 <<get_feedback_dump>>
+<<get_gateway_ip>>
 #+END_SRC
 
 ** tests
