@@ -153,9 +153,7 @@ class TestGetFeedback(TestCase):
 
         print "request-str = %s" % request_str
         response = self.client.get(request_str, headers=headers)
-        result = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(result['lab_name'], lab_name)
 
     def test_get_lab_feedback_with_401_error(self):
         print "test_get_lab_feedback_with_401_error"
@@ -175,7 +173,7 @@ class TestGetFeedback(TestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_get_lab_feedback_with_400_error(self):
-        print "test_get_lab_feedback_with_401_error"
+        print "test_get_lab_feedback_with_400_error"
         print "test bad request"
 
         lab_name = ""
@@ -187,7 +185,6 @@ class TestGetFeedback(TestCase):
 
         print "request-str = %s" % request_str
         response = self.client.get(request_str, headers=headers)
-        result = json.loads(response.data)
         self.assertEqual(response.status_code, 400)
 
  #+END_SRC
