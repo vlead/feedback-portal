@@ -114,7 +114,7 @@ class TestAddFeedback(TestCase):
         question_cls = System.delegate.entities['question']
         answer_cls = System.delegate.entities['answer']
         feedback_cls = System.delegate.entities['feedback']
-
+        version = "open-edx-virtual-labs-v2.0"
         date = datetime.datetime.now().date()
 
         data_dict = {'lab_name': 'data structure',
@@ -122,17 +122,19 @@ class TestAddFeedback(TestCase):
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
                     'date': date,
+                    'version':version,
                     'responses': [] 
                    }
         data_dict['session'] = session_cls(key=data_dict['key'])
         del(data_dict['key'])
-
+        print len(data_dict)
         feedback = System.do("add_feedback", **data_dict)
 
         fb = feedback_cls.get_by_id(1)
         self.assertEqual(fb.get("gateway_ip"), '10.4.12.24')
         self.assertEqual(fb.get("lab_name"), 'data structure')
         self.assertEqual(fb.get("exp_name"), 'tuples')
+        self.assertEqual(fb.get("version"), version)
         self.assertEqual(fb.get("responses"), [])
             
 #+END_SRC
@@ -176,12 +178,14 @@ class TestAddResponsesToFeedback(TestCase):
         gateway_ip = "10.100.40.2"
         lab_name = "cse01"
         exp_name = "data01"
+        version = "open-edx-virtual-labs-v2.0"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
         fb = feedback_cls(gateway_ip=gateway_ip,
                       lab_name=lab_name,
                       exp_name=exp_name,
                       date=date,
+                      version=version,
                       responses=[])
         fb.save()
 
@@ -229,12 +233,14 @@ class TestGetFeedbackUsage(TestCase):
         answer_cls = System.delegate.entities['answer']
         feedback_cls = System.delegate.entities['feedback']
 
+        version = "open-edx-virtual-labs-v2.0"
         date = datetime.datetime.now().date()
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
                     'date': date,
+                    'version': version,
                     'responses': [] 
                    }
         data_dict['session'] = session_cls(key=data_dict['key'])
@@ -280,12 +286,13 @@ class TestGetFeedbackDump(TestCase):
         feedback_cls = System.delegate.entities['feedback']
 
         date = datetime.datetime.now().date()
-
+        version = "open-edx-virtual-labs-v2.0"
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
                     'date': date,
+                    'version': version,
                     'responses': [] 
                    }
         data_dict['session'] = session_cls(key=data_dict['key'])

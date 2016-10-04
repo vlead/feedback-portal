@@ -293,7 +293,7 @@ class AddAnswer():
 class AddFeedback():
     arg_types = {"gateway_ip": is_str, "lab_name": is_str, "date": is_date,
                   "exp_name": is_str, "responses": are_responses_or_empty_list,
-                  "session": is_session}
+                  "version": is_str, "session": is_session}
     arity_and_type_checks_needed = True
 
     @staticmethod
@@ -314,12 +314,14 @@ class AddFeedback():
         lab_name = args["lab_name"]
         exp_name = args["exp_name"]
         date = args["date"]
+        version = args["version"]
         responses = args['responses']
         try:
             feedback = System.delegate.add_feedback(gateway_ip, 
                                                         lab_name,
                                                         exp_name,
                                                         date,
+                                                        version,
                                                         responses)
             return feedback
         except Exception as err:
