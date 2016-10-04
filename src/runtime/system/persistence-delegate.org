@@ -158,11 +158,12 @@ class TestPersistenceDelegate(TestCase):
         lab_name = "cse01"
         exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
-
+        version = "open-edx-virtual-labs-v2.0"
         fb = Feedback(gateway_ip=gateway_ip,
                        lab_name=lab_name,
                        exp_name=exp_name,
                        date=date,
+                       version=version,
                        responses=[])
         fb.save()
 
@@ -210,10 +211,12 @@ class TestPersistenceDelegate(TestCase):
         lab_name1 = "cse01"
         exp_name1 = "data01"
         date1 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+        version = "open-edx-virtual-labs-v2.0"
         fb1 = Feedback(gateway_ip=gateway_ip1,
                         lab_name=lab_name1,
                         exp_name=exp_name1,
                         date=date1,
+                        version=version,
                         responses=[])
         fb1.save()
 
@@ -221,10 +224,12 @@ class TestPersistenceDelegate(TestCase):
         lab_name2 = "cse02"
         exp_name2 = "data02"
         date2 = datetime.datetime.strptime("30-06-2017", "%d-%m-%Y").date()
+        version2 = "open-edx-virtual-labs-v1.0"
         fb2 = Feedback(gateway_ip=gateway_ip2,
                                 lab_name=lab_name2,
                                 exp_name=exp_name2,
                                 date=date2,
+                                version=version2,
                                 responses=[]
                                 )
         
@@ -289,12 +294,13 @@ class TestPersistenceDelegate(TestCase):
     This function adds a feedback to the system.
 #+NAME: persistence_add_feedback
 #+BEGIN_SRC python
-    def add_feedback(self, gateway_ip, lab_name, exp_name, date, responses):
+    def add_feedback(self, gateway_ip, lab_name, exp_name, date, version, responses):
         try:
             new_feedback = Feedback(gateway_ip=gateway_ip,
                                     lab_name=lab_name,
                                     exp_name=exp_name,
                                     date=date,
+                                    version=version,
                                     responses=responses)
             new_feedback.save()
             return new_feedback
@@ -313,11 +319,13 @@ class TestPersistenceDelegate(TestCase):
          lab_name = "cse01"
          exp_name = "data01"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+         version = "open-edx-virtual-labs-v2.0"
          responses = []
 
          try:
             fb1 = self.persistence_delegate.add_feedback(gateway_ip, lab_name,
-                                                         exp_name, date,
+                                                         exp_name, date, 
+                                                         version,
                                                          responses)
          except Exception as err:
              self.assertEqual(True, False)
@@ -329,6 +337,7 @@ class TestPersistenceDelegate(TestCase):
          self.assertEqual(feedback.get("exp_name"), exp_name)
          self.assertEqual(feedback.get("responses"), [])
          self.assertEqual(feedback.get("date"), date)
+         self.assertEqual(feedback.get("version"), version)
 
 #+END_SRC
 
@@ -405,12 +414,14 @@ class TestPersistenceDelegate(TestCase):
          gateway_ip = "10.100.40.2"
          lab_name = "cse01"
          exp_name = "data01"
+         version = "open-edx-virtual-labs-v2.0"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
          fb = Feedback(gateway_ip=gateway_ip,
                         lab_name=lab_name,
                         exp_name=exp_name,
                         date=date,
+                        version=version,
                         responses=[])
          fb.save()
 
@@ -436,11 +447,12 @@ class TestPersistenceDelegate(TestCase):
          res3.save()
          res4.save()
 
-
+         version = "open-edx-virtual-labs-v2.0"
          fb1 = Feedback(gateway_ip=gateway_ip,
                           lab_name="Finite Automate",
                           exp_name="DFA",
                           date=date,
+                          version=version,
                           responses=[])
          fb1.save()
 
@@ -482,11 +494,13 @@ class TestPersistenceDelegate(TestCase):
          lab_name = "cse01"
          exp_name = "data01"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+         version = "open-edx-virtual-labs-v2.0"
 
          fb = Feedback(gateway_ip=gateway_ip,
                         lab_name=lab_name,
                         exp_name=exp_name,
                         date=date,
+                        version=version,
                         responses=[])
          fb.save()
 
@@ -532,11 +546,13 @@ class TestPersistenceDelegate(TestCase):
          lab_name = "cse01"
          exp_name = "data01"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
+         version = "open-edx-virtual-labs-v2.0"
 
          fb = Feedback(gateway_ip=gateway_ip,
                         lab_name=lab_name,
                         exp_name=exp_name,
                         date=date,
+                        version=version,
                         responses=[])
          fb.save()
 
@@ -584,12 +600,14 @@ class TestPersistenceDelegate(TestCase):
          gateway_ip = "10.100.40.2"
          lab_name = "cse01"
          exp_name = "data01"
+         version = "open-edx-virtual-labs-v2.0"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
          fb = Feedback(gateway_ip=gateway_ip,
                         lab_name=lab_name,
                         exp_name=exp_name,
                         date=date,
+                        version=version,
                         responses=[])
          fb.save()
 
@@ -641,18 +659,22 @@ class TestPersistenceDelegate(TestCase):
          gateway_ip1 = "10.100.40.2"
          lab_name1 = "cse01"
          exp_name1 = "data01"
+         version = "open-edx-virtual-labs-v2.0"
          date1 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
          responses1 = []
          fb1 = self.persistence_delegate.add_feedback(gateway_ip1, lab_name1,
                                                         exp_name1, date1,
+                                                        version,
                                                         responses1)
          gateway_ip2 = "10.100.40.2"
          lab_name2 = "cse02"
          exp_name2 = "data02"
+         version2 = "open-edx-virtual-labs-v1.0"
          date2 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
          responses2 = []
          fb2 = self.persistence_delegate.add_feedback(gateway_ip2, lab_name2,
                                                         exp_name2, date2,
+                                                        version2,
                                                         responses2)
          usage = self.persistence_delegate.get_feedback_usage(gateway_ip2, 
                                                                  date2)
@@ -684,18 +706,22 @@ class TestPersistenceDelegate(TestCase):
          gateway_ip1 = "10.100.40.2"
          lab_name1 = "cse01"
          exp_name1 = "data01"
+         version1 = "open-edx-virtual-labs-v1.0"
          date1 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
          responses1 = []
          fb1 = self.persistence_delegate.add_feedback(gateway_ip1, lab_name1,
                                                         exp_name1, date1,
+                                                        version1,
                                                         responses1)
          gateway_ip2 = "10.100.40.2"
          lab_name2 = "cse02"
          exp_name2 = "data02"
          date2 = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
          responses2 = []
+         version2 = "open-edx-virtual-labs-v2.0"
          fb2 = self.persistence_delegate.add_feedback(gateway_ip2, lab_name2,
                                                         exp_name2, date2,
+                                                        version2,
                                                         responses2)
          feedbacks = self.persistence_delegate.get_feedback_dump(date2)
 
@@ -816,12 +842,14 @@ class TestPersistenceDelegate(TestCase):
          gateway_ip = "10.100.40.2"
          lab_name = "cse01"
          exp_name = "data01"
+         version = "open-edx-virtual-labs-v2.0"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
          fb = Feedback(gateway_ip=gateway_ip,
                         lab_name=lab_name,
                         exp_name=exp_name,
                         date=date,
+                        version=version,
                         responses=[])
          fb.save()
 
@@ -890,12 +918,14 @@ class TestPersistenceDelegate(TestCase):
          gateway_ip = "10.100.40.2"
          lab_name = "cse01"
          exp_name = "data01"
+         version = "open-edx-virtual-labs-v2.0"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
          fb = Feedback(gateway_ip=gateway_ip,
                         lab_name=lab_name,
                         exp_name=exp_name,
                         date=date,
+                        version=version,
                         responses=[])
          fb.save()
 
@@ -960,12 +990,14 @@ class TestPersistenceDelegate(TestCase):
          gateway_ip = "10.100.40.2"
          lab_name = "cse01"
          exp_name = "data01"
+         version = "open-edx-virtual-labs-v2.0"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
          fb = Feedback(gateway_ip=gateway_ip,
                         lab_name=lab_name,
                         exp_name=exp_name,
                         date=date,
+                        version=version,
                         responses=[])
          fb.save()
 
@@ -1012,12 +1044,14 @@ class TestPersistenceDelegate(TestCase):
          gateway_ip = "10.100.40.2"
          lab_name = "cse01"
          exp_name = "data01"
+         version = "open-edx-virtual-labs-v2.0"
          date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
          fb = Feedback(gateway_ip=gateway_ip,
                         lab_name=lab_name,
                         exp_name=exp_name,
                         date=date,
+                        version=version,
                         responses=[])
          fb.save()
 
