@@ -765,12 +765,60 @@ class TestGetFeedbackDump(TestCase):
           }
           
           else if(sampleData.questions[i].type === "radio") {
+	      
+	      
               renderQuesLabel();
               labelQues.innerHTML = sampleData.questions[i].name;
               var optionsDiv1 = document.createElement("div");
               optionsDiv1.id = sampleData.questions[i].name;
               var optionsLength = sampleData.questions[i].options.length;
-              
+              function GenerateTable(arg1, arg2, arg3, table_id) {
+		  var customers = new Array();
+		  customers.push([arg1, arg2, arg3]);
+		  
+		  //Create a HTML Table element.
+		  var table = document.createElement("TABLE");
+		  table.border = "0";
+		  
+		  //Get the count of columns.
+		  var columnCount = customers[0].length;
+		  
+		  //Add the header row.
+		  var row = table.insertRow(-1);
+		  for (var i = 0; i < columnCount; i++) {
+                      var headerCell = document.createElement("Td");
+                      headerCell.innerHTML = customers[0][i];
+                      row.appendChild(headerCell);
+		  }
+		  var dvTable = document.getElementById(table_id);
+		  dvTable.innerHTML = "";
+		  dvTable.appendChild(table);
+              }
+	      if(i == 2){
+		//  renderQuesLabel();
+		  console.log(i);
+		  labelQues = document.createElement('div');
+		  labelQues.id="dvTable";
+		  formGroup.appendChild(labelQues);
+		  GenerateTable("Not at all", "To some extent", "Very well", "dvTable");
+	      }
+	      else if(i == 4){
+		  console.log(i);
+		//  renderQuesLabel();
+		  labelQues = document.createElement('div');
+		  labelQues.id="dvTable1";
+		  formGroup.appendChild(labelQues);
+		  GenerateTable("Not at all", "To some extent", "Much better","dvTable1");
+	      }
+
+	      else if(i == 5){
+		  console.log(i);
+		//  renderQuesLabel();
+		  labelQues = document.createElement('div');
+		  labelQues.id="dvTable2";
+		  formGroup.appendChild(labelQues);
+		  GenerateTable("Not at all", "May Recommend", "Will definitely","dvTable2");
+	      }
               for (var k = 0; k < optionsLength; k++) {
                   radioOption = document.createElement('input');
                   radioOption.type = "radio";
@@ -787,6 +835,7 @@ class TestGetFeedbackDump(TestCase):
                   formGroup.appendChild(optionsDiv1);
                   questions_list.appendChild(formGroup);
               }
+	     
           }
           else if (sampleData.questions[i].type === "text") {
               var ansTextArea;
@@ -835,7 +884,14 @@ class TestGetFeedbackDump(TestCase):
                   var child = children[j];
                   // console.log('child', child, child.type, child.checked);
                   if(child.type === 'radio' && child.checked === true) {
-                      answer.push(child.value);
+                      
+		      if(child.value =="Yes" || child.value =="No"){
+		      	  answer.push(child.value);
+		      }
+		      else{
+			  var ans = child.value + "/"+ String(Number(children.length)-1)
+			  answer.push(ans);
+			  }
 
                   }
               }
@@ -852,13 +908,9 @@ class TestGetFeedbackDump(TestCase):
               }
           }
           else if(sampleData.questions[i].type === 'text') {
+	      answer = [];
               var input = questionElement;
-              answer = input.value;
-          }
-          else if(sampleData.questions[i].type === 'text') {
-              var input = questionElement;
-              
-              answer = input.value;
+              answer.push(input.value);
           }
           // create an object to insert the current question data
           var question = {};
@@ -868,10 +920,11 @@ class TestGetFeedbackDump(TestCase):
           feedback.responses.push(question);
       }
       // Posting json data to /feedback api
+   
       console.log(feedback);
       function add_feedback(){
 	  $.ajax({
-              url: 'http://fp-edx-demo.vlabs.ac.in/feedback',
+              url: 'http://localhost:5000/feedback',
               type: 'POST',
               data: JSON.stringify(feedback),
               contentType: 'application/json',
@@ -900,6 +953,7 @@ class TestGetFeedbackDump(TestCase):
       
       
   }
+  
   
   
 #+END_SRC
@@ -1023,6 +1077,22 @@ body {
 {
 margin-top:120px;
 }
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 55%;
+}
+
+td {
+    border: 0px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
 
 #+END_SRC
 
