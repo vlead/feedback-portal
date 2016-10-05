@@ -893,9 +893,16 @@ class TestAddFeedback(TestCase):
   function renderFeedbackform() {
       $("#lab_name_label").html("Lab Name");
       $("#lab_name_value").val(sampleData.lab_name)
-      
-      $("#exp_name_label").html("Experiment Name");
-      $("#exp_name_value").val(sampleData.exp_name)
+      if(sampleData.exp_name){
+	  
+	  $("#exp_name_label").html("Experiment Name");
+	  $("#exp_name_value").val(sampleData.exp_name);
+      }
+      else
+	  {
+	      var elem = document.getElementById("exp_name_value");
+	      elem.parentNode.removeChild(elem);
+	  }
       
       var quesArray = sampleData.questions.length;
       for (var i = 0; i < quesArray; i++) {
