@@ -38,10 +38,13 @@ def get_add_feedback():
 	else:
 	    lab_name = str(request.args['lab_name'])
 	    key = str(request.args['key'])
+
 	if 'exp_name' not in request.args:
 	    exp_name = None
 	else:
 	    exp_name = str(request.args['exp_name'])
+
+        print exp_name
 
 	if 'date' not in request.args:
 	    date = None
@@ -67,6 +70,7 @@ def get_add_feedback():
 	    """
 	    return render_template('index.html', 
 				   questions_data=response)
+
 	except NotAuthorizedError as err:
 	    error_message =  'Not Authorized error: %s' % str(err)
 	    if request.headers['Content-Type'] == "application/json":
@@ -222,8 +226,8 @@ class TestAddFeedback(TestCase):
         db.session.remove()
         db.drop_all()
 
-    def test_add_feedback(self):
-        print "test_add_feedback"
+    def test_add_lab_feedback(self):
+        print "test_add_lab_feedback"
         version = "open-edx-virtual-labs-v2.0"
         payload = {'lab_name': 'data structure',
             'exp_name': 'tuples',
@@ -235,12 +239,32 @@ class TestAddFeedback(TestCase):
 
         headers = {'Content-Type': 'application/json'}
         ip_address = {'REMOTE_ADDR': '1.2.3.4'}
-        
+
         response = self.client.post("/feedback", data=json.dumps(payload),
                                  headers=headers,
                                  environ_overrides=ip_address)
-        
+
         self.assertEqual(response.status_code, 200)
+
+    def test_add_exp_feedback(self):
+        print "test_add_exp_feedback"
+        version = "open-edx-virtual-labs-v2.0"
+        payload = {'lab_name': 'data structure',
+            'key' : KEY,
+            'version': version,
+            'responses': [{'name': 'How is your breakfast?',
+                            'answers':['yes', 'no'] }]
+           }
+
+        headers = {'Content-Type': 'application/json'}
+        ip_address = {'REMOTE_ADDR': '1.2.3.4'}
+
+        response = self.client.post("/feedback", data=json.dumps(payload),
+                                 headers=headers,
+                                 environ_overrides=ip_address)
+
+        self.assertEqual(response.status_code, 200)
+
 '''
     def test_get_lab_feedback_form_data(self):
         print "test_get_lab_feedback_form_data"
