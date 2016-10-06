@@ -772,7 +772,7 @@ def get_gateway_ip():
 #+END_SRC
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
-
+  
   var sampleData = window.data;
   var labelQues, formGroup;
   function renderQuesLabel() {
@@ -787,15 +787,15 @@ def get_gateway_ip():
       $("#lab_name_label").html("Lab Name");
       $("#lab_name_value").val(sampleData.lab_name)
       if(sampleData.exp_name){
-	  
-	  $("#exp_name_label").html("Experiment Name");
-	  $("#exp_name_value").val(sampleData.exp_name);
+          
+          $("#exp_name_label").html("Experiment Name");
+          $("#exp_name_value").val(sampleData.exp_name);
       }
       else
-	  {
-	      var elem = document.getElementById("exp_name_value");
-	      elem.parentNode.removeChild(elem);
-	  }
+          {
+              var elem = document.getElementById("exp_name_value");
+              elem.parentNode.removeChild(elem);
+          }
       
       var quesArray = sampleData.questions.length;
       for (var i = 0; i < quesArray; i++) {
@@ -823,60 +823,60 @@ def get_gateway_ip():
           }
           
           else if(sampleData.questions[i].type === "radio") {
-	      
-	      
+              
+              
               renderQuesLabel();
               labelQues.innerHTML = sampleData.questions[i].name;
               var optionsDiv1 = document.createElement("div");
               optionsDiv1.id = sampleData.questions[i].name;
               var optionsLength = sampleData.questions[i].options.length;
               function GenerateTable(arg1, arg2, arg3, table_id) {
-		  var customers = new Array();
-		  customers.push([arg1, arg2, arg3]);
-		  
-		  //Create a HTML Table element.
-		  var table = document.createElement("TABLE");
-		  table.border = "0";
-		  
-		  //Get the count of columns.
-		  var columnCount = customers[0].length;
-		  
-		  //Add the header row.
-		  var row = table.insertRow(-1);
-		  for (var i = 0; i < columnCount; i++) {
+                  var customers = new Array();
+                  customers.push([arg1, arg2, arg3]);
+                  
+                  //Create a HTML Table element.
+                  var table = document.createElement("TABLE");
+                  table.border = "0";
+                  
+                  //Get the count of columns.
+                  var columnCount = customers[0].length;
+                  
+                  //Add the header row.
+                  var row = table.insertRow(-1);
+                  for (var i = 0; i < columnCount; i++) {
                       var headerCell = document.createElement("Td");
                       headerCell.innerHTML = customers[0][i];
                       row.appendChild(headerCell);
-		  }
-		  var dvTable = document.getElementById(table_id);
-		  dvTable.innerHTML = "";
-		  dvTable.appendChild(table);
+                  }
+                  var dvTable = document.getElementById(table_id);
+                  dvTable.innerHTML = "";
+                  dvTable.appendChild(table);
               }
-	      if(i == 2){
-		//  renderQuesLabel();
-		  console.log(i);
-		  labelQues = document.createElement('div');
-		  labelQues.id="dvTable";
-		  formGroup.appendChild(labelQues);
-		  GenerateTable("Not at all", "To some extent", "Very well", "dvTable");
-	      }
-	      else if(i == 4){
-		  console.log(i);
-		//  renderQuesLabel();
-		  labelQues = document.createElement('div');
-		  labelQues.id="dvTable1";
-		  formGroup.appendChild(labelQues);
-		  GenerateTable("Not at all", "To some extent", "Much better","dvTable1");
-	      }
-
-	      else if(i == 5){
-		  console.log(i);
-		//  renderQuesLabel();
-		  labelQues = document.createElement('div');
-		  labelQues.id="dvTable2";
-		  formGroup.appendChild(labelQues);
-		  GenerateTable("Not at all", "May Recommend", "Will definitely","dvTable2");
-	      }
+              if(i == 2){
+                //  renderQuesLabel();
+                  console.log(i);
+                  labelQues = document.createElement('div');
+                  labelQues.id="dvTable";
+                  formGroup.appendChild(labelQues);
+                  GenerateTable("Not at all", "To some extent", "Very well", "dvTable");
+              }
+              else if(i == 4){
+                  console.log(i);
+                //  renderQuesLabel();
+                  labelQues = document.createElement('div');
+                  labelQues.id="dvTable1";
+                  formGroup.appendChild(labelQues);
+                  GenerateTable("Not at all", "To some extent", "Much better","dvTable1");
+              }
+  
+              else if(i == 5){
+                  console.log(i);
+                //  renderQuesLabel();
+                  labelQues = document.createElement('div');
+                  labelQues.id="dvTable2";
+                  formGroup.appendChild(labelQues);
+                  GenerateTable("Not at all", "May Recommend", "Will definitely","dvTable2");
+              }
               for (var k = 0; k < optionsLength; k++) {
                   radioOption = document.createElement('input');
                   radioOption.type = "radio";
@@ -893,7 +893,7 @@ def get_gateway_ip():
                   formGroup.appendChild(optionsDiv1);
                   questions_list.appendChild(formGroup);
               }
-	     
+             
           }
           else if (sampleData.questions[i].type === "text") {
               var ansTextArea;
@@ -939,21 +939,21 @@ def get_gateway_ip():
           var questionElement = document.getElementById(sampleData.questions[i].name);
           var answer = null;
           if(sampleData.questions[i].type === 'radio') {
-	      answer = []
+              answer = []
               var children = questionElement.querySelectorAll('input');
               for(var j = 0; j < children.length; j++) {
                   var child = children[j];
                   // console.log('child', child, child.type, child.checked);
                   if(child.type === 'radio' && child.checked === true) {
                       
-		      if(child.value =="Yes" || child.value =="No"){
-		      	  answer.push(child.value);
-		      }
-		      else{
-			  var ans = child.value + "/"+ String(Number(children.length)-1)
-			  answer.push(ans);
-			  }
-
+                      if(child.value =="Yes" || child.value =="No"){
+                          answer.push(child.value);
+                      }
+                      else{
+                          var ans = child.value + "/"+ String(Number(children.length)-1)
+                          answer.push(ans);
+                          }
+  
                   }
               }
           }
@@ -969,7 +969,7 @@ def get_gateway_ip():
               }
           }
           else if(sampleData.questions[i].type === 'text') {
-	      answer = [];
+              answer = [];
               var input = questionElement;
               answer.push(input.value);
           }
@@ -984,31 +984,45 @@ def get_gateway_ip():
    
       console.log(feedback);
       function add_feedback(){
-	  $.ajax({
+          $.ajax({
               url: '/feedback',
               type: 'POST',
               data: JSON.stringify(feedback),
               contentType: 'application/json',
               success: function (data) {
-		  window.location.href="/success";
-		  console.log(data);
+                  window.location.href="/success";
+                  $.ajax({
+                      url: 'http://vlabs-analytics.vlabs.ac.in:9400/feedback/data',
+                      type: 'POST',
+                      data: JSON.stringify(feedback),
+                      contentType: 'application/json',
+                      success: function (data) {
+                          console.log(data);
+                      },
+                      error: function(data){
+                          console.log("Error in submitted feedback");
+                          console.log(data); 
+                      }
+                      
+                  });  
+                  console.log(data);
               },
               error: function(data){
-		  
-		  console.log("Error in submitted feedback");
-		  console.log(data); 
+                  
+                  console.log("Error in submitted feedback");
+                  console.log(data); 
               }
               
-	  });  
+          });  
       }
       var count=0;
       for(var i=0;i<feedback.responses.length;i++){
-	  if(feedback.responses[i].answers!= ""){
-	      count=count+1;
-	      }
+          if(feedback.responses[i].answers!= ""){
+              count=count+1;
+              }
       }
       if(count == feedback.responses.length){
-	  add_feedback();
+          add_feedback();
       }
       else{alert("Please do fill the total feedback");}
       
