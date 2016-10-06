@@ -512,6 +512,23 @@ class TestGetFeedbackDump(TestCase):
 
 #+END_SRC
 
+
+** Get Gateway IP
+   This is the REST API method for getting the Gateway IP.
+
+#+NAME: get_gateway_ip
+#+BEGIN_SRC python
+@api.route('/get_gateway_ip', methods=['GET'])
+def get_gateway_ip():
+    try:
+        gateway_ip = str(request.remote_addr)
+        return jsonify({'gateway_ip': gateway_ip}) 
+    except Exception as e:
+        return "Error in getting the gateway_ip"
+  
+#+END_SRC
+
+
    
 * WebApp
 
@@ -586,8 +603,9 @@ class TestGetFeedbackDump(TestCase):
         </form>
       </div>
       <div id="footer">
-        <div class="container">
-          <p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>
+        {% include 'footer.html' %}
+<!--        <div class="container">
+          <p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>-->
         </div>
       </div>
     </body>
@@ -677,6 +695,80 @@ class TestGetFeedbackDump(TestCase):
 
 #+END_SRC
   
+** Footer HTML
+#+BEGIN_SRC html :tangle ./templates/footer.html :eval no :noweb yes
+<head>
+  <link rel="stylesheet" type="text/css" href="static/css/main.css">
+</head>
+
+<footer>
+  <div class="container-fluid footer-div" style="background: #404040; margin-top: 40px;  padding: 20px;">
+    <div class="col-md-4 border-right-green-dotted" >
+      <h2 class="text-h2-lightblue-small" style="font-weight: bold;margin-top: 0px;">Updates</h2>
+      <a href="http://community.virtual-labs.ac.in/w/index.php/Download" class="text-normal-gray-small nounderline" style="color: white" > Lab Integration Kit Releases</a><br>
+      <a href="http://community.virtual-labs.ac.in/w/index.php/First_Integration_workshop"
+	 class="text-normal-gray-small nounderline"
+	 style="color: white" >First Integration Workshop at IIIT Hyderabad</a><br>
+      <a href="http://community.virtual-labs.ac.in/w/index.php/Summer_Sprint_Integration_workshop" class="text-normal-gray-small nounderline" style="color: white" > Summer Integration Workshop at IIT Guwahati</a><br>
+      <a href="http://community.virtual-labs.ac.in/w/index.php/QA/Integration_workshop"
+	 class="text-normal-gray-small nounderline"
+	 style="color: white" > QA Integration
+	Workshop at IIIT Hyderabad</a><br>
+      <a href="http://community.virtual-labs.ac.in/w/index.php/A_new_set_of_25_Virtual_Labs_on_Portable_Media" class="text-normal-gray-small nounderline" style="color: white" > A new set of 25 Virtual Labs on Portable Media</a><br>
+    </div>
+    
+    <div class="col-md-2 border-right-green-dotted" >
+
+      <a href="./faq.html" class="text-a-lightgreen" style="text-decoration: underline;" > FAQ</a><br>
+      <a href="http://community.virtual-labs.ac.in/w/index.php/Main_Page" class="text-a-lightgreen" style="text-decoration: underline;" >Community</a><br>
+      
+      <a href="http://outreach.vlabs.ac.in/ncentres"
+	 class="text-a-lightgreen"
+	 style="text-decoration: underline;" > Nodal Centers</a><br>
+      
+      
+      <a href="http://www.sakshat.ac.in/" class="text-a-lightgreen" style="text-decoration: underline;" > Sakshat Portal</a><br>
+
+      <a href="http://outreach.vlabs.ac.in/" class="text-a-lightgreen" style="text-decoration: underline;" > Outreach Portal</a><br>
+      <a href="http://118.102.191.38/vlabiitece/"
+	 class="text-a-lightgreen"
+	 style="text-decoration: underline;" > Labs
+	Developed by Nodal Centers</a><br>
+      
+    </div>
+    
+    <div class="col-md-3 border-right-green-dotted" id="contact" >
+      <h2 class="text-h2-lightblue-small" style="font-weight: bold;margin-top: 0px;"> Contact us</h2>
+      <a href="http://feedback.vlabs.ac.in/" class="text-a-lightgreen" style="text-decoration: underline;" > Feedback</a><br>
+      
+      <a class="text-a-lightgreen"style="text-decoration: underline;" href="mailto:support@vlabs.ac.in">support@vlabs.ac.in</a><br>
+      <a href="http://118.102.191.38/labassessment/assessmentform.html"
+	 class="text-a-lightgreen"
+	 style="text-decoration: underline;" > Lab
+	Assessment Form</a><br>
+
+    </div>
+    
+                        
+    <div class="col-md-2 border-right-green-dotted" >
+      <h2 class="text-h2-lightblue-small" style="font-weight: bold;margin-top: 0px;"> Follow us</h2>
+      <a href="https://www.facebook.com/pages/Virtual-Labs-IIT-Delhi/301510159983871" class="text-a-lightgreen nounderline"   target="_blank"> <img src="http://vlabs.ac.in/images/social/fb.png"  style="border-radius: 50%;"/> </a><br>
+      <a href="https://twitter.com/TheVirtualLabs" class="text-a-lightgreen nounderline"   target="_blank"> <img src="http://vlabs.ac.in/images/social/twitter.png"  style="border-radius: 50%;"/></a><br>
+      <a href="http://linkedin.com" class="text-a-lightgreen nounderline"  target="_blank" > <img src="http://vlabs.ac.in/images/social/linkedin.png" style="border-radius: 50%;" /></a><br>
+      <a href="https://www.youtube.com/watch?v=mVBYNXLaDdg"
+	 class="text-a-lightgreen nounderline"
+	 target="_blank" >
+	<img src="http://vlabs.ac.in/images/social/youtube.png"
+	     style="border-radius: 50%; width: 38px;
+		    height: 38px" /></a><br>
+      
+    </div>
+    
+  </div>
+</footer>
+
+
+#+END_SRC
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
 
@@ -693,9 +785,16 @@ class TestGetFeedbackDump(TestCase):
   function renderFeedbackform() {
       $("#lab_name_label").html("Lab Name");
       $("#lab_name_value").val(sampleData.lab_name)
-      
-      $("#exp_name_label").html("Experiment Name");
-      $("#exp_name_value").val(sampleData.exp_name)
+      if(sampleData.exp_name){
+	  
+	  $("#exp_name_label").html("Experiment Name");
+	  $("#exp_name_value").val(sampleData.exp_name);
+      }
+      else
+	  {
+	      var elem = document.getElementById("exp_name_value");
+	      elem.parentNode.removeChild(elem);
+	  }
       
       var quesArray = sampleData.questions.length;
       for (var i = 0; i < quesArray; i++) {
@@ -723,12 +822,60 @@ class TestGetFeedbackDump(TestCase):
           }
           
           else if(sampleData.questions[i].type === "radio") {
+	      
+	      
               renderQuesLabel();
               labelQues.innerHTML = sampleData.questions[i].name;
               var optionsDiv1 = document.createElement("div");
               optionsDiv1.id = sampleData.questions[i].name;
               var optionsLength = sampleData.questions[i].options.length;
-              
+              function GenerateTable(arg1, arg2, arg3, table_id) {
+		  var customers = new Array();
+		  customers.push([arg1, arg2, arg3]);
+		  
+		  //Create a HTML Table element.
+		  var table = document.createElement("TABLE");
+		  table.border = "0";
+		  
+		  //Get the count of columns.
+		  var columnCount = customers[0].length;
+		  
+		  //Add the header row.
+		  var row = table.insertRow(-1);
+		  for (var i = 0; i < columnCount; i++) {
+                      var headerCell = document.createElement("Td");
+                      headerCell.innerHTML = customers[0][i];
+                      row.appendChild(headerCell);
+		  }
+		  var dvTable = document.getElementById(table_id);
+		  dvTable.innerHTML = "";
+		  dvTable.appendChild(table);
+              }
+	      if(i == 2){
+		//  renderQuesLabel();
+		  console.log(i);
+		  labelQues = document.createElement('div');
+		  labelQues.id="dvTable";
+		  formGroup.appendChild(labelQues);
+		  GenerateTable("Not at all", "To some extent", "Very well", "dvTable");
+	      }
+	      else if(i == 4){
+		  console.log(i);
+		//  renderQuesLabel();
+		  labelQues = document.createElement('div');
+		  labelQues.id="dvTable1";
+		  formGroup.appendChild(labelQues);
+		  GenerateTable("Not at all", "To some extent", "Much better","dvTable1");
+	      }
+
+	      else if(i == 5){
+		  console.log(i);
+		//  renderQuesLabel();
+		  labelQues = document.createElement('div');
+		  labelQues.id="dvTable2";
+		  formGroup.appendChild(labelQues);
+		  GenerateTable("Not at all", "May Recommend", "Will definitely","dvTable2");
+	      }
               for (var k = 0; k < optionsLength; k++) {
                   radioOption = document.createElement('input');
                   radioOption.type = "radio";
@@ -745,6 +892,7 @@ class TestGetFeedbackDump(TestCase):
                   formGroup.appendChild(optionsDiv1);
                   questions_list.appendChild(formGroup);
               }
+	     
           }
           else if (sampleData.questions[i].type === "text") {
               var ansTextArea;
@@ -793,7 +941,14 @@ class TestGetFeedbackDump(TestCase):
                   var child = children[j];
                   // console.log('child', child, child.type, child.checked);
                   if(child.type === 'radio' && child.checked === true) {
-                      answer.push(child.value);
+                      
+		      if(child.value =="Yes" || child.value =="No"){
+		      	  answer.push(child.value);
+		      }
+		      else{
+			  var ans = child.value + "/"+ String(Number(children.length)-1)
+			  answer.push(ans);
+			  }
 
                   }
               }
@@ -810,13 +965,9 @@ class TestGetFeedbackDump(TestCase):
               }
           }
           else if(sampleData.questions[i].type === 'text') {
+	      answer = [];
               var input = questionElement;
-              answer = input.value;
-          }
-          else if(sampleData.questions[i].type === 'text') {
-              var input = questionElement;
-              
-              answer = input.value;
+              answer.push(input.value);
           }
           // create an object to insert the current question data
           var question = {};
@@ -826,6 +977,7 @@ class TestGetFeedbackDump(TestCase):
           feedback.responses.push(question);
       }
       // Posting json data to /feedback api
+   
       console.log(feedback);
       function add_feedback(){
 	  $.ajax({
@@ -858,6 +1010,7 @@ class TestGetFeedbackDump(TestCase):
       
       
   }
+  
   
   
 #+END_SRC
@@ -946,6 +1099,58 @@ body {
 .menu-ul {
     margin-top: 45px;
 }
+
+.text-h2-lightblue-small
+{
+	color: #2C99CE;
+	font-size: 1.5em;
+}
+.text-a-lightgreen
+{
+	color: #72AB44;
+	font-size: 1.3em;
+	text-decoration: underline;
+}
+
+.text-a-lightgreen:HOVER
+{
+	color: #72AB44 !important;
+}
+
+.text-normal-gray-small
+{
+	color: #888;
+	font-size: 16px;
+}
+
+.border-right-green-dotted
+{
+	border-right: 2px dotted;
+	 margin-top: 30px;
+	 border-right-color: #678f48;
+	 min-height: 115px;
+}
+.footer-div
+{
+margin-top:120px;
+}
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 48%;
+}
+
+td {
+    border: 0px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+
 #+END_SRC
 
 
@@ -1009,6 +1214,7 @@ if __name__ == '__main__':
 <<add_feedback>>
 <<get_feedback_usage>>
 <<get_feedback_dump>>
+<<get_gateway_ip>>
 #+END_SRC
 
 ** tests

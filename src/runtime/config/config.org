@@ -20,44 +20,26 @@ This holds the application's configuration parameters.
   requested.
 #+NAME: feedback_forms
 #+BEGIN_SRC python
-  
 feedback_forms = [
                   {'version': 'open-edx-virtual-labs-v2.0',
                    'questions': [
-                       {'name':'1. Did you do the experiment?',
-                        'type':'radio',
-                        'options':['Yes', 'No']
-                        },
-                        {'name':'2. Did the experiment work?',
-                         'type':'radio',
-                         'options': ['Yes', 'No']
-                        },
-                        {'name': '3. How much did you know about the experiment before doing it in Virtual Labs?',
-                         'type': 'radio',
-                         'options': ["0", "1", "2", "3", "4", "5", "6"]
-                        },
-                        {'name': '4. Is this experiment part of your curriculum?',
-                         'type': 'radio',
-                         'options': ["Yes", "No"]
-                        },
-                        {'name': '5. Does this help you to perform better in the curriculum?',
-                         'type': 'radio',
-                         'options': ["0", "1", "2", "3", "4", "5", "6"]
-                        },
-                        {'name': '6. Would you recommend it to your fellow students?',
-                         'type': 'radio',
-                         'options': ["0", "1", "2", "3", "4", "5", "6"]
-                        },
-                        {'name': '7. Did you find any bugs in the experiment?',
-                         'type': 'radio',
-                         'options': ["Yes", "No"]
-                        },
-                        {'name': 'Comments',
-                         'type': 'text',
-                        'options': ["Yes"]}
-                       ]
-                  }
-    ]
+    {'name':'1. Did you do the experiment?', 'type':'radio',
+     'options':['Yes', 'No']},
+    {'name':'2. Did the experiment work?', 'type':'radio',
+     'options': ['Yes', 'No']},
+    {'name': '3. How much did you know about the experiment before doing it in Virtual Labs?', 'type': 'radio',
+     'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
+    {'name': '4. Is this experiment part of your curriculum?', 'type': 'radio',
+     'options': ["Yes", "No"]},
+    {'name': '5. Does this help you to perform better in the curriculum?', 'type': 'radio',
+     'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
+    {'name': '6. Would you recommend it to your fellow students?', 'type': 'radio',
+     'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
+    {'name': '7. Did you find any bugs in the experiment?', 'type': 'radio',
+     'options': ["Yes", "No"]},
+    {'name': 'Comments', 'type': 'text',
+     'options': ["Yes"]}
+]}]
   
 #+END_SRC
 
