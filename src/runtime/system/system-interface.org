@@ -127,10 +127,10 @@ class TestGetFeedbackForm(TestCase):
         answer_cls = System.delegate.entities['answer']
 
         if 'exp_name' not in data_dict:
-            data_dict['exp_name'] = ""
+            data_dict['exp_name'] = "Null"
 
         if 'user_id' not in data_dict:
-            data_dict['user_id'] = ""
+            data_dict['user_id'] = "Null"
 
         if 'date' not in data_dict:
             data_dict['date'] = datetime.datetime.now().date()

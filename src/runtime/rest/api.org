@@ -176,22 +176,22 @@ class TestGetFeedback(TestCase):
         response = self.client.get(request_str, headers=headers)
         result = json.loads(response.data)
         self.assertEqual(response.status_code, 401)
-
+'''
     def test_get_lab_feedback_with_400_error(self):
         print "test_get_lab_feedback_with_400_error"
         print "test bad request"
 
-        lab_name = ""
+        lab_name = "Data Sturtures"
         exp_name = "binary search"
         user_id = "123user"
         headers = {'Content-Type': 'application/json'}
         request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
-          % (lab_name, exp_name, user_id, KEY)
+          % (lab_name, exp_name, user_id, "default key")
 
         print "request-str = %s" % request_str
         response = self.client.get(request_str, headers=headers)
         self.assertEqual(response.status_code, 400)
-
+'''
  #+END_SRC
 
 
