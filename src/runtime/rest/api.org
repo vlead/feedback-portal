@@ -118,7 +118,8 @@ def get_add_feedback():
 	    data_dict["gateway_ip"] = gateway_ip
 	try:
 	    fb = SystemInterface.add_feedback(data_dict)
-	    return jsonify({'status' : 'Success'})
+            feedback = fb.to_client()
+	    return jsonify(feedback)
 
 	except NotAuthorizedError as err:
 	    abort(401, 'Not Authorized error: %s' % str(err))
