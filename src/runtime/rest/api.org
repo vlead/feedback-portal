@@ -924,8 +924,11 @@ def get_gateway_ip():
       event.preventDefault();
       var feedback = {}; // the final feedback object
       feedback.lab_name = sampleData.lab_name;
-      feedback.exp_name = sampleData.exp_name;
-      //feedback.user_id = sampleData.user_id;
+      if(sampleData.exp_name){
+          feedback.exp_name = sampleData.exp_name;
+      }
+      feedback.user_id = sampleData.user_id;
+      feedback.version = sampleData.version;
       feedback.key = sampleData.key;
       
       feedback.responses = []; // the list of questions and user answers
@@ -981,7 +984,7 @@ def get_gateway_ip():
       console.log(feedback);
       function add_feedback(){
 	  $.ajax({
-              url: 'http://fp-edx-demo.vlabs.ac.in/feedback',
+              url: 'http://localhost:5000/feedback',
               type: 'POST',
               data: JSON.stringify(feedback),
               contentType: 'application/json',
