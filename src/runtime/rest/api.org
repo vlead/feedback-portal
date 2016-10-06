@@ -18,6 +18,10 @@
 #+NAME: add_feedback
 #+BEGIN_SRC python
 
+@api.route('/', methods=['GET'])
+def get_redirect():
+    return redirect('http://vlabs.ac.in')
+
 @api.route('/success', methods=['GET'])
 def get_success_template():
     return render_template('success.html')
