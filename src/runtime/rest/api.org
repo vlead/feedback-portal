@@ -985,7 +985,7 @@ def get_gateway_ip():
       console.log(feedback);
       function add_feedback(){
 	  $.ajax({
-              url: 'http://localhost:5000/feedback',
+              url: '/feedback',
               type: 'POST',
               data: JSON.stringify(feedback),
               contentType: 'application/json',
