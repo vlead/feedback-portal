@@ -127,7 +127,10 @@ class TestGetFeedbackForm(TestCase):
         answer_cls = System.delegate.entities['answer']
 
         if 'exp_name' not in data_dict:
-            data_dict['exp_name'] = "Null"
+            data_dict['exp_name'] = ""
+
+        if 'user_id' not in data_dict:
+            data_dict['user_id'] = ""
 
         if 'date' not in data_dict:
             data_dict['date'] = datetime.datetime.now().date()
@@ -209,11 +212,13 @@ class TestAddFeedback(TestCase):
         print "test_add_feedback_in_system_interface"
 
         version = "open-edx-virtual-labs-v2.0"
+        user_id = "John123"
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
                     'version': version,
+                    'user_id': user_id,
                     'responses': [{'name': 'How is your breakfast?',
                                     'answers':['yes', 'no'] }]
                    }
@@ -236,11 +241,13 @@ class TestAddFeedback(TestCase):
         answer = answer_cls(name='yes')
         answer.save()
         version = "open-edx-virtual-labs-v2.0"
+        user_id = "John123"
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
                     'version': version,
+                    'user_id': user_id,
                     'responses': [{'name': 'How is your breakfast?',
                                     'answers':['yes', 'no'] }]
                    }
@@ -252,6 +259,7 @@ class TestAddFeedback(TestCase):
             'key' : KEY,
             'gateway_ip': 'X.X.X.X',
             'version': version,
+            'user_id': user_id,
             'responses': [{'name': 'How is your breakfast?',
                             'answers':['yes', 'no'] }]
            }
@@ -264,11 +272,12 @@ class TestAddFeedback(TestCase):
         
         
         self.assertEqual(2, len(feedback_cls.get_all()))
-        self.assertEqual(1, len(response_cls.get_all()))
+        self.assertEqual(2, len(response_cls.get_all()))
         self.assertEqual(fb.get("lab_name"), data_dict1['lab_name'])
         self.assertEqual(fb.get("exp_name"), data_dict1['exp_name'])
         self.assertEqual(fb.get("gateway_ip"), data_dict1['gateway_ip'])
         self.assertEqual(fb.get("version"), data_dict1['version'])
+        self.assertEqual(fb.get("user_id"), data_dict1['user_id'])
         self.assertEqual(fb.get("responses")[0].get("question").get("name"),
                              'How is your breakfast?')
 
@@ -276,11 +285,13 @@ class TestAddFeedback(TestCase):
     def test_add_feedback_raises_type_error_in_system_interface(self):
         print "test_add_feedback_raises_type_error_in_system_interface"
         version = "open-edx-virtual-labs-v2.0"
+        user_id = "John123"
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
                     'version': version,
+                    'user_id': user_id,
                     'responses': "hello"
                    }
 
@@ -348,11 +359,13 @@ class TestGetFeedbackUsage(TestCase):
         print "test_get_feedback_usage_in_system_interface"
 
         version = "open-edx-virtual-labs-v2.0"
+        user_id = "John123"
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
                     'version': version,
+                    'user_id': user_id,
                     'responses': [{'name': 'How is your breakfast?',
                                     'answers':['yes', 'no'] }]
                    }
@@ -436,13 +449,14 @@ class TestGetFeedbackDump(TestCase):
 
     def test_add_feedback_dump_in_system_interface(self):
         print "test_get_feedback_dump_in_system_interface"
-
+        user_id = "John123"
         version = "open-edx-virtual-labs-v2.0"
         data_dict = {'lab_name': 'data structure',
                     'exp_name': 'tuples',
                     'key' : KEY,
                     'gateway_ip': '10.4.12.24',
                     'version': version,
+                    'user_id': user_id,
                     'responses': [{'name': 'How is your breakfast?',
                                     'answers':['yes', 'no'] }]
                    }

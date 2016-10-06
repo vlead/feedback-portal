@@ -111,7 +111,8 @@ args = {"__tablename__": "feedback",
         "id": db.Column(db.Integer, primary_key=True),
         "gateway_ip" : db.Column(db.String(255), nullable=False),
         "lab_name" : db.Column(db.String(255), nullable=False),
-        "exp_name" : db.Column(db.String(255), nullable=False),
+        "exp_name" : db.Column(db.String(255), nullable=True),
+        "user_id" : db.Column(db.String(255), nullable=True),
         "version" : db.Column(db.String(255), nullable=False),
         "date": db.Column(db.Date, nullable=False)
         }
@@ -145,11 +146,13 @@ class TestPersistenceFeedback(TestCase):
         exp_name = "data01"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
         version = "open-edx-virtual-labs-v2.0"
+        user_id = "John123"
         fb = Feedback(gateway_ip=gateway_ip,
                       lab_name=lab_name,
                       exp_name=exp_name,
                       date=date,
                       version=version,
+                      user_id=user_id,
                       responses=[])
         fb.save()
 
@@ -157,6 +160,7 @@ class TestPersistenceFeedback(TestCase):
         self.assertEqual(fb.get("lab_name"), lab_name)
         self.assertEqual(fb.get("exp_name"), exp_name)
         self.assertEqual(fb.get("version"), version)
+        self.assertEqual(fb.get("user_id"), user_id)
         self.assertEqual(fb.get("responses"), [])
 
  #+END_SRC
@@ -238,6 +242,7 @@ class TestPersistenceResponse(TestCase):
         lab_name = "cse01"
         exp_name = "data01"
         version = "open-edx-virtual-labs-v2.0"
+        user_id = "John123"
         date = datetime.datetime.strptime("30-06-2016", "%d-%m-%Y").date()
 
         fb = Feedback(gateway_ip=gateway_ip,
@@ -245,6 +250,7 @@ class TestPersistenceResponse(TestCase):
                       exp_name=exp_name,
                       date=date,
                       version=version,
+                      user_id=user_id,
                       responses=[])
         fb.save()
 

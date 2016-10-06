@@ -40,11 +40,9 @@ def get_add_feedback():
 	    key = str(request.args['key'])
 
 	if 'exp_name' not in request.args:
-	    exp_name = None
+	    exp_name = ""
 	else:
 	    exp_name = str(request.args['exp_name'])
-
-        print exp_name
 
 	if 'date' not in request.args:
 	    date = None
