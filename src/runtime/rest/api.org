@@ -778,6 +778,7 @@ def get_gateway_ip():
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
 
 
+
   var feedbackForm = window.data;
   var labelQues, formGroup;
   console.log(feedbackForm);
@@ -942,7 +943,7 @@ def get_gateway_ip():
                   var child = children[j];
                   // console.log('child', child, child.type, child.checked);
                   if(child.type === 'radio' && child.checked === true) {
-                      if(children.length){
+                      if(children.length == 10){
 			  var ans = child.value + "/"+ String(Number(children.length))
 			  answer.push(ans);
 		      }
@@ -998,12 +999,13 @@ def get_gateway_ip():
 	  });  
       }
       var count=0;
-      for(var i=0;i<feedback.responses.length;i++){
+      for(var i=0;i<feedback.responses.length-1;i++){
 	  if(feedback.responses[i].answers!= ""){
 	      count=count+1;
+	      console.log(feedback.responses[i]);
 	      }
       }
-      if(count == feedback.responses.length){
+      if(count == feedback.responses.length-1){
 	  add_feedback();
       }
       else{alert("Please do fill the total feedback");}
