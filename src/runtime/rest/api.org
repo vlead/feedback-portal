@@ -30,107 +30,85 @@ def get_success_template():
 @api.route('/feedback', methods=['GET', 'POST'])
 def get_add_feedback():
     if request.method == 'GET':
-	if 'lab_name' not in request.args or 'key' not in request.args:
-	    error_message = 'Either lab_name or key or both arguments are not passed' 
-	    """
-	    if request.headers['Content-Type'] == "application/json":
-		abort(400, error_message)
-	    else:
-	    """
-	    return render_template('error.html', 
-				   data=error_message)
-	else:
-	    lab_name = str(request.args['lab_name'])
-	    key = str(request.args['key'])
+        if 'lab_name' not in request.args or 'key' not in request.args:
+            error_message = 'Either lab_name or key or both arguments are not passed'
+            return render_template('error.html', data=error_message)
+        else:
+            lab_name = str(request.args['lab_name'])
+            key = str(request.args['key'])
 
-	if 'exp_name' not in request.args:
-	    exp_name = ""
-	else:
-	    exp_name = str(request.args['exp_name'])
+        if 'exp_name' not in request.args:
+            exp_name = ""
+        else:
+            exp_name = str(request.args['exp_name'])
 
-	if 'date' not in request.args:
-	    date = None
-	else:
-	    date = str(request.args['date'])
+        if 'date' not in request.args:
+            date = None
+        else:
+            date = str(request.args['date'])
 
-	if 'user_id' not in request.args:
-	    user_id = None
-	else:
-	    user_id = str(request.args['user_id'])
-	    current_app.logger.debug("lab_name = %s, exp_name=%s, user_id=%s, "
-				     "key=%s" % 
-				     (lab_name, exp_name, user_id, key))
-	try:
-	    response = SystemInterface.get_feedback_form(key, 
-							 lab_name, 
-							 exp_name,
-							 user_id)
-	    """
-	    if request.headers['Content-Type'] == "application/json":
-		return jsonify(response)
-	    else:
-	    """
-	    return render_template('index.html', 
-				   questions_data=response)
+        if 'user_id' not in request.args:
+            user_id = None
+        else:
+            user_id = str(request.args['user_id'])
+            current_app.logger.debug("lab_name = %s, exp_name=%s, user_id=%s, "
+                        "key=%s" % (lab_name, exp_name, user_id, key))
+        try:
+            response = SystemInterface.get_feedback_form(key, 
+                                lab_name, 
+                                exp_name,
+                                user_id,
+                                version)
 
-	except NotAuthorizedError as err:
-	    error_message =  'Not Authorized error: %s' % str(err)
-	    if request.headers['Content-Type'] == "application/json":
-		abort(401, error_message)
-	    else:
-		return render_template('error.html', 
-				       data=error_message)
-	except TypeError as err:
-	    error_message = 'Malformed arguments, error: %s' % str(err)
-	    """
-	    if request.headers['Content-Type'] == "application/json":
-		abort(400, error_message)
-	    else:
-	    """
-	    return render_template('error.html', 
-				   data=error_message)
-	except Exception as err:
-	    error_message = 'error: %s' % str(err)
-	    """
-	    if request.headers['Content-Type'] == "application/json":
-		abort(400, error_message)
-	    else:
-	    """
-	    return render_template('error.html', 
-				   data=error_message)
+            return render_template('index.html', 
+                    questions_data=response)
+
+        except NotAuthorizedError as err:
+            error_message =  'Not Authorized error: %s' % str(err)
+
+            return render_template('error.html', 
+                    data=error_message)
+            
+        except TypeError as err:
+            error_message = 'Malformed arguments, error: %s' % str(err)
+
+            return render_template('error.html', 
+                    data=error_message)
+        except Exception as err:
+            error_message = 'error: %s' % str(err)
+
+            return render_template('error.html', 
+                    data=error_message)
 
     if request.method == 'POST':
-	if request.is_json:
-	    data_json = json.dumps(request.get_json())
-	    data_dict = yaml.safe_load(data_json)
-	else:
-	    abort(500, "the request does not contain data in json")
+        if request.is_json:
+            data_json = json.dumps(request.get_json())
+            data_dict = yaml.safe_load(data_json)
+        else:
+            abort(500, "the request does not contain data in json")
 
-	if 'lab_name' not in data_dict or 'key' not in data_dict or \
-	    'responses' not in data_dict or 'version' not in data_dict:
-	    abort(400, 'Either lab name or key or version or responses' 
-                             ' are not passed')
-	else:
-	    gateway_ip = str(request.remote_addr)
-	    current_app.logger.debug("lab_name = %s, responses=%s, "
-                                 "version=%s, key=%s, "
-					%(data_dict['lab_name'],
-					  data_dict['responses'],
-					  data_dict['version'],                      
-					  data_dict['key']))
+        if 'lab_name' not in data_dict or 'key' not in data_dict or \
+          'responses' not in data_dict or 'version' not in data_dict:
+            abort(400, 'Either lab name or key or version or responses' 
+                      ' are not passed')
+        else:
+            gateway_ip = str(request.remote_addr)
+            current_app.logger.debug("lab_name = %s, responses=%s, "
+                                         "version=%s, key=%s, "
+                          %(data_dict['lab_name'], data_dict['responses'],
+                            data_dict['version'], data_dict['key']))
 
-	    data_dict["gateway_ip"] = gateway_ip
-	try:
-	    fb = SystemInterface.add_feedback(data_dict)
-            feedback = fb.to_client()
-	    return jsonify(feedback)
+            data_dict["gateway_ip"] = gateway_ip
+        try:
+            fb = SystemInterface.add_feedback(data_dict)
+            return jsonify('{"status":"sucess"}')
 
-	except NotAuthorizedError as err:
-	    abort(401, 'Not Authorized error: %s' % str(err))
-	except TypeError as err:
-	    abort(400, 'Malformed arguments, error: %s' % str(err))
-	except Exception as err:
-	    abort(500, 'error: %s' % str(err))
+        except NotAuthorizedError as err:
+            abort(401, 'Not Authorized error: %s' % str(err))
+        except TypeError as err:
+            abort(400, 'Malformed arguments, error: %s' % str(err))
+        except Exception as err:
+            abort(500, 'error: %s' % str(err))
   
 #+END_SRC
 
@@ -155,16 +133,36 @@ class TestGetFeedback(TestCase):
         print "test_get_lab_feedback_form_data"
 
         lab_name = "Data Structures"
-        exp_name = "binary search"
         user_id = "123user"
+        version = None
         headers = {'Content-Type': 'application/json'}
         request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
-          % (lab_name, exp_name, user_id, KEY)
+          % (lab_name, user_id, version, KEY)
 
         print "request-str = %s" % request_str
         response = self.client.get(request_str, headers=headers)
         self.assertEqual(response.status_code, 200)
 
+
+    def test_get_exp_feedback_form_data(self):
+        print "test_get_exp_feedback_form_data"
+        lab_name = "Data Structures"
+        exp_name = "binary search"
+        user_id = "123user"
+        version = None
+        headers = {'Content-Type': 'application/json'}
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s \
+                      &version=%s"\
+                      % (lab_name, exp_name, user_id, version, KEY)
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+#+END_SRC
+
+#+NAME: error_test_cases
+#+BEGIN_SRC python
     def test_get_lab_feedback_with_401_error(self):
         print "test_get_lab_feedback_with_401_error"
         print "test not authorized error"
@@ -173,15 +171,17 @@ class TestGetFeedback(TestCase):
         exp_name = "binary search"
         user_id = "123user"
         key = "jigajiga"
+        version = None
         headers = {'Content-Type': 'application/json'}
-        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
-          % (lab_name, exp_name, user_id, key)
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s \
+                      &version=%s"\
+                      % (lab_name, exp_name, user_id, version, key)
 
         print "request-str = %s" % request_str
         response = self.client.get(request_str, headers=headers)
-        result = json.loads(response.data)
         self.assertEqual(response.status_code, 401)
-'''
+
+
     def test_get_lab_feedback_with_400_error(self):
         print "test_get_lab_feedback_with_400_error"
         print "test bad request"
@@ -196,9 +196,9 @@ class TestGetFeedback(TestCase):
         print "request-str = %s" % request_str
         response = self.client.get(request_str, headers=headers)
         self.assertEqual(response.status_code, 400)
-'''
- #+END_SRC
 
+ 
+#+END_SRC
 
 *** TestAddFeedback
  #+NAME: test_add_feedback
