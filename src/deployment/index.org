@@ -63,14 +63,14 @@ def populate():
     question5 = question_cls(name="4. Is this experiment part of your curriculum?",
                              question_type=q_type)
 
-    question6 = question_cls(name="5. Does this help you to perform better in the curriculum?",
+    question6 = question_cls(name="5. Did this experiment help you understand the concept better?",
                              question_type=q_type)
 
-    question7 = question_cls(name="6. Would you recommend it to your fellow students?",
+    question7 = question_cls(name="6. Will you recommend this experiment to others?",
                              question_type=q_type)
 
     q_type = "text"
-    question8 = question_cls(name="Comments",
+    question8 = question_cls(name="Please provide any other feedback about this experiment?",
                              question_type=q_type)
 
     question9 = question_cls(name="feedback_about_experiment",

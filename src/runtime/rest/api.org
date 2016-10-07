@@ -20,7 +20,7 @@
 
 @api.route('/', methods=['GET'])
 def get_redirect():
-    return redirect('http://vlabs.ac.in')
+    return redirect('https://open-edx.vlabs.ac.in')
 
 @api.route('/success', methods=['GET'])
 def get_success_template():
@@ -989,7 +989,7 @@ def get_gateway_ip():
       console.log(feedback);
       function add_feedback(){
 	  $.ajax({
-              url: 'http://localhost:5000/feedback',
+              url: '/feedback',
               type: 'POST',
               data: JSON.stringify(feedback),
               contentType: 'application/json',
@@ -1145,7 +1145,7 @@ margin-top:120px;
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
-    width: 48%;
+    width: 32em;
 }
 
 td {

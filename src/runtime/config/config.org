@@ -30,14 +30,14 @@ feedback_forms = [
     {'name': '3. How much did you know about the experiment before doing it in Virtual Labs?', 'type': 'radio',
      'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
     {'name': '4. Is this experiment part of your curriculum?', 'type': 'radio',
-     'options': ["Yes", "No"]},
-    {'name': '5. Does this help you to perform better in the curriculum?', 'type': 'radio',
+     'options': ["Do not know", "Not applicable"]},
+    {'name': '5. Did this experiment help you understand the concept better?', 'type': 'radio',
      'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
-    {'name': '6. Would you recommend it to your fellow students?', 'type': 'radio',
+    {'name': '6. Will you recommend this experiment to others?', 'type': 'radio',
      'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
     {'name': '7. Did you find any bugs in the experiment?', 'type': 'radio',
      'options': ["Yes", "No"]},
-    {'name': 'Comments', 'type': 'text',
+    {'name': 'Please provide any other feedback about this experiment?', 'type': 'text',
      'options': ["Yes"]}
 ]}]
   
