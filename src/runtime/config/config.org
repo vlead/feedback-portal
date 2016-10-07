@@ -21,7 +21,7 @@ This holds the application's configuration parameters.
 #+NAME: feedback_forms
 #+BEGIN_SRC python
 feedback_forms = [
-                  {'version': 'open-edx-virtual-labs-v2.0',
+                  {'version': 'open-edx-virtual-labs-v2.0_for_experiment',
                    'questions': [
     {'name':'1. Did you do the experiment?', 'type':'radio',
      'options':['Yes', 'No']},
@@ -30,14 +30,30 @@ feedback_forms = [
     {'name': '3. How much did you know about the experiment before doing it in Virtual Labs?', 'type': 'radio',
      'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
     {'name': '4. Is this experiment part of your curriculum?', 'type': 'radio',
-     'options': ["Do not know", "Not applicable"]},
-    {'name': '5. Did this experiment help you understand the concept better?', 'type': 'radio',
+     'options': ["Yes", "No"]},
+    {'name': '5. Does this help you to perform better in the curriculum?', 'type': 'radio',
      'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
-    {'name': '6. Will you recommend this experiment to others?', 'type': 'radio',
+    {'name': '6. Would you recommend it to your fellow students?', 'type': 'radio',
      'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
     {'name': '7. Did you find any bugs in the experiment?', 'type': 'radio',
      'options': ["Yes", "No"]},
-    {'name': 'Please provide any other feedback about this experiment?', 'type': 'text',
+    {'name': 'Comments', 'type': 'text',
+     'options': ["Yes"]}
+    ]},
+    
+    {'version': 'open-edx-virtual-labs-v2.0_for_lab',
+    'questions': [
+    {'name': '1. How much did you know about the lab?', 'type': 'radio',
+     'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
+    {'name': '2. Is this lab part of your curriculum?', 'type': 'radio',
+     'options': ["Yes", "No"]},
+    {'name': '3. Does this lab help you to perform better in the curriculum?', 'type': 'radio',
+     'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
+    {'name': '4. Would you recommend it to your fellow students?', 'type': 'radio',
+     'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]},
+    {'name': '5. Did you find any bugs in the lab?', 'type': 'radio',
+     'options': ["Yes", "No"]},
+    {'name': 'Comments', 'type': 'text',
      'options': ["Yes"]}
 ]}]
   
