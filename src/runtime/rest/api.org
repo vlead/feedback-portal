@@ -777,8 +777,10 @@ def get_gateway_ip():
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
 
-  var sampleData = window.data;
+
+  var feedbackForm = window.data;
   var labelQues, formGroup;
+  console.log(feedbackForm);
   function renderQuesLabel() {
       formGroup = document.createElement("div");
       formGroup.className = "form-group"
@@ -789,11 +791,11 @@ def get_gateway_ip():
   
   function renderFeedbackform() {
       $("#lab_name_label").html("Lab Name");
-      $("#lab_name_value").val(sampleData.lab_name)
-      if(sampleData.exp_name){
+      $("#lab_name_value").val(feedbackForm.lab_name)
+      if(feedbackForm.exp_name){
 	  
 	  $("#exp_name_label").html("Experiment Name");
-	  $("#exp_name_value").val(sampleData.exp_name);
+	  $("#exp_name_value").val(feedbackForm.exp_name);
       }
       else
 	  {
@@ -801,23 +803,23 @@ def get_gateway_ip():
 	      elem.parentNode.removeChild(elem);
 	  }
       
-      var quesArray = sampleData.questions.length;
+      var quesArray = feedbackForm.questions.length;
       for (var i = 0; i < quesArray; i++) {
-          if (sampleData.questions[i].type === "checkbox") {
+          if (feedbackForm.questions[i].type === "checkbox") {
               renderQuesLabel();
-              labelQues.innerHTML = sampleData.questions[i].name;
+              labelQues.innerHTML = feedbackForm.questions[i].name;
               var optionsDiv = document.createElement("div");
-              optionsDiv.id = sampleData.questions[i].name;
-              var optionsLength = sampleData.questions[i].options.length;
+              optionsDiv.id = feedbackForm.questions[i].name;
+              var optionsLength = feedbackForm.questions[i].options.length;
               
               for (var j = 0; j < optionsLength; j++) {
                   checkOption = document.createElement('input');
                   checkOption.type = "checkbox";
-                  checkOption.value = sampleData.questions[i].options[j];
+                  checkOption.value = feedbackForm.questions[i].options[j];
                   
                   ansLabel = document.createElement('label');
                   ansLabel.className = "checkbox-inline"
-                  ansLabel.innerHTML = sampleData.questions[i].options[j];
+                  ansLabel.innerHTML = feedbackForm.questions[i].options[j];
                   
                   optionsDiv.appendChild(ansLabel);
                   ansLabel.insertBefore(checkOption, ansLabel.firstChild);
@@ -826,14 +828,14 @@ def get_gateway_ip():
               }
           }
           
-          else if(sampleData.questions[i].type === "radio") {
+          else if(feedbackForm.questions[i].type === "radio") {
 	      
 	      
               renderQuesLabel();
-              labelQues.innerHTML = sampleData.questions[i].name;
+              labelQues.innerHTML = feedbackForm.questions[i].name;
               var optionsDiv1 = document.createElement("div");
-              optionsDiv1.id = sampleData.questions[i].name;
-              var optionsLength = sampleData.questions[i].options.length;
+              optionsDiv1.id = feedbackForm.questions[i].name;
+              var optionsLength = feedbackForm.questions[i].options.length;
               function GenerateTable(arg1, arg2, arg3, table_id) {
 		  var customers = new Array();
 		  customers.push([arg1, arg2, arg3]);
@@ -856,7 +858,7 @@ def get_gateway_ip():
 		  dvTable.innerHTML = "";
 		  dvTable.appendChild(table);
               }
-	      if(i == 2){
+	      if(i == 2 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 0 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
 		//  renderQuesLabel();
 		  console.log(i);
 		  labelQues = document.createElement('div');
@@ -864,7 +866,7 @@ def get_gateway_ip():
 		  formGroup.appendChild(labelQues);
 		  GenerateTable("Not at all", "To some extent", "Very well", "dvTable");
 	      }
-	      else if(i == 4){
+	      else if(i == 4 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 2 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
 		  console.log(i);
 		//  renderQuesLabel();
 		  labelQues = document.createElement('div');
@@ -873,7 +875,7 @@ def get_gateway_ip():
 		  GenerateTable("Not at all", "To some extent", "Much better","dvTable1");
 	      }
 
-	      else if(i == 5){
+	      else if(i == 5 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 3 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
 		  console.log(i);
 		//  renderQuesLabel();
 		  labelQues = document.createElement('div');
@@ -885,12 +887,12 @@ def get_gateway_ip():
                   radioOption = document.createElement('input');
                   radioOption.type = "radio";
                   radioOption.className = "";
-                  radioOption.name = sampleData.questions[i].name;
-                  radioOption.value = sampleData.questions[i].options[k];
+                  radioOption.name = feedbackForm.questions[i].name;
+                  radioOption.value = feedbackForm.questions[i].options[k];
                   
                   radioLabel = document.createElement('label');
                   radioLabel.className = "radio-inline";
-                  radioLabel.innerHTML = sampleData.questions[i].options[k];
+                  radioLabel.innerHTML = feedbackForm.questions[i].options[k];
                   
                   optionsDiv1.appendChild(radioLabel);
                   radioLabel.insertBefore(radioOption, radioLabel.firstChild);
@@ -899,28 +901,19 @@ def get_gateway_ip():
               }
 	     
           }
-          else if (sampleData.questions[i].type === "text") {
+          else if (feedbackForm.questions[i].type === "text") {
               var ansTextArea;
               renderQuesLabel();
-              labelQues.innerHTML = sampleData.questions[i].name;
+              labelQues.innerHTML = feedbackForm.questions[i].name;
               
               ansTextArea = document.createElement("textarea");
-              ansTextArea.className = "form-control"
-              ansTextArea.id = sampleData.questions[i].name;
+              ansTextArea.className = "form-control";
+              ansTextArea.id = feedbackForm.questions[i].name;
+	      ansTextArea.maxLength = "160";
               
               formGroup.appendChild(ansTextArea);
           }
-          else if(sampleData.questions[i].type === 'textBox') {
-              var ansTextBox;
-              renderQuesLabel();
-              labelQues.innerHTML = sampleData.questions[i].name;
-              
-              ansTextBox = document.createElement("input");
-              ansTextBox.className = "form-control"
-              ansTextBox.id = sampleData.questions[i].name;
-              
-              formGroup.appendChild(ansTextBox);
-          }
+
       }
   }
   
@@ -928,40 +921,39 @@ def get_gateway_ip():
       
       event.preventDefault();
       var feedback = {}; // the final feedback object
-      feedback.lab_name = sampleData.lab_name;
-      if(sampleData.exp_name){
-          feedback.exp_name = sampleData.exp_name;
+      feedback.lab_name = feedbackForm.lab_name;
+      if(feedbackForm.exp_name){
+          feedback.exp_name = feedbackForm.exp_name;
       }
-      feedback.user_id = sampleData.user_id;
-      feedback.version = sampleData.version;
-      feedback.key = sampleData.key;
+      feedback.user_id = feedbackForm.user_id;
+      feedback.version = feedbackForm.version;
+      feedback.key = feedbackForm.key;
       
       feedback.responses = []; // the list of questions and user answers
-      var quesArray = sampleData.questions.length;
+      var quesArray = feedbackForm.questions.length;
       // loop over the questions
       for (var i = 0; i < quesArray; i++) {
-          var questionElement = document.getElementById(sampleData.questions[i].name);
+          var questionElement = document.getElementById(feedbackForm.questions[i].name);
           var answer = null;
-          if(sampleData.questions[i].type === 'radio') {
+          if(feedbackForm.questions[i].type === 'radio') {
 	      answer = []
               var children = questionElement.querySelectorAll('input');
               for(var j = 0; j < children.length; j++) {
                   var child = children[j];
                   // console.log('child', child, child.type, child.checked);
                   if(child.type === 'radio' && child.checked === true) {
-                      
-		      if(child.value =="Yes" || child.value =="No"){
-		      	  answer.push(child.value);
+                      if(children.length){
+			  var ans = child.value + "/"+ String(Number(children.length))
+			  answer.push(ans);
 		      }
 		      else{
-			  var ans = child.value + "/"+ String(Number(children.length)-1)
-			  answer.push(ans);
-			  }
+		      	  answer.push(child.value);
+		      }
 
                   }
               }
           }
-          else if(sampleData.questions[i].type === 'checkbox') {
+          else if(feedbackForm.questions[i].type === 'checkbox') {
               answer = [];
               var children = questionElement.querySelectorAll('input');
               for(var j = 0; j < children.length; j++) {
@@ -972,15 +964,15 @@ def get_gateway_ip():
                   }
               }
           }
-          else if(sampleData.questions[i].type === 'text') {
+          else if(feedbackForm.questions[i].type === 'text') {
 	      answer = [];
               var input = questionElement;
               answer.push(input.value);
           }
           // create an object to insert the current question data
           var question = {};
-          question.name = sampleData.questions[i].name;
-          //question.type = sampleData.questions[i].type;
+          question.name = feedbackForm.questions[i].name;
+          //question.type = feedbackForm.questions[i].type;
           question.answers = answer;
           feedback.responses.push(question);
       }
@@ -989,14 +981,14 @@ def get_gateway_ip():
       console.log(feedback);
       function add_feedback(){
 	  $.ajax({
-              url: '/feedback',
+              url: 'http://localhost:5000/feedback',
               type: 'POST',
               data: JSON.stringify(feedback),
               contentType: 'application/json',
               success: function (data) {
 		  window.location.href="/success";
 		  console.log(data);
-              },
+	      },
               error: function(data){
 		  
 		  console.log("Error in submitted feedback");
@@ -1018,7 +1010,6 @@ def get_gateway_ip():
       
       
   }
-  
   
   
 #+END_SRC
@@ -1161,7 +1152,7 @@ tr:nth-child(even) {
 
 #+END_SRC
 
-
+   
 * Infra                                                         :boilerplate:
 
 ** sources
