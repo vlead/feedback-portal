@@ -22,7 +22,7 @@ This holds the application's configuration parameters.
 #+BEGIN_SRC python
 
 feedback_forms = [
-    {'version': 'open-edx-virtual-labs-v2.0',
+    {'version': 'open-edx-virtual-labs-v2.0_for_experiment',
      'questions': [
 	 {'name':'1. Did you do the experiment?', 'type':'radio',
 	  'options':['Yes', 'No']},
