@@ -611,6 +611,9 @@ def get_gateway_ip():
           <div class="form-group" id="questions_list"></div>
           <button class="btn btn-primary" >Submit</button>
         </form>
+        <div align="right">
+	  <span id="version"></span>
+	</div>
       </div>
       <div id="footer">
         {% include 'footer.html' %}
@@ -787,6 +790,7 @@ def get_gateway_ip():
   var feedbackForm = window.data;
   var labelQues, formGroup;
   console.log(feedbackForm);
+  document.getElementById("version").innerHTML = "version : "+feedbackForm.version;
   function renderQuesLabel() {
       formGroup = document.createElement("div");
       formGroup.className = "form-group"
@@ -1013,7 +1017,7 @@ def get_gateway_ip():
       if(count == feedback.responses.length-1){
 	  add_feedback();
       }
-      else{alert("Please do fill the total feedback");}
+      else{alert("Some of the questions are not answered");}
       
       
   }
