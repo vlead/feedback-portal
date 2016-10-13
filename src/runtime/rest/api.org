@@ -62,9 +62,9 @@ def get_add_feedback():
             response = SystemInterface.get_feedback_form(key, 
                                 lab_name, 
                                 exp_name,
-                                user_id,
-                                version)
-
+                                version,
+                                user_id)
+                            
             return render_template('index.html', 
                     questions_data=response)
 
