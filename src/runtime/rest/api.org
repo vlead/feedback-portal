@@ -786,7 +786,6 @@ def get_gateway_ip():
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
 
 
-
   var feedbackForm = window.data;
   var labelQues, formGroup;
   console.log(feedbackForm);
@@ -794,9 +793,14 @@ def get_gateway_ip():
   function renderQuesLabel() {
       formGroup = document.createElement("div");
       formGroup.className = "form-group"
+      labelQues1 = document.createElement('label');
+      formGroup.appendChild(labelQues1);
       labelQues = document.createElement('label');
       $("#questions_list").append(formGroup);
       formGroup.appendChild(labelQues);
+      labelQues2 = document.createElement('label');
+      formGroup.appendChild(labelQues2);
+      
   }
   
   function renderFeedbackform() {
@@ -816,7 +820,7 @@ def get_gateway_ip():
       var quesArray = feedbackForm.questions.length;
       for (var i = 0; i < quesArray; i++) {
           if (feedbackForm.questions[i].type === "checkbox") {
-              renderQuesLabel();
+	      renderQuesLabel();
               labelQues.innerHTML = feedbackForm.questions[i].name;
               var optionsDiv = document.createElement("div");
               optionsDiv.id = feedbackForm.questions[i].name;
@@ -839,12 +843,15 @@ def get_gateway_ip():
           }
           
           else if(feedbackForm.questions[i].type === "radio") {
-	      
-	      
-              renderQuesLabel();
+	      renderQuesLabel();
+	      labelQues1.innerHTML = feedbackForm.questions[i].id+".&nbsp;&nbsp;";
               labelQues.innerHTML = feedbackForm.questions[i].name;
+	      if(feedbackForm.questions[i].mandatory == "Yes"){
+		  labelQues2.innerHTML = "&nbsp;<font color='#800000'>*</font>";
+	      }
+	      
               var optionsDiv1 = document.createElement("div");
-              optionsDiv1.id = feedbackForm.questions[i].name;
+              optionsDiv1.id = feedbackForm.questions[i].id;
               var optionsLength = feedbackForm.questions[i].options.length;
               function GenerateTable(arg1, arg2, arg3, table_id) {
 		  var customers = new Array();
@@ -868,38 +875,100 @@ def get_gateway_ip():
 		  dvTable.innerHTML = "";
 		  dvTable.appendChild(table);
               }
-	      if(i == 2 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 0 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
+	      if(i == 3 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 0 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
 		//  renderQuesLabel();
-		  console.log(i);
 		  labelQues = document.createElement('div');
 		  labelQues.id="dvTable";
 		  formGroup.appendChild(labelQues);
 		  GenerateTable("Not at all", "To some extent", "Very well", "dvTable");
 	      }
-	      else if(i == 4 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 2 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
-		  console.log(i);
-		//  renderQuesLabel();
+	      else if(i == 5 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 2 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
+
+		//renderQuesLabel();
 		  labelQues = document.createElement('div');
 		  labelQues.id="dvTable1";
 		  formGroup.appendChild(labelQues);
 		  GenerateTable("Not at all", "To some extent", "Much better","dvTable1");
 	      }
 
-	      else if(i == 5 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 3 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
-		  console.log(i);
+	      else if(i == 6 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 3 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
+		  
 		//  renderQuesLabel();
 		  labelQues = document.createElement('div');
 		  labelQues.id="dvTable2";
 		  formGroup.appendChild(labelQues);
 		  GenerateTable("Not at all", "May Recommend", "Will definitely","dvTable2");
 	      }
+	      function answer(flag){
+		  if(flag == "No"){
+		      var element = document.getElementById("bug-answer");
+		      element.outerHTML = "";
+		      delete element;
+		  }
+		  else{
+		      if(document.getElementById("bug-answer") == null){
+
+			  var div = document.getElementById("3");
+		      
+			  var newdiv = document.createElement('div'); // create new textarea
+			  newdiv.id = "bug";
+			  div.appendChild(newdiv);
+			  
+			  var bug = document.getElementById('bug');
+			  ansTextArea = document.createElement("textarea");
+			  ansTextArea.className = "form-control";
+			  ansTextArea.id = "bug-answer";
+			  ansTextArea.placeholder = "Please specify the bug details here";
+			  ansTextArea.maxLength = "160";
+			  bug.appendChild(ansTextArea);
+		      }
+		  }
+		  
+	      }
+	      function driver(questions, value, flag){
+		  for(var i=0; i<questions.length;i++){
+		      var questionElement = document.getElementById(questions[i]);
+		      var children = questionElement.querySelectorAll('input');
+		      for(var j = 0; j < children.length; j++) {
+			  var child = children[j];
+
+			  if(flag == "false"){
+			      child.checked = false;
+
+			  }
+			  else if(flag == "true" && child.value == value){
+			      child.checked = true;
+			  }
+
+		      }
+		      
+		  }
+	      }
+	      
               for (var k = 0; k < optionsLength; k++) {
+		  
                   radioOption = document.createElement('input');
                   radioOption.type = "radio";
                   radioOption.className = "";
+		  if(i == 0 && k == 0 && feedbackForm.questions[i].driver.length!=0){
+		      var questions = feedbackForm.questions[i].driver;
+		      radioOption.onclick = function(){driver(questions, 'Not applicable', 'false'); };
+		  }
+		  if(i == 0 && k == 1  && feedbackForm.questions[i].driver.length!=0){
+		      var questions = feedbackForm.questions[i].driver;
+		      radioOption.onclick = function(){ driver(questions, 'Not applicable', 'true'); };
+		  }
+		  if(feedbackForm.questions[i].linked_answer == "Yes" && k == 0){
+		      radioOption.onclick = function(){ answer("Yes"); };
+		  }
+		  if(feedbackForm.questions[i].linked_answer == "Yes" && k == 1){
+		      radioOption.onclick = function(){ answer("No"); };
+		  }
+		  if(feedbackForm.questions[i].linked_answer == "Yes" && k == 2){
+		      radioOption.onclick = function(){ answer("No"); };
+		  }
                   radioOption.name = feedbackForm.questions[i].name;
                   radioOption.value = feedbackForm.questions[i].options[k];
-                  
                   radioLabel = document.createElement('label');
                   radioLabel.className = "radio-inline";
                   radioLabel.innerHTML = feedbackForm.questions[i].options[k];
@@ -918,7 +987,7 @@ def get_gateway_ip():
               
               ansTextArea = document.createElement("textarea");
               ansTextArea.className = "form-control";
-              ansTextArea.id = feedbackForm.questions[i].name;
+              ansTextArea.id = feedbackForm.questions[i].id;
 	      ansTextArea.maxLength = "160";
               
               formGroup.appendChild(ansTextArea);
@@ -943,21 +1012,35 @@ def get_gateway_ip():
       var quesArray = feedbackForm.questions.length;
       // loop over the questions
       for (var i = 0; i < quesArray; i++) {
-          var questionElement = document.getElementById(feedbackForm.questions[i].name);
-          var answer = null;
+          var questionElement = document.getElementById(feedbackForm.questions[i].id);
+	  var answer = null;
           if(feedbackForm.questions[i].type === 'radio') {
 	      answer = []
               var children = questionElement.querySelectorAll('input');
+	      console.log(children);
               for(var j = 0; j < children.length; j++) {
                   var child = children[j];
                   // console.log('child', child, child.type, child.checked);
                   if(child.type === 'radio' && child.checked === true) {
+		      
                       if(children.length == 10){
 			  var ans = child.value + "/"+ String(Number(children.length))
 			  answer.push(ans);
 		      }
+		      else if(children.length == 11){
+			  var ans = child.value + "/"+ String(Number(children.length)-1)
+			  answer.push(ans);
+		      }
+		      
 		      else{
-		      	  answer.push(child.value);
+			  if(i == 2 ){
+			      if(document.getElementById("bug-answer") != null){
+				  var text = document.getElementById("bug-answer").value;
+				  console.log(text);
+				  answer.push(text);
+			      }
+			  }
+			  answer.push(child.value);
 		      }
 
                   }
@@ -991,7 +1074,7 @@ def get_gateway_ip():
       console.log(feedback);
       function add_feedback(){
 	  $.ajax({
-              url: 'http://localhost:5000/feedback',
+              url: '/feedback',
               type: 'POST',
               data: JSON.stringify(feedback),
               contentType: 'application/json',
@@ -1011,7 +1094,7 @@ def get_gateway_ip():
       for(var i=0;i<feedback.responses.length-1;i++){
 	  if(feedback.responses[i].answers!= ""){
 	      count=count+1;
-	      console.log(feedback.responses[i]);
+	      //console.log(feedback.responses[i]);
 	      }
       }
       if(count == feedback.responses.length-1){
@@ -1021,6 +1104,7 @@ def get_gateway_ip():
       
       
   }
+  
   
   
 #+END_SRC

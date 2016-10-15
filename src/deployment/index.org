@@ -48,30 +48,30 @@ def populate():
 
     question_cls = System.delegate.entities['question']
 
-    question1 = question_cls(name="1. Did you do the experiment?",
+    question1 = question_cls(name="Did you attempt the experiment?",
 			     question_type=q_type)
 
-    question2 = question_cls(name="2. Did the experiment work?",
+    question2 = question_cls(name="Did the experiment work?",
 			     question_type=q_type)
 
-    question3 = question_cls(name="7. Did you find any bugs in the experiment?",
+    question3 = question_cls(name="Did you find any bugs in the experiment?",
 			     question_type=q_type)
 
-    question4 = question_cls(name="3. How much did you know about the experiment before doing it in Virtual Labs?",
+    question4 = question_cls(name="How much did you know about the experiment before doing it in Virtual Labs?",
 			     question_type=q_type)
 
-    question5 = question_cls(name="4. Is this experiment part of your curriculum?",
+    question5 = question_cls(name="Is this experiment part of your curriculum?",
 			     question_type=q_type)
 
-    question6 = question_cls(name="5. Did this experiment help you understand the concept better?",
+    question6 = question_cls(name="Did this experiment help you understand the concept better?",
 			     question_type=q_type)
 
-    question7 = question_cls(name="6. Will you recommend this experiment to others?",
+    question7 = question_cls(name="Will you recommend this experiment to others?",
 			     question_type=q_type)
 
-
+    
     q_type = "text"
-    question8 = question_cls(name="Please provide any other feedback about this experiment?",
+    question8 = question_cls(name="Please provide any other feedback about this experiment",
 			     question_type=q_type)
 
     question9 = question_cls(name="feedback_about_experiment",
@@ -87,20 +87,20 @@ def populate():
     question14 = question_cls(name="suggestions_in_general",
 			      question_type=q_type)
 
-    question15 = question_cls(name="1. How much did you know about the lab?",
+    question15 = question_cls(name="How much did you know about the lab?",
 			      question_type=q_type)
-    question16 = question_cls(name="2. Is this lab part of your curriculum?",
+    question16 = question_cls(name="Is this lab part of your curriculum?",
 			      question_type=q_type)
-    question17 = question_cls(name="3. Did this lab help you understand the concept better?",
+    question17 = question_cls(name="Did this lab help you understand the concept better?",
 			      question_type=q_type)
     
-    question19 = question_cls(name="4. Will you recommend this lab to others?",
+    question19 = question_cls(name="Will you recommend this lab to others?",
 			      question_type=q_type)
-    question20 = question_cls(name="5. Did you find any bugs in the lab?",
+    question20 = question_cls(name="Did you find any bugs in the lab?",
 			      question_type=q_type)
     q_type = "text"
 
-    question21 = question_cls(name="Please provide any other feedback about this lab?",
+    question21 = question_cls(name="Please provide any other feedback about this lab",
 			      question_type=q_type)
 
     question1.save()
@@ -128,6 +128,7 @@ def populate():
 if __name__ == "__main__":
     db.create_all(app=create_app(config))
     populate()
+
 #+END_SRC
 
 * Program to migrate the data 
