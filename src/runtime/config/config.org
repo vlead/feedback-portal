@@ -47,12 +47,12 @@ feedback_forms = [
 	  'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],'driver' : [], 'mandatory' : 'Yes'},
 	 {'id' : '2', 'name': 'Is this lab part of your curriculum?', 'type': 'radio',
 	  'options': ["Yes", "No", "Don't know", "Not applicable"],'mandatory' : 'Yes'},
-	 {'id' : '3','name': 'Did this lab help you understand the concept better?', 'type': 'radio',
+         {'id' : '3','name': "Did you find any bugs in the lab?", 'type': 'radio', 'linked_answer' : 'Yes', 'options': ["Yes", "No"],'mandatory' : 'Yes'},
+	 {'id' : '4','name': 'Did this lab help you understand the concept better?', 'type': 'radio',
 	  'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],'linked_answer' : 'No','mandatory' : 'Yes'},
-	 {'id' : '4','name': 'Will you recommend this lab to others?', 'type': 'radio',
+	 {'id' : '5','name': 'Will you recommend this lab to others?', 'type': 'radio',
 	  'options': ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],'mandatory' : 'Yes'},
-	 {'id' : '5','name': "Did you find any bugs in the lab?", 'type': 'radio', 'options': ["Yes", "No"],'mandatory' : 'Yes'},
-	 {'id' : '6','name': 'Please provide any other feedback about this lab', 'type': 'text',
+         {'id' : '6','name': 'Please provide any other feedback about this lab', 'type': 'text',
          'options': ["Yes"],'mandatory' : 'No'}
 ]}]
 
