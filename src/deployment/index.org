@@ -70,10 +70,10 @@ def populate():
 			     question_type=q_type)
 
     
-    q_type = "text"
+    q_type = "textarea"
     question8 = question_cls(name="Please provide any other feedback about this experiment",
 			     question_type=q_type)
-
+    
     question9 = question_cls(name="feedback_about_experiment",
 			     question_type=q_type)
     question10 = question_cls(name="feedback_about_lab",
@@ -86,7 +86,7 @@ def populate():
 			      question_type=q_type)
     question14 = question_cls(name="suggestions_in_general",
 			      question_type=q_type)
-
+    q_type = "radio"
     question15 = question_cls(name="How much did you know about the lab?",
 			      question_type=q_type)
     question16 = question_cls(name="Is this lab part of your curriculum?",
@@ -98,11 +98,25 @@ def populate():
 			      question_type=q_type)
     question20 = question_cls(name="Did you find any bugs in the lab?",
 			      question_type=q_type)
-    q_type = "text"
+    q_type = "textarea"
 
     question21 = question_cls(name="Please provide any other feedback about this lab",
 			      question_type=q_type)
+    question22 = question_cls(name="How useful do you think Virtual Labs is for an engineering student ?",
+			      question_type=q_type)
 
+    question23 = question_cls(name="What are your suggestions about making Virtual Labs better ?",
+			      question_type=q_type)
+    q_type = "radio"
+    question24 = question_cls(name="Designation",
+			      question_type=q_type)
+    q_type = "text"
+    question24 = question_cls(name="Email ID",
+			      question_type=q_type)
+    question25 = question_cls(name="Name",
+			      question_type=q_type)
+    
+    
     question1.save()
     question2.save()
     question3.save()
@@ -123,7 +137,10 @@ def populate():
     question19.save()
     question20.save()
     question21.save()
-
+    question22.save()
+    question23.save()
+    question24.save()
+    question25.save()
 
 if __name__ == "__main__":
     db.create_all(app=create_app(config))
