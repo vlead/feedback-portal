@@ -785,6 +785,7 @@ def get_gateway_ip():
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
 
+
 var feedbackForm = window.data;
 var labelQues, formGroup;
 console.log(feedbackForm);
@@ -803,8 +804,17 @@ function renderQuesLabel() {
 }
 
 function renderFeedbackform() {
-    $("#lab_name_label").html("Lab Name");
-    $("#lab_name_value").val(feedbackForm.lab_name)
+    if(feedbackForm.exp_name){
+	$("#lab_name_label").html("Lab Name");
+	$("#lab_name_value").val(feedbackForm.lab_name)
+    }
+    else{
+	var elem = document.getElementById("lab_name_label");
+	elem.parentNode.removeChild(elem);
+	var elem1 = document.getElementById("lab_name_value");
+	elem1.parentNode.removeChild(elem1);
+
+    }
     if(feedbackForm.exp_name){
 
 	$("#exp_name_label").html("Experiment Name");
@@ -991,11 +1001,14 @@ function renderFeedbackform() {
 	    }
 
 	}
-	else if (feedbackForm.questions[i].type === "text") {
+	else if (feedbackForm.questions[i].type === "textarea") {
 	    var ansTextArea;
 	    renderQuesLabel();
 	    labelQues.innerHTML = feedbackForm.questions[i].name;
-
+	    labelQues1.innerHTML = feedbackForm.questions[i].id+".&nbsp;&nbsp;";
+	    if(feedbackForm.questions[i].mandatory == "Yes"){
+		labelQues2.innerHTML = "&nbsp;<font color='maroon'>*</font>";
+	    }
 	    ansTextArea = document.createElement("textarea");
 	    ansTextArea.className = "form-control";
 	    ansTextArea.id = feedbackForm.questions[i].id;
@@ -1004,6 +1017,22 @@ function renderFeedbackform() {
 	    ansTextArea.maxLength = "160";
 
 	    formGroup.appendChild(ansTextArea);
+	    
+	}
+	else if(feedbackForm.questions[i].type === "text") {
+	    var ansTextBox;
+	    renderQuesLabel();
+	    labelQues.innerHTML = feedbackForm.questions[i].name;
+	    labelQues1.innerHTML = feedbackForm.questions[i].id+".&nbsp;&nbsp;";
+	    if(feedbackForm.questions[i].mandatory == "Yes"){
+		labelQues2.innerHTML = "&nbsp;<font color='maroon'>*</font>";
+	    }
+	    ansTextBox = document.createElement("input");
+	    ansTextBox.className = "form-control"
+	    ansTextBox.placeholder = feedbackForm.questions[i].placeholder;
+	    ansTextBox.style.width = "25em";
+	    ansTextBox.id = feedbackForm.questions[i].id;
+	    formGroup.appendChild(ansTextBox);
 	}
 
     }
@@ -1040,7 +1069,7 @@ function submitFeedback(event) {
 			answer.push(ans);
 		    }
 		    else if(children.length == 11){
-			var ans = child.value + "/"+ String(Number(children.length)-1)
+			var ans = child.value;
 			answer.push(ans);
 		    }
 
@@ -1069,9 +1098,15 @@ function submitFeedback(event) {
 		}
 	    }
 	}
+	else if(feedbackForm.questions[i].type === 'textarea') {
+	    answer = [];
+	    var input = questionElement;
+	    answer.push(input.value);
+	}
 	else if(feedbackForm.questions[i].type === 'text') {
 	    answer = [];
 	    var input = questionElement;
+	    console.log(input);
 	    answer.push(input.value);
 	}
 	// create an object to insert the current question data
@@ -1105,7 +1140,7 @@ function submitFeedback(event) {
     var count = 0;
     var not_answered = []
     for(var i=0;i<feedback.responses.length;i++){
-	if(feedbackForm.questions[i].mandatory == "Yes" && feedback.responses[i].answers.length  == 0){
+	if(feedbackForm.questions[i].mandatory == "Yes" && (feedback.responses[i].answers.length == 0 || feedback.responses[i].answers[0] == "")){
 	    //alert("Some of the questions are not answered");
 	    //alert("Quesion No " + (i+1) +" is not answered");
 	    count++;
@@ -1117,12 +1152,11 @@ function submitFeedback(event) {
 	add_feedback();
     }
     else{
-	alert(not_answered + " Questions are not answered");
+	alert(not_answered + " Question(s) are not answered");
     }
 
 
 }
-
   
 #+END_SRC
    
