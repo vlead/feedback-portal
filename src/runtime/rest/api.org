@@ -1158,8 +1158,14 @@ function submitFeedback(event) {
 			answer.push(ans);
 		    }
 		    else if(children.length == 11){
-			var ans = child.value;
-			answer.push(ans);
+                        var ans = child.value;
+			if(ans != "Not applicable"){
+			    var ans = child.value + "/"+ String(Number(children.length)-1)
+			    answer.push(ans);
+			}
+			else{
+			    answer.push(ans);
+			}
 		    }
 
 		    else{
