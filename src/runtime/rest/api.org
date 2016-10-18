@@ -17,10 +17,11 @@
 
 #+NAME: add_feedback
 #+BEGIN_SRC python
-
 @api.route('/', methods=['GET'])
 def get_redirect():
-    return redirect('https://open-edx.vlabs.ac.in')
+    response = SystemInterface.get_generic_feedback_form()
+    return render_template('index.html', 
+                        questions_data=response)
 
 @api.route('/success', methods=['GET'])
 def get_success_template():

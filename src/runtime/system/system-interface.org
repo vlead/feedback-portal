@@ -121,6 +121,80 @@ class TestGetFeedbackForm(TestCase):
  #+END_SRC
 
 
+** GetGenericFeedbackForm
+#+NAME: get_generic_feedback_form
+#+BEGIN_SRC python
+    @staticmethod
+    def get_feedback_generic_form()
+        return feedback_forms[2]
+
+#+END_SRC
+
+*** Test GetFeedBackForm
+ #+NAME: test_class_get_feedback_form
+ #+BEGIN_SRC python
+class TestGetFeedbackForm(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_feedback_form_in_system_interface(self):
+        print "test_get_feedback_form_in_system_interface"
+
+        lab_name = "data structures"
+        exp_name = "binary search"
+        user_id = "123user"
+        version = None
+        key = KEY
+
+        questions_dict = SystemInterface.get_feedback_form(key, lab_name, 
+                                                               exp_name,
+                                                               version,
+                                                               user_id)
+                                                               
+        self.assertEqual(questions_dict['lab_name'], lab_name)
+
+    def test_get_feedback_form_with_type_error(self):
+        print "test_get_feedback_form_with_type_error"
+
+        lab_name = None
+        exp_name = "binary search"
+        user_id = "123user"
+        key = KEY
+
+        with self.assertRaises(TypeError):
+            SystemInterface.get_feedback_form(key, 
+                                              lab_name, 
+                                              exp_name,
+                                              user_id)
+
+    def test_get_feedback_form_with_auth_error(self):
+        print "test_get_feedback_form_with_auth_error"
+
+        lab_name = "Data Structures"
+        exp_name = "binary search"
+        user_id = "123user"
+        version = None
+        key = "temp"
+
+        with self.assertRaises(NotAuthorizedError):
+            SystemInterface.get_feedback_form(key, 
+                                              lab_name, 
+                                              exp_name,
+                                              version,
+                                              user_id)
+
+ #+END_SRC
+
+
 ** AddFeedback
 
 #+NAME: class_add_feedback
@@ -492,6 +566,7 @@ class TestGetFeedbackDump(TestCase):
 from runtime.system.system import *
 import datetime
 from flask import current_app
+from runtime.config.feedback_forms import feedback_forms
 
 #+end_src
 
