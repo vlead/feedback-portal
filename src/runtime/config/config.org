@@ -56,7 +56,7 @@ feedback_forms = [
          'options': ["Yes"],'mandatory' : 'No'}
 ]},
 
-    {'version': 'open-edx-virtual-labs-v2.0',
+    {'version': 'generic-feedback-v2.0',
      'questions': [
      {'id' : '1', 'name': 'Name', 'type': 'text',
       'options': ["Yes"],'driver' : [], 'mandatory' : 'Yes', 'placeholder' : 'John'},

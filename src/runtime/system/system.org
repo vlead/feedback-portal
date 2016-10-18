@@ -258,6 +258,7 @@ class AddQuestion():
 #+end_src
 
 
+
 ** =AddAnswer=
 #+NAME: class_addanswer
 #+begin_src python
@@ -285,6 +286,7 @@ class AddAnswer():
         return answer
 
 #+end_src
+
 
 
 ** =AddFeedback=
@@ -373,6 +375,7 @@ class AddResponsesToFeedback():
 #+end_src
 
 
+
 ** =GetFeedbackUsage=
 #+NAME: class_get_feedback_usage
 #+begin_src python
@@ -401,6 +404,7 @@ class GetFeedbackUsage():
 #+end_src
 
 
+
 ** =GetFeedbackDump=
 #+NAME: class_get_feedback_dump
 #+begin_src python
@@ -425,6 +429,7 @@ class GetFeedbackDump():
         return feedbacks
 
 #+end_src
+
 
 
 ** =GetFeedbackForm=
@@ -489,6 +494,7 @@ class GetFeedbackForm():
 
 #+END_SRC
     
+
 
 ** Operations Table
    Each operation has a corresponding implementation defined as a class.

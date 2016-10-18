@@ -12,22 +12,134 @@
   
 * REST
 
-** Get and Add Feedback
-   This is the REST API method for both getting and adding feedback.
+** Get and Add Generic Feedback
+   REST API to get and post generic feedback
 
-#+NAME: add_feedback
+#+NAME: get_add_generic_feedback
 #+BEGIN_SRC python
-@api.route('/', methods=['GET'])
-def get_redirect():
-    response = SystemInterface.get_generic_feedback_form()
-    return render_template('index.html', 
-                        questions_data=response)
+@api.route('/', methods=['GET', 'POST'])
+def get_generic_feedback():
+    if request.method == 'GET':
+        response = SystemInterface.get_generic_feedback_form('generic-feedback-v2.0')
+        return render_template('index.html', 
+                            questions_data=response)
+    if request.method == 'POST':
+        if request.is_json:
+            data_json = json.dumps(request.get_json())
+            data_dict = yaml.safe_load(data_json)
+        else:
+            abort(500, "the request does not contain data in json")
 
+        try:
+            gateway_ip = str(request.remote_addr)
+            data_dict["gateway_ip"] = gateway_ip
+            fb = SystemInterface.add_generic_feedback(data_dict)
+            return jsonify('{"status":"sucess"}')
+
+        except TypeError as err:
+            error_message = 'Malformed arguments, error: %s' % str(err)
+
+            return render_template('error.html', 
+                    data=error_message)
+
+        except Exception as err:
+            abort(500, 'error: %s' % str(err))
+            
+#+END_SRC
+
+*** TestGetGenericFeedback
+ #+NAME: test_get_generic_feedback
+ #+BEGIN_SRC python
+class TestGetGenericFeedback(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_generic_feedback_form_data(self):
+        print "test_get_generic_feedback_form_data"
+
+        headers = {'Content-Type': 'application/json'}
+        request_str = "/"
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+#+END_SRC
+
+
+*** TestAddGenericFeedback
+ #+NAME: test_add_generic_feedback
+ #+BEGIN_SRC python
+class TestAddGenericFeedback(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_add_generic_feedback(self):
+        print "test_add_generic_feedback"
+        version = "open-edx-virtual-labs-v2.0"
+        payload = {'version': version,
+            'responses': [{'name': 'How is your breakfast?',
+                            'answers':['yes', 'no'] }]
+           }
+
+        headers = {'Content-Type': 'application/json'}
+        ip_address = {'REMOTE_ADDR': '1.2.3.4'}
+
+        response = self.client.post("/", data=json.dumps(payload),
+                                 headers=headers,
+                                 environ_overrides=ip_address)
+
+        self.assertEqual(response.status_code, 200)
+
+ #+END_SRC
+
+
+** Get Success Template
+   Rest API to render a template on success.
+#+NAME: get_success_template
+#+BEGIN_SRC  python
 @api.route('/success', methods=['GET'])
 def get_success_template():
     return render_template('success.html')
 
+#+END_SRC
 
+
+** Get and ADD Feedback for lab and experiments
+   REST API to get and post lab and experiment feedback
+#+NAME: get_add_feedback
+#+BEGIN_SRC python
 @api.route('/feedback', methods=['GET', 'POST'])
 def get_add_feedback():
     if request.method == 'GET':
@@ -94,7 +206,7 @@ def get_add_feedback():
             abort(500, "the request does not contain data in json")
 
         if 'lab_name' not in data_dict or 'key' not in data_dict or \
-          'responses' not in data_dict or 'version' not in data_dict:
+           'responses' not in data_dict or 'version' not in data_dict:
             abort(400, 'Either lab name or key or version or responses' 
                       ' are not passed')
         else:
@@ -117,7 +229,6 @@ def get_add_feedback():
             abort(500, 'error: %s' % str(err))
   
 #+END_SRC
-
 
 *** TestGetFeedback
  #+NAME: test_get_feedback
@@ -205,6 +316,7 @@ class TestGetFeedback(TestCase):
 
  
 #+END_SRC
+
 
 *** TestAddFeedback
  #+NAME: test_add_feedback
@@ -1357,15 +1469,20 @@ if __name__ == '__main__':
 ** sources
 #+BEGIN_SRC python :tangle api.py :eval no :noweb yes
 <<imports_for_sources>>
-<<add_feedback>>
+<<get_add_generic_feedback>>
+<<get_success_template>>
+<<get_add_feedback>>
 <<get_feedback_usage>>
 <<get_feedback_dump>>
 <<get_gateway_ip>>
 #+END_SRC
 
+
 ** tests
 #+BEGIN_SRC python :tangle test_api.py :eval no :noweb yes
 <<imports_for_tests>>
+<<test_get_generic_feedback>>
+<<test_add_generic_feedback>>
 <<test_get_feedback>>
 <<test_add_feedback>>
 <<test_get_feedback_usage>>
