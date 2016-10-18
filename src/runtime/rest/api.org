@@ -668,42 +668,8 @@ def get_gateway_ip():
     </head>
     
     <body onload="renderFeedbackform();">
-      <header>
-        <!-- Navigation -->
-        <nav class="navbar navbar-default " style="background-color: white !important; margin-bottom: 0px !important;">
-          <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header page-scroll">
-              <button aria-controls="bs-navbar" aria-expanded="true"  type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar #bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar" style="background-color: #77BB41"></span>
-                <span class="icon-bar" style="background-color: #77BB41"></span>
-                <span class="icon-bar" style="background-color: #77BB41"></span>
-              </button>
-              <a class="navbar-brand main-logo-a" href="http://vlabs.ac.in/index.html"><img src="http://vlabs.ac.in/images/logo-new.png" class="img-responsive main-logo" /></a>
-            </div>                  
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
-              <ul class="nav navbar-nav navbar-right menu-ul search-ul" style="position: relative; top: -5px;">
-                <li></li>
-              </ul>
-              <ul class="nav navbar-nav navbar-right menu-ul">
-                <li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/" class="menu-a" >HOME</a>
-                </li>
-                <li class="page-scroll menu-li">
-                  <a href="http://vlabs.ac.in/labs.html"  class="menu-a " >ALL LABS</a>
-                </li>
-                <li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/#partner" class="menu-a" >PARTNERS</a>
-                </li><li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/#contact" class="menu-a" >CONTACT</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav>
-      </header>
+      <div id="header">
+        {% include 'header.html' %}        
       <div class="row">
         <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
       </div>
@@ -729,8 +695,8 @@ def get_gateway_ip():
       </div>
       <div id="footer">
         {% include 'footer.html' %}
-<!--        <div class="container">
-          <p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>-->
+<!--<div class="container">
+    <p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>-->
         </div>
       </div>
     </body>
@@ -742,6 +708,7 @@ def get_gateway_ip():
   </html>
   
 #+END_SRC
+
 ** Error Page Template
 #+BEGIN_SRC html :tangle ./templates/error.html :eval no :noweb yes
 
@@ -755,6 +722,7 @@ def get_gateway_ip():
 </html>
 
 #+END_SRC
+
 ** Success Page Template
   #+BEGIN_SRC html :tangle ./templates/success.html :eval no :noweb yes
   <!DOCTYPE html>
@@ -765,8 +733,27 @@ def get_gateway_ip():
       <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity = "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
       <link rel = "stylesheet" href = "/static/css/main.css">
     </head>
-    
     <body onload="renderFeedbackform();">
+      <div id="header">
+        {% include 'header.html' %}        
+      <div class="row">
+        <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
+      </div>
+      <br><br><br><br><br>
+      <h2 align="center"><font color="green">Thank you for feedback</font></h2>
+      <br>
+      <h5 align="center"><font color="green">You may close this window</font></h5>
+    </body>
+    
+    <!-- Jquery and Scipts Link -->
+
+  </html>
+
+#+END_SRC
+  
+
+** Header HTML
+#+BEGIN_SRC html :tangle ./templates/header.html :eval no :noweb yes
       <header>
         <!-- Navigation -->
         <nav class="navbar navbar-default " style="background-color: white !important; margin-bottom: 0px !important;">
@@ -779,7 +766,7 @@ def get_gateway_ip():
                 <span class="icon-bar" style="background-color: #77BB41"></span>
                 <span class="icon-bar" style="background-color: #77BB41"></span>
               </button>
-              <a class="navbar-brand main-logo-a" href="http://vlabs.ac.in/index.html"><img src="http://vlabs.ac.in/images/logo-new.png" class="img-responsive main-logo" /></a>
+              <a class="navbar-brand main-logo-a" href="https://open-edx.vlabs.ac.in"><img src="http://vlabs.ac.in/images/logo-new.png" class="img-responsive main-logo" /></a>
             </div>                  
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
@@ -788,38 +775,24 @@ def get_gateway_ip():
               </ul>
               <ul class="nav navbar-nav navbar-right menu-ul">
                 <li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/" class="menu-a" >HOME</a>
+                  <a href="https://open-edx.vlabs.ac.in" class="menu-a" >HOME</a>
                 </li>
                 <li class="page-scroll menu-li">
-                  <a href="http://vlabs.ac.in/labs.html"  class="menu-a " >ALL LABS</a>
+                  <a href="https://open-edx.vlabs.ac.in/courses"  class="menu-a " >ALL LABS</a>
                 </li>
-                <li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/#partner" class="menu-a" >PARTNERS</a>
+                <li class="page-scroll menu-li" >
+                  <a href="https://open-edx.vlabs.ac.in/#partner" class="menu-a" >PARTNERS</a>
                 </li><li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/#contact" class="menu-a" >CONTACT</a>
+                  <a href="https://open-edx.vlabs.ac.in/#partner" class="menu-a" >CONTACT</a>
                 </li>
               </ul>
             </div>
           </div>
         </nav>
       </header>
-      <div class="row">
-        <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
-      </div>
-      <br><br><br><br><br>
-      <h2 align="center"><font color="green">Thank you for feedback</font></h2>
-      <br>
-      <h5 align="center"><font color="green">You may close this window</font></h5>
-      
-      
-    </body>
-    
-    <!-- Jquery and Scipts Link -->
-
-  </html>
 
 #+END_SRC
-  
+
 ** Footer HTML
 #+BEGIN_SRC html :tangle ./templates/footer.html :eval no :noweb yes
 <head>
@@ -844,7 +817,7 @@ def get_gateway_ip():
     
     <div class="col-md-2 border-right-green-dotted" >
 
-      <a href="./faq.html" class="text-a-lightgreen" style="text-decoration: underline;" > FAQ</a><br>
+<!--      <a href="./faq.html" class="text-a-lightgreen" style="text-decoration: underline;" > FAQ</a><br>-->
       <a href="http://community.virtual-labs.ac.in/w/index.php/Main_Page" class="text-a-lightgreen" style="text-decoration: underline;" >Community</a><br>
       
       <a href="http://outreach.vlabs.ac.in/ncentres"
@@ -894,6 +867,7 @@ def get_gateway_ip():
 
 
 #+END_SRC
+
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
 
@@ -1301,6 +1275,7 @@ function submitFeedback(event) {
   
 #+END_SRC
    
+
 ** CSS 
 #+BEGIN_SRC css :tangle ./static/css/main.css :eval no :noweb yes
 @import url(https://fonts.googleapis.com/css?family=Raleway:400,300,700,500,600);
