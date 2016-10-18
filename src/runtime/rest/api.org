@@ -675,8 +675,7 @@ def get_gateway_ip():
       </div>
       <div class="container">
         <h1> Virtual Labs Feedback Form </h1>
-        <h4> Please fill in details below and click on submit </h4>
-        
+              
         <form class="form" id="feedback-form" onsubmit="submitFeedback(event)">
           <div class="form-group">
             <label class="" id="lab_name_label"></label>
@@ -891,7 +890,7 @@ function renderQuesLabel() {
 }
 
 function renderFeedbackform() {
-    if(feedbackForm.exp_name){
+    if(feedbackForm.lab_name){
 	$("#lab_name_label").html("Lab Name");
 	$("#lab_name_value").val(feedbackForm.lab_name)
     }
@@ -973,23 +972,23 @@ function renderFeedbackform() {
 		dvTable.innerHTML = "";
 		dvTable.appendChild(table);
 	    }
-	    if(i == 3 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 0 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
+	    if(i == 4 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 1 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
 	      //  renderQuesLabel();
 		labelQues = document.createElement('div');
 		labelQues.id="dvTable";
 		formGroup.appendChild(labelQues);
 		GenerateTable("Not at all", "To some extent", "Very well", "dvTable");
 	    }
-	    else if(i == 5 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 3 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
+	    else if(i == 6 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 4 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
 
 	      //renderQuesLabel();
 		labelQues = document.createElement('div');
 		labelQues.id="dvTable1";
 		formGroup.appendChild(labelQues);
-		GenerateTable("Not at all", "To some extent", "Much better","dvTable1");
+		GenerateTable("Not at all", "To some extent", "Very well","dvTable1");
 	    }
 
-	    else if(i == 6 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 4 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
+	    else if(i == 7 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 5 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
 
 	      //  renderQuesLabel();
 		labelQues = document.createElement('div');
@@ -1055,11 +1054,11 @@ function renderFeedbackform() {
 		radioOption.className = "";
 
 
-		if(i == 0 && k == 0 && feedbackForm.questions[i].driver.length!=0){
+		if(i == 1 && k == 0 && feedbackForm.questions[i].driver.length!=0){
 		    var questions = feedbackForm.questions[i].driver;
 		    radioOption.onclick = function(){driver(questions, 'Not applicable', 'false'); };
 		}
-		if(i == 0 && k == 1  && feedbackForm.questions[i].driver.length!=0){
+		if(i == 1 && k == 1  && feedbackForm.questions[i].driver.length!=0){
 		    var questions = feedbackForm.questions[i].driver;
 		    radioOption.onclick = function(){ driver(questions, 'Not applicable', 'true'); };
 		}
@@ -1216,6 +1215,26 @@ function submitFeedback(event) {
 		window.location.href="/success";
 		console.log(data);
 	    },
+
+	    error: function(data){
+		alert("error");
+		console.log("Error in submitted feedback");
+		console.log(data); 
+	    }
+
+	});  
+    }
+    function add_generic_feedback(){
+	$.ajax({
+	    url: '/',
+	    type: 'POST',
+	    data: JSON.stringify(feedback),
+	    contentType: 'application/json',
+	    success: function (data) {
+		window.location.href="/success";
+		console.log(data);
+	    },
+
 	    error: function(data){
 		alert("error");
 		console.log("Error in submitted feedback");
@@ -1236,7 +1255,12 @@ function submitFeedback(event) {
 	}
     }
     if(count == 0){
-	add_feedback();
+	if(feedbackForm.version == "generic-feedback-v2.0"){
+	    add_generic_feedback();
+	    }
+	else{
+	    add_feedback();
+	}
     }
     else{
 	alert(not_answered + " Question(s) are not answered");
@@ -1244,6 +1268,7 @@ function submitFeedback(event) {
 
 
 }
+  
   
 #+END_SRC
    
