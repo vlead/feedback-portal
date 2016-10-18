@@ -15,6 +15,33 @@
   :PROPERTIES:
   :CUSTOM_ID: api
   :END: 
+** Display generic feedback form. 
+  :PROPERTIES:
+  :CUSTOM_ID: display_feedback_form
+  :END:    
+  - URL :: /
+
+  - Method :: GET
+
+  - URL Params
+    None
+
+  - Success Response
+    + Code: 200
+
+    + Content:
+      {
+       questions: [{name: 'question', 
+                    type: 'radio | checkbox | textbox',
+                    options: 'list of options' | 'size of text'}, ....]
+      }
+
+  - Error Response:
+    
+  - Example:
+    [[http://localhost:5000/][example url]]
+
+
 ** Display the feedback form. 
   :PROPERTIES:
   :CUSTOM_ID: display_feedback_form
@@ -57,6 +84,37 @@
 
   - Example:
     [[http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&user_id=temp124&key=defaultkey][example url]]
+
+
+** Save generic feedback form. 
+  :PROPERTIES:
+  :CUSTOM_ID: save_feedback_form
+  :END:    
+   The authentication for the =POST= is sent as part of header.
+   - URL :: /
+
+   - Method :: POST
+
+   - Data Params
+     {
+        version: <version>,
+        questions: [{name: 'question', 
+                     answers: [ans1, ...]
+       }
+
+   - Success Response
+     + Code: 200
+
+     + Content:
+       {
+         status: "success"
+       }
+
+   - Error Response:
+     + Code: 400 Bad Request
+
+     + Content: { error : "some of the parameters are not part of the
+       request" }
 
 
 ** Save the feedback form. 

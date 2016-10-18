@@ -48,44 +48,71 @@ def populate():
 
     question_cls = System.delegate.entities['question']
 
-    question1 = question_cls(name="1. Did you do the experiment?",
-                             question_type=q_type)
+    question1 = question_cls(name="Did you attempt the experiment?",
+			     question_type=q_type)
 
-    question2 = question_cls(name="2. Did the experiment work?",
-                             question_type=q_type)
+    question2 = question_cls(name="Did the experiment work?",
+			     question_type=q_type)
 
-    question3 = question_cls(name="7. Did you find any bugs in the experiment?",
-                             question_type=q_type)
+    question3 = question_cls(name="Did you find any bugs in the experiment?",
+			     question_type=q_type)
 
-    question4 = question_cls(name="3. How much did you know about the experiment before doing it in Virtual Labs?",
-                             question_type=q_type)
+    question4 = question_cls(name="How much did you know about the experiment before doing it in Virtual Labs?",
+			     question_type=q_type)
 
-    question5 = question_cls(name="4. Is this experiment part of your curriculum?",
-                             question_type=q_type)
+    question5 = question_cls(name="Is this experiment part of your curriculum?",
+			     question_type=q_type)
 
-    question6 = question_cls(name="5. Does this help you to perform better in the curriculum?",
-                             question_type=q_type)
+    question6 = question_cls(name="Did this experiment help you understand the concept better?",
+			     question_type=q_type)
 
-    question7 = question_cls(name="6. Would you recommend it to your fellow students?",
-                             question_type=q_type)
+    question7 = question_cls(name="Will you recommend this experiment to others?",
+			     question_type=q_type)
 
-    q_type = "text"
-    question8 = question_cls(name="Comments",
-                             question_type=q_type)
-
+    
+    q_type = "textarea"
+    question8 = question_cls(name="Please provide any other feedback about this experiment",
+			     question_type=q_type)
+    
     question9 = question_cls(name="feedback_about_experiment",
-                             question_type=q_type)
+			     question_type=q_type)
     question10 = question_cls(name="feedback_about_lab",
-                             question_type=q_type)
+			      question_type=q_type)
     question11 = question_cls(name="how_useful_are_labs",
-                             question_type=q_type)
+			      question_type=q_type)
     question12 = question_cls(name="suggestions_about_experiment",
-                             question_type=q_type)
+			      question_type=q_type)
     question13 = question_cls(name="suggestions_about_lab",
-                             question_type=q_type)
+			      question_type=q_type)
     question14 = question_cls(name="suggestions_in_general",
-                             question_type=q_type)
+			      question_type=q_type)
+    q_type = "radio"
+    question15 = question_cls(name="How much did you know about the lab?",
+			      question_type=q_type)
+    question16 = question_cls(name="Is this lab part of your curriculum?",
+			      question_type=q_type)
+    question17 = question_cls(name="Did this lab help you understand the concept better?",
+			      question_type=q_type)
+    
+    question19 = question_cls(name="Will you recommend this lab to others?",
+			      question_type=q_type)
+    question20 = question_cls(name="Did you find any bugs in the lab?",
+			      question_type=q_type)
+    q_type = "textarea"
 
+    question21 = question_cls(name="Please provide any other feedback about this lab",
+			      question_type=q_type)
+    question22 = question_cls(name="Please provide any other feedback about Virtual Labs",
+			      question_type=q_type)
+    q_type = "radio"
+    question23 = question_cls(name="Designation",
+			      question_type=q_type)
+    question24 = question_cls(name="Did you attempt any experiments ?",
+			      question_type=q_type)
+    question25 = question_cls(name="Please rate your experience",
+			      question_type=q_type)
+    
+    
     question1.save()
     question2.save()
     question3.save()
@@ -100,11 +127,21 @@ def populate():
     question12.save()
     question13.save()
     question14.save()
-
+    question15.save()
+    question16.save()
+    question17.save()
+    question19.save()
+    question20.save()
+    question21.save()
+    question22.save()
+    question23.save()
+    question24.save()
+    question25.save()
 
 if __name__ == "__main__":
     db.create_all(app=create_app(config))
     populate()
+
 #+END_SRC
 
 * Program to migrate the data 
@@ -115,16 +152,19 @@ import yaml
 
 data_url = "http://data.vlabs.ac.in/feedback"
 data_by_id = data_url+"/"
-fb_url = "http://fp-edx-demo.vlabs.ac.in/feedback"
+fb_url = "http://localhost:5000/feedback"
+
 fbs = requests.get(data_url).json()
 questions = ['feedback_about_experiment', 'feedback_about_lab',
              'how_useful_are_labs', 'suggestions_about_experiment',
              'suggestions_about_lab', 'suggestions_in_general']
+
 for index in range(1, len(fbs)):
      a_url = data_by_id + str(index)
      fb = requests.get(a_url).json()
      fb_x = yaml.safe_load(json.dumps(fb))
      gateway_ip = fb_x['ip']
+     user_id = fb_x['user_name']
      print index
      if fb_x['lab'] is None:
         lab_name = "Null"
@@ -151,11 +191,14 @@ for index in range(1, len(fbs)):
                         'answers':[answer] }
             responses.append(response)
 
+     version = "virtual-labs-feedback-v1.0"
      payload = {'lab_name': lab_name,
                 'exp_name': exp_name,
                 'key' : 'defaultkey',
                 'responses': responses,
-                'gateway_ip': gateway_ip
+                'gateway_ip': gateway_ip,
+                'user_id': user_id,
+                'version': version
                }
 
      print payload

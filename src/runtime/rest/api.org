@@ -12,124 +12,223 @@
   
 * REST
 
-** Get and Add Feedback
-   This is the REST API method for both getting and adding feedback.
+** Get and Add Generic Feedback
+   REST API to get and post generic feedback
 
-#+NAME: add_feedback
+#+NAME: get_add_generic_feedback
 #+BEGIN_SRC python
+@api.route('/', methods=['GET', 'POST'])
+def get_generic_feedback():
+    if request.method == 'GET':
+        response = SystemInterface.get_generic_feedback_form('generic-feedback-v2.0')
+        return render_template('index.html', 
+                            questions_data=response)
+    if request.method == 'POST':
+        if request.is_json:
+            data_json = json.dumps(request.get_json())
+            data_dict = yaml.safe_load(data_json)
+        else:
+            abort(500, "the request does not contain data in json")
 
+        try:
+            gateway_ip = str(request.remote_addr)
+            data_dict["gateway_ip"] = gateway_ip
+            fb = SystemInterface.add_generic_feedback(data_dict)
+            return jsonify('{"status":"sucess"}')
+
+        except TypeError as err:
+            error_message = 'Malformed arguments, error: %s' % str(err)
+
+            return render_template('error.html', 
+                    data=error_message)
+
+        except Exception as err:
+            abort(500, 'error: %s' % str(err))
+            
+#+END_SRC
+
+*** TestGetGenericFeedback
+ #+NAME: test_get_generic_feedback
+ #+BEGIN_SRC python
+class TestGetGenericFeedback(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_generic_feedback_form_data(self):
+        print "test_get_generic_feedback_form_data"
+
+        headers = {'Content-Type': 'application/json'}
+        request_str = "/"
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+#+END_SRC
+
+
+*** TestAddGenericFeedback
+ #+NAME: test_add_generic_feedback
+ #+BEGIN_SRC python
+class TestAddGenericFeedback(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_add_generic_feedback(self):
+        print "test_add_generic_feedback"
+        version = "open-edx-virtual-labs-v2.0"
+        payload = {'version': version,
+            'responses': [{'name': 'How is your breakfast?',
+                            'answers':['yes', 'no'] }]
+           }
+
+        headers = {'Content-Type': 'application/json'}
+        ip_address = {'REMOTE_ADDR': '1.2.3.4'}
+
+        response = self.client.post("/", data=json.dumps(payload),
+                                 headers=headers,
+                                 environ_overrides=ip_address)
+
+        self.assertEqual(response.status_code, 200)
+
+ #+END_SRC
+
+
+** Get Success Template
+   Rest API to render a template on success.
+#+NAME: get_success_template
+#+BEGIN_SRC  python
 @api.route('/success', methods=['GET'])
 def get_success_template():
     return render_template('success.html')
 
+#+END_SRC
 
+
+** Get and ADD Feedback for lab and experiments
+   REST API to get and post lab and experiment feedback
+#+NAME: get_add_feedback
+#+BEGIN_SRC python
 @api.route('/feedback', methods=['GET', 'POST'])
 def get_add_feedback():
     if request.method == 'GET':
-	if 'lab_name' not in request.args or 'key' not in request.args:
-	    error_message = 'Either lab_name or key or both arguments are not passed' 
-	    """
-	    if request.headers['Content-Type'] == "application/json":
-		abort(400, error_message)
-	    else:
-	    """
-	    return render_template('error.html', 
-				   data=error_message)
-	else:
-	    lab_name = str(request.args['lab_name'])
-	    key = str(request.args['key'])
+        if 'lab_name' not in request.args or 'key' not in request.args:
+            error_message = 'Either lab_name or key or both arguments are not passed'
+            return render_template('error.html', data=error_message)
+        else:
+            lab_name = str(request.args['lab_name'])
+            key = str(request.args['key'])
 
-	if 'exp_name' not in request.args:
-	    exp_name = ""
-	else:
-	    exp_name = str(request.args['exp_name'])
+        if 'exp_name' not in request.args:
+            exp_name = None
+        else:
+            exp_name = str(request.args['exp_name'])
 
-	if 'date' not in request.args:
-	    date = None
-	else:
-	    date = str(request.args['date'])
+        if 'date' not in request.args:
+            date = None
+        else:
+            date = str(request.args['date'])
 
-	if 'user_id' not in request.args:
-	    user_id = None
-	else:
-	    user_id = str(request.args['user_id'])
-	    current_app.logger.debug("lab_name = %s, exp_name=%s, user_id=%s, "
-				     "key=%s" % 
-				     (lab_name, exp_name, user_id, key))
-	try:
-	    response = SystemInterface.get_feedback_form(key, 
-							 lab_name, 
-							 exp_name,
-							 user_id)
-	    """
-	    if request.headers['Content-Type'] == "application/json":
-		return jsonify(response)
-	    else:
-	    """
-	    return render_template('index.html', 
-				   questions_data=response)
+        if 'version' not in request.args:
+            version = None
+        else:
+            version = str(request.args['version'])
 
-	except NotAuthorizedError as err:
-	    error_message =  'Not Authorized error: %s' % str(err)
-	    if request.headers['Content-Type'] == "application/json":
-		abort(401, error_message)
-	    else:
-		return render_template('error.html', 
-				       data=error_message)
-	except TypeError as err:
-	    error_message = 'Malformed arguments, error: %s' % str(err)
-	    """
-	    if request.headers['Content-Type'] == "application/json":
-		abort(400, error_message)
-	    else:
-	    """
-	    return render_template('error.html', 
-				   data=error_message)
-	except Exception as err:
-	    error_message = 'error: %s' % str(err)
-	    """
-	    if request.headers['Content-Type'] == "application/json":
-		abort(400, error_message)
-	    else:
-	    """
-	    return render_template('error.html', 
-				   data=error_message)
+        if 'user_id' not in request.args:
+            user_id = None
+        else:
+            user_id = str(request.args['user_id'])
+            current_app.logger.debug("lab_name = %s, exp_name=%s, user_id=%s, "
+                        "key=%s" % (lab_name, exp_name, user_id, key))
+        try:
+            response = SystemInterface.get_feedback_form(key, 
+                                lab_name, 
+                                exp_name,
+                                version,
+                                user_id)
+                            
+            return render_template('index.html', 
+                    questions_data=response)
+
+        except NotAuthorizedError as err:
+            error_message = 'Not Authorized error: %s' % str(err)
+
+            return render_template('error.html', 
+                    data=error_message)
+            
+        except TypeError as err:
+            error_message = 'Malformed arguments, error: %s' % str(err)
+
+            return render_template('error.html', 
+                    data=error_message)
+        except Exception as err:
+            error_message = 'error: %s' % str(err)
+
+            return render_template('error.html', 
+                    data=error_message)
 
     if request.method == 'POST':
-	if request.is_json:
-	    data_json = json.dumps(request.get_json())
-	    data_dict = yaml.safe_load(data_json)
-	else:
-	    abort(500, "the request does not contain data in json")
+        if request.is_json:
+            data_json = json.dumps(request.get_json())
+            data_dict = yaml.safe_load(data_json)
+        else:
+            abort(500, "the request does not contain data in json")
 
-	if 'lab_name' not in data_dict or 'key' not in data_dict or \
-	    'responses' not in data_dict or 'version' not in data_dict:
-	    abort(400, 'Either lab name or key or version or responses' 
-                             ' are not passed')
-	else:
-	    gateway_ip = str(request.remote_addr)
-	    current_app.logger.debug("lab_name = %s, responses=%s, "
-                                 "version=%s, key=%s, "
-					%(data_dict['lab_name'],
-					  data_dict['responses'],
-					  data_dict['version'],                      
-					  data_dict['key']))
+        if 'lab_name' not in data_dict or 'key' not in data_dict or \
+           'responses' not in data_dict or 'version' not in data_dict:
+            abort(400, 'Either lab name or key or version or responses' 
+                      ' are not passed')
+        else:
+            gateway_ip = str(request.remote_addr)
+            current_app.logger.debug("lab_name = %s, responses=%s, "
+                                         "version=%s, key=%s, "
+                          %(data_dict['lab_name'], data_dict['responses'],
+                            data_dict['version'], data_dict['key']))
 
-	    data_dict["gateway_ip"] = gateway_ip
-	try:
-	    fb = SystemInterface.add_feedback(data_dict)
-            feedback = fb.to_client()
-	    return jsonify(feedback)
+            data_dict["gateway_ip"] = gateway_ip
+        try:
+            fb = SystemInterface.add_feedback(data_dict)
+            return jsonify('{"status":"sucess"}')
 
-	except NotAuthorizedError as err:
-	    abort(401, 'Not Authorized error: %s' % str(err))
-	except TypeError as err:
-	    abort(400, 'Malformed arguments, error: %s' % str(err))
-	except Exception as err:
-	    abort(500, 'error: %s' % str(err))
+        except NotAuthorizedError as err:
+            abort(401, 'Not Authorized error: %s' % str(err))
+        except TypeError as err:
+            abort(400, 'Malformed arguments, error: %s' % str(err))
+        except Exception as err:
+            abort(500, 'error: %s' % str(err))
   
 #+END_SRC
-
 
 *** TestGetFeedback
  #+NAME: test_get_feedback
@@ -151,16 +250,36 @@ class TestGetFeedback(TestCase):
         print "test_get_lab_feedback_form_data"
 
         lab_name = "Data Structures"
-        exp_name = "binary search"
         user_id = "123user"
+        version = None
         headers = {'Content-Type': 'application/json'}
         request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
-          % (lab_name, exp_name, user_id, KEY)
+          % (lab_name, user_id, version, KEY)
 
         print "request-str = %s" % request_str
         response = self.client.get(request_str, headers=headers)
         self.assertEqual(response.status_code, 200)
 
+
+    def test_get_exp_feedback_form_data(self):
+        print "test_get_exp_feedback_form_data"
+        lab_name = "Data Structures"
+        exp_name = "binary search"
+        user_id = "123user"
+        version = None
+        headers = {'Content-Type': 'application/json'}
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s \
+                      &version=%s"\
+                      % (lab_name, exp_name, user_id, version, KEY)
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+#+END_SRC
+
+#+NAME: error_test_cases
+#+BEGIN_SRC python
     def test_get_lab_feedback_with_401_error(self):
         print "test_get_lab_feedback_with_401_error"
         print "test not authorized error"
@@ -169,15 +288,17 @@ class TestGetFeedback(TestCase):
         exp_name = "binary search"
         user_id = "123user"
         key = "jigajiga"
+        version = None
         headers = {'Content-Type': 'application/json'}
-        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
-          % (lab_name, exp_name, user_id, key)
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s \
+                      &version=%s"\
+                      % (lab_name, exp_name, user_id, version, key)
 
         print "request-str = %s" % request_str
         response = self.client.get(request_str, headers=headers)
-        result = json.loads(response.data)
         self.assertEqual(response.status_code, 401)
-'''
+
+
     def test_get_lab_feedback_with_400_error(self):
         print "test_get_lab_feedback_with_400_error"
         print "test bad request"
@@ -192,8 +313,9 @@ class TestGetFeedback(TestCase):
         print "request-str = %s" % request_str
         response = self.client.get(request_str, headers=headers)
         self.assertEqual(response.status_code, 400)
-'''
- #+END_SRC
+
+ 
+#+END_SRC
 
 
 *** TestAddFeedback
@@ -546,49 +668,14 @@ def get_gateway_ip():
     </head>
     
     <body onload="renderFeedbackform();">
-      <header>
-        <!-- Navigation -->
-        <nav class="navbar navbar-default " style="background-color: white !important; margin-bottom: 0px !important;">
-          <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header page-scroll">
-              <button aria-controls="bs-navbar" aria-expanded="true"  type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar #bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar" style="background-color: #77BB41"></span>
-                <span class="icon-bar" style="background-color: #77BB41"></span>
-                <span class="icon-bar" style="background-color: #77BB41"></span>
-              </button>
-              <a class="navbar-brand main-logo-a" href="http://vlabs.ac.in/index.html"><img src="http://vlabs.ac.in/images/logo-new.png" class="img-responsive main-logo" /></a>
-            </div>                  
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
-              <ul class="nav navbar-nav navbar-right menu-ul search-ul" style="position: relative; top: -5px;">
-                <li></li>
-              </ul>
-              <ul class="nav navbar-nav navbar-right menu-ul">
-                <li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/" class="menu-a" >HOME</a>
-                </li>
-                <li class="page-scroll menu-li">
-                  <a href="http://vlabs.ac.in/labs.html"  class="menu-a " >ALL LABS</a>
-                </li>
-                <li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/#partner" class="menu-a" >PARTNERS</a>
-                </li><li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/#contact" class="menu-a" >CONTACT</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav>
-      </header>
+      <div id="header">
+        {% include 'header.html' %}        
       <div class="row">
         <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
       </div>
       <div class="container">
         <h1> Virtual Labs Feedback Form </h1>
-        <h4> Please fill in details below and click on submit </h4>
-        
+              
         <form class="form" id="feedback-form" onsubmit="submitFeedback(event)">
           <div class="form-group">
             <label class="" id="lab_name_label"></label>
@@ -602,11 +689,14 @@ def get_gateway_ip():
           <div class="form-group" id="questions_list"></div>
           <button class="btn btn-primary" >Submit</button>
         </form>
+        <div align="right">
+	  <span id="version"></span>
+	</div>
       </div>
       <div id="footer">
         {% include 'footer.html' %}
-<!--        <div class="container">
-          <p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>-->
+<!--<div class="container">
+    <p class="text-muted credit" style="color:#A29E9E; margin-left: 71% ">Version v1.0.0</p>-->
         </div>
       </div>
     </body>
@@ -618,6 +708,7 @@ def get_gateway_ip():
   </html>
   
 #+END_SRC
+
 ** Error Page Template
 #+BEGIN_SRC html :tangle ./templates/error.html :eval no :noweb yes
 
@@ -631,6 +722,7 @@ def get_gateway_ip():
 </html>
 
 #+END_SRC
+
 ** Success Page Template
   #+BEGIN_SRC html :tangle ./templates/success.html :eval no :noweb yes
   <!DOCTYPE html>
@@ -641,8 +733,27 @@ def get_gateway_ip():
       <link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity = "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
       <link rel = "stylesheet" href = "/static/css/main.css">
     </head>
-    
     <body onload="renderFeedbackform();">
+      <div id="header">
+        {% include 'header.html' %}        
+      <div class="row">
+        <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
+      </div>
+      <br><br><br><br><br>
+      <h2 align="center"><font color="green">Thank you for feedback</font></h2>
+      <br>
+      <h5 align="center"><font color="green">You may close this window</font></h5>
+    </body>
+    
+    <!-- Jquery and Scipts Link -->
+
+  </html>
+
+#+END_SRC
+  
+
+** Header HTML
+#+BEGIN_SRC html :tangle ./templates/header.html :eval no :noweb yes
       <header>
         <!-- Navigation -->
         <nav class="navbar navbar-default " style="background-color: white !important; margin-bottom: 0px !important;">
@@ -655,7 +766,7 @@ def get_gateway_ip():
                 <span class="icon-bar" style="background-color: #77BB41"></span>
                 <span class="icon-bar" style="background-color: #77BB41"></span>
               </button>
-              <a class="navbar-brand main-logo-a" href="http://vlabs.ac.in/index.html"><img src="http://vlabs.ac.in/images/logo-new.png" class="img-responsive main-logo" /></a>
+              <a class="navbar-brand main-logo-a" href="https://open-edx.vlabs.ac.in"><img src="http://vlabs.ac.in/images/logo-new.png" class="img-responsive main-logo" /></a>
             </div>                  
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
@@ -664,38 +775,24 @@ def get_gateway_ip():
               </ul>
               <ul class="nav navbar-nav navbar-right menu-ul">
                 <li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/" class="menu-a" >HOME</a>
+                  <a href="https://open-edx.vlabs.ac.in" class="menu-a" >HOME</a>
                 </li>
                 <li class="page-scroll menu-li">
-                  <a href="http://vlabs.ac.in/labs.html"  class="menu-a " >ALL LABS</a>
+                  <a href="https://open-edx.vlabs.ac.in/courses"  class="menu-a " >ALL LABS</a>
                 </li>
-                <li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/#partner" class="menu-a" >PARTNERS</a>
+                <li class="page-scroll menu-li" >
+                  <a href="https://open-edx.vlabs.ac.in/#partner" class="menu-a" >PARTNERS</a>
                 </li><li class="page-scroll menu-li " >
-                  <a href="http://vlabs.ac.in/#contact" class="menu-a" >CONTACT</a>
+                  <a href="https://open-edx.vlabs.ac.in/#partner" class="menu-a" >CONTACT</a>
                 </li>
               </ul>
             </div>
           </div>
         </nav>
       </header>
-      <div class="row">
-        <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
-      </div>
-      <br><br><br><br><br>
-      <h2 align="center"><font color="green">Thank you for feedback</font></h2>
-      <br>
-      <h5 align="center"><font color="green">You may close this window</font></h5>
-      
-      
-    </body>
-    
-    <!-- Jquery and Scipts Link -->
-
-  </html>
 
 #+END_SRC
-  
+
 ** Footer HTML
 #+BEGIN_SRC html :tangle ./templates/footer.html :eval no :noweb yes
 <head>
@@ -720,7 +817,7 @@ def get_gateway_ip():
     
     <div class="col-md-2 border-right-green-dotted" >
 
-      <a href="./faq.html" class="text-a-lightgreen" style="text-decoration: underline;" > FAQ</a><br>
+<!--      <a href="./faq.html" class="text-a-lightgreen" style="text-decoration: underline;" > FAQ</a><br>-->
       <a href="http://community.virtual-labs.ac.in/w/index.php/Main_Page" class="text-a-lightgreen" style="text-decoration: underline;" >Community</a><br>
       
       <a href="http://outreach.vlabs.ac.in/ncentres"
@@ -770,269 +867,422 @@ def get_gateway_ip():
 
 
 #+END_SRC
+
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
-  
-  var sampleData = window.data;
-  var labelQues, formGroup;
-  function renderQuesLabel() {
-      formGroup = document.createElement("div");
-      formGroup.className = "form-group"
-      labelQues = document.createElement('label');
-      $("#questions_list").append(formGroup);
-      formGroup.appendChild(labelQues);
-  }
-  
-  function renderFeedbackform() {
-      $("#lab_name_label").html("Lab Name");
-      $("#lab_name_value").val(sampleData.lab_name)
-      if(sampleData.exp_name){
-          
-          $("#exp_name_label").html("Experiment Name");
-          $("#exp_name_value").val(sampleData.exp_name);
-      }
-      else
-          {
-              var elem = document.getElementById("exp_name_value");
-              elem.parentNode.removeChild(elem);
-          }
-      
-      var quesArray = sampleData.questions.length;
-      for (var i = 0; i < quesArray; i++) {
-          if (sampleData.questions[i].type === "checkbox") {
-              renderQuesLabel();
-              labelQues.innerHTML = sampleData.questions[i].name;
-              var optionsDiv = document.createElement("div");
-              optionsDiv.id = sampleData.questions[i].name;
-              var optionsLength = sampleData.questions[i].options.length;
-              
-              for (var j = 0; j < optionsLength; j++) {
-                  checkOption = document.createElement('input');
-                  checkOption.type = "checkbox";
-                  checkOption.value = sampleData.questions[i].options[j];
-                  
-                  ansLabel = document.createElement('label');
-                  ansLabel.className = "checkbox-inline"
-                  ansLabel.innerHTML = sampleData.questions[i].options[j];
-                  
-                  optionsDiv.appendChild(ansLabel);
-                  ansLabel.insertBefore(checkOption, ansLabel.firstChild);
-                  formGroup.appendChild(optionsDiv);
-                  questions_list.appendChild(formGroup);
-              }
-          }
-          
-          else if(sampleData.questions[i].type === "radio") {
-              
-              
-              renderQuesLabel();
-              labelQues.innerHTML = sampleData.questions[i].name;
-              var optionsDiv1 = document.createElement("div");
-              optionsDiv1.id = sampleData.questions[i].name;
-              var optionsLength = sampleData.questions[i].options.length;
-              function GenerateTable(arg1, arg2, arg3, table_id) {
-                  var customers = new Array();
-                  customers.push([arg1, arg2, arg3]);
-                  
-                  //Create a HTML Table element.
-                  var table = document.createElement("TABLE");
-                  table.border = "0";
-                  
-                  //Get the count of columns.
-                  var columnCount = customers[0].length;
-                  
-                  //Add the header row.
-                  var row = table.insertRow(-1);
-                  for (var i = 0; i < columnCount; i++) {
-                      var headerCell = document.createElement("Td");
-                      headerCell.innerHTML = customers[0][i];
-                      row.appendChild(headerCell);
-                  }
-                  var dvTable = document.getElementById(table_id);
-                  dvTable.innerHTML = "";
-                  dvTable.appendChild(table);
-              }
-              if(i == 2){
-                //  renderQuesLabel();
-                  console.log(i);
-                  labelQues = document.createElement('div');
-                  labelQues.id="dvTable";
-                  formGroup.appendChild(labelQues);
-                  GenerateTable("Not at all", "To some extent", "Very well", "dvTable");
-              }
-              else if(i == 4){
-                  console.log(i);
-                //  renderQuesLabel();
-                  labelQues = document.createElement('div');
-                  labelQues.id="dvTable1";
-                  formGroup.appendChild(labelQues);
-                  GenerateTable("Not at all", "To some extent", "Much better","dvTable1");
-              }
-  
-              else if(i == 5){
-                  console.log(i);
-                //  renderQuesLabel();
-                  labelQues = document.createElement('div');
-                  labelQues.id="dvTable2";
-                  formGroup.appendChild(labelQues);
-                  GenerateTable("Not at all", "May Recommend", "Will definitely","dvTable2");
-              }
-              for (var k = 0; k < optionsLength; k++) {
-                  radioOption = document.createElement('input');
-                  radioOption.type = "radio";
-                  radioOption.className = "";
-                  radioOption.name = sampleData.questions[i].name;
-                  radioOption.value = sampleData.questions[i].options[k];
-                  
-                  radioLabel = document.createElement('label');
-                  radioLabel.className = "radio-inline";
-                  radioLabel.innerHTML = sampleData.questions[i].options[k];
-                  
-                  optionsDiv1.appendChild(radioLabel);
-                  radioLabel.insertBefore(radioOption, radioLabel.firstChild);
-                  formGroup.appendChild(optionsDiv1);
-                  questions_list.appendChild(formGroup);
-              }
-             
-          }
-          else if (sampleData.questions[i].type === "text") {
-              var ansTextArea;
-              renderQuesLabel();
-              labelQues.innerHTML = sampleData.questions[i].name;
-              
-              ansTextArea = document.createElement("textarea");
-              ansTextArea.className = "form-control"
-              ansTextArea.id = sampleData.questions[i].name;
-              
-              formGroup.appendChild(ansTextArea);
-          }
-          else if(sampleData.questions[i].type === 'textBox') {
-              var ansTextBox;
-              renderQuesLabel();
-              labelQues.innerHTML = sampleData.questions[i].name;
-              
-              ansTextBox = document.createElement("input");
-              ansTextBox.className = "form-control"
-              ansTextBox.id = sampleData.questions[i].name;
-              
-              formGroup.appendChild(ansTextBox);
-          }
-      }
-  }
-  
-  function submitFeedback(event) {
-      
-      event.preventDefault();
-      var feedback = {}; // the final feedback object
-      feedback.lab_name = sampleData.lab_name;
-      if(sampleData.exp_name){
-          feedback.exp_name = sampleData.exp_name;
-      }
-      feedback.user_id = sampleData.user_id;
-      feedback.version = sampleData.version;
-      feedback.key = sampleData.key;
-      
-      feedback.responses = []; // the list of questions and user answers
-      var quesArray = sampleData.questions.length;
-      // loop over the questions
-      for (var i = 0; i < quesArray; i++) {
-          var questionElement = document.getElementById(sampleData.questions[i].name);
-          var answer = null;
-          if(sampleData.questions[i].type === 'radio') {
-              answer = []
-              var children = questionElement.querySelectorAll('input');
-              for(var j = 0; j < children.length; j++) {
-                  var child = children[j];
-                  // console.log('child', child, child.type, child.checked);
-                  if(child.type === 'radio' && child.checked === true) {
-                      
-                      if(child.value =="Yes" || child.value =="No"){
-                          answer.push(child.value);
-                      }
-                      else{
-                          var ans = child.value + "/"+ String(Number(children.length)-1)
-                          answer.push(ans);
-                          }
-  
-                  }
-              }
-          }
-          else if(sampleData.questions[i].type === 'checkbox') {
-              answer = [];
-              var children = questionElement.querySelectorAll('input');
-              for(var j = 0; j < children.length; j++) {
-                  var child = children[j];
-                  if(child.checked === true) {
-                      // console.log('selected', child.value);
-                      answer.push(child.value);
-                  }
-              }
-          }
-          else if(sampleData.questions[i].type === 'text') {
-              answer = [];
-              var input = questionElement;
-              answer.push(input.value);
-          }
-          // create an object to insert the current question data
-          var question = {};
-          question.name = sampleData.questions[i].name;
-          //question.type = sampleData.questions[i].type;
-          question.answers = answer;
-          feedback.responses.push(question);
-      }
-      // Posting json data to /feedback api
-   
-      console.log(feedback);
-      function add_feedback(){
-          $.ajax({
-              url: '/feedback',
-              type: 'POST',
-              data: JSON.stringify(feedback),
-              contentType: 'application/json',
-              success: function (data) {
-                  window.location.href="/success";
-                  $.ajax({
-                      url: 'http://vlabs-analytics.vlabs.ac.in:9400/feedback/data',
-                      type: 'POST',
-                      data: JSON.stringify(feedback),
-                      contentType: 'application/json',
-                      success: function (data) {
-                          console.log(data);
-                      },
-                      error: function(data){
-                          console.log("Error in submitted feedback");
-                          console.log(data); 
-                      }
-                      
-                  });  
-                  console.log(data);
-              },
-              error: function(data){
-                  
-                  console.log("Error in submitted feedback");
-                  console.log(data); 
-              }
-              
-          });  
-      }
-      var count=0;
-      for(var i=0;i<feedback.responses.length;i++){
-          if(feedback.responses[i].answers!= ""){
-              count=count+1;
-              }
-      }
-      if(count == feedback.responses.length){
-          add_feedback();
-      }
-      else{alert("Please do fill the total feedback");}
-      
-      
-  }
-  
+
+var feedbackForm = window.data;
+var labelQues, formGroup;
+console.log(feedbackForm);
+document.getElementById("version").innerHTML = "version : "+feedbackForm.version;
+function renderQuesLabel() {
+    formGroup = document.createElement("div");
+    formGroup.className = "form-group"
+    newline = document.createElement('p');
+    formGroup.appendChild(newline);
+    labelQues1 = document.createElement('label');
+    formGroup.appendChild(labelQues1);
+    labelQues = document.createElement('label');
+    $("#questions_list").append(formGroup);
+    formGroup.appendChild(labelQues);
+    labelQues2 = document.createElement('label');
+    formGroup.appendChild(labelQues2);
+
+}
+
+function renderFeedbackform() {
+    if(feedbackForm.lab_name){
+	$("#lab_name_label").html("Lab Name");
+	$("#lab_name_value").val(feedbackForm.lab_name)
+    }
+    else{
+	var elem = document.getElementById("lab_name_label");
+	elem.parentNode.removeChild(elem);
+	var elem1 = document.getElementById("lab_name_value");
+	elem1.parentNode.removeChild(elem1);
+
+    }
+    if(feedbackForm.exp_name){
+
+	$("#exp_name_label").html("Experiment Name");
+	$("#exp_name_value").val(feedbackForm.exp_name);
+    }
+    else
+	{
+	    var elem = document.getElementById("exp_name_label");
+	    elem.parentNode.removeChild(elem);
+	    var elem1 = document.getElementById("exp_name_value");
+	    elem1.parentNode.removeChild(elem1);
+	}
+
+    var quesArray = feedbackForm.questions.length;
+    for (var i = 0; i < quesArray; i++) {
+	if (feedbackForm.questions[i].type === "checkbox") {
+	    renderQuesLabel();
+	    labelQues.innerHTML = feedbackForm.questions[i].name;
+	    var optionsDiv = document.createElement("div");
+	    optionsDiv.id = feedbackForm.questions[i].name;
+	    var optionsLength = feedbackForm.questions[i].options.length;
+
+	    for (var j = 0; j < optionsLength; j++) {
+		checkOption = document.createElement('input');
+		checkOption.type = "checkbox";
+		checkOption.value = feedbackForm.questions[i].options[j];
+
+		ansLabel = document.createElement('label');
+		ansLabel.className = "checkbox-inline"
+		ansLabel.innerHTML = feedbackForm.questions[i].options[j];
+
+		optionsDiv.appendChild(ansLabel);
+		ansLabel.insertBefore(checkOption, ansLabel.firstChild);
+		formGroup.appendChild(optionsDiv);
+		questions_list.appendChild(formGroup);
+	    }
+	}
+
+	else if(feedbackForm.questions[i].type === "radio") {
+	    renderQuesLabel();
+	    labelQues1.innerHTML = feedbackForm.questions[i].id+".&nbsp;&nbsp;";
+	    labelQues.innerHTML = feedbackForm.questions[i].name;
+	    if(feedbackForm.questions[i].mandatory == "Yes"){
+		labelQues2.innerHTML = "&nbsp;<font color='maroon'>*</font>";
+	    }
+
+	    var optionsDiv1 = document.createElement("div");
+	    optionsDiv1.id = feedbackForm.questions[i].id;
+	    var optionsLength = feedbackForm.questions[i].options.length;
+	    function GenerateTable(arg1, arg2, arg3, table_id) {
+		var customers = new Array();
+		customers.push([arg1, arg2, arg3]);
+
+		//Create a HTML Table element.
+		var table = document.createElement("TABLE");
+		table.border = "0";
+
+		//Get the count of columns.
+		var columnCount = customers[0].length;
+
+		//Add the header row.
+		var row = table.insertRow(-1);
+		for (var i = 0; i < columnCount; i++) {
+		    var headerCell = document.createElement("Td");
+		    headerCell.innerHTML = customers[0][i];
+		    row.appendChild(headerCell);
+		}
+		var dvTable = document.getElementById(table_id);
+		dvTable.innerHTML = "";
+		dvTable.appendChild(table);
+	    }
+	    if(i == 4 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 1 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
+	      //  renderQuesLabel();
+		labelQues = document.createElement('div');
+		labelQues.id="dvTable";
+		formGroup.appendChild(labelQues);
+		GenerateTable("Not at all", "To some extent", "Very well", "dvTable");
+	    }
+	    else if(i == 6 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 4 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
+
+	      //renderQuesLabel();
+		labelQues = document.createElement('div');
+		labelQues.id="dvTable1";
+		formGroup.appendChild(labelQues);
+		GenerateTable("Not at all", "To some extent", "Very well","dvTable1");
+	    }
+
+	    else if(i == 7 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || i == 5 && feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab"){
+
+	      //  renderQuesLabel();
+		labelQues = document.createElement('div');
+		labelQues.id="dvTable2";
+		formGroup.appendChild(labelQues);
+		GenerateTable("Not at all", "May Recommend", "Will definitely","dvTable2");
+	    }
+	    function answer(flag, question_id){
+		if(flag == "No"){
+		    var element = document.getElementById("answer");
+		    if(element != null){
+			element.outerHTML = "";
+			delete element;
+		    }
+		}
+		else{
+		    if(document.getElementById("answer") == null){
+			var div = document.getElementById(question_id);
+			var answer = document.createElement('div');
+			answer.id = "answer";
+			div.appendChild(answer);
+			labelQues = document.createElement('br');
+			var answer_id = document.getElementById("answer");
+			answer_id.appendChild(labelQues);
+
+			ansTextArea = document.createElement("textarea");
+			ansTextArea.className = "form-control";
+			ansTextArea.style.width = "35em";
+			ansTextArea.style.height = "7em";
+			ansTextArea.id = "bug-answer";
+			ansTextArea.placeholder = "Please specify the bug details here";
+			ansTextArea.maxLength = "160";
+			answer_id.appendChild(ansTextArea);
+
+		    }
+		}
+
+	    }
+	    function driver(questions, value, flag){
+		for(var i=0; i<questions.length;i++){
+		    var questionElement = document.getElementById(questions[i]);
+		    var children = questionElement.querySelectorAll('input');
+		    for(var j = 0; j < children.length; j++) {
+			var child = children[j];
+
+			if(flag == "false"){
+			    child.checked = false;
+
+			}
+			else if(flag == "true" && child.value == value){
+			    child.checked = true;
+			}
+
+		    }
+
+		}
+	    }
+
+	    for (var k = 0; k < optionsLength; k++) {
+
+		radioOption = document.createElement('input');
+		radioOption.type = "radio";
+		radioOption.className = "";
+		
+		if(i == 0 && k == 0){
+		    radioOption.checked = true;
+		}
+		if(i == 1 && k == 0 && feedbackForm.questions[i].driver.length!=0){
+		    var questions = feedbackForm.questions[i].driver;
+		    radioOption.onclick = function(){driver(questions, 'Not applicable', 'false'); };
+		}
+		if(i == 1 && k == 1  && feedbackForm.questions[i].driver.length!=0){
+		    var questions = feedbackForm.questions[i].driver;
+		    radioOption.onclick = function(){ driver(questions, 'Not applicable', 'true'); };
+		}
+		if(feedbackForm.questions[i].linked_answer == "Yes" && k == 0){
+		    var id = feedbackForm.questions[i].id;
+		    radioOption.onclick = function(){ answer("Yes", id); };
+		}
+		if(feedbackForm.questions[i].linked_answer == "Yes" && k == 1){
+		    var id = feedbackForm.questions[i].id;
+		    radioOption.onclick = function(){ answer("No", id); };
+		}
+		if(feedbackForm.questions[i].linked_answer == "Yes" && k == 2){
+		    var id = feedbackForm.questions[i].id;
+		    radioOption.onclick = function(){ answer("No", id); };
+		}
+		radioOption.name = feedbackForm.questions[i].name;
+		radioOption.value = feedbackForm.questions[i].options[k];
+		radioLabel = document.createElement('label');
+		radioLabel.className = "radio-inline";
+		radioLabel.innerHTML = feedbackForm.questions[i].options[k];
+
+		optionsDiv1.appendChild(radioLabel);
+		radioLabel.insertBefore(radioOption, radioLabel.firstChild);
+		formGroup.appendChild(optionsDiv1);
+		questions_list.appendChild(formGroup);
+	    }
+
+	}
+	else if (feedbackForm.questions[i].type === "textarea") {
+	    var ansTextArea;
+	    renderQuesLabel();
+	    labelQues.innerHTML = feedbackForm.questions[i].name;
+	    labelQues1.innerHTML = feedbackForm.questions[i].id+".&nbsp;&nbsp;";
+	    if(feedbackForm.questions[i].mandatory == "Yes"){
+		labelQues2.innerHTML = "&nbsp;<font color='maroon'>*</font>";
+	    }
+	    ansTextArea = document.createElement("textarea");
+	    ansTextArea.className = "form-control";
+	    ansTextArea.id = feedbackForm.questions[i].id;
+	    ansTextArea.style.width = "38em";
+	    ansTextArea.style.height = "6em";
+	    ansTextArea.maxLength = "160";
+
+	    formGroup.appendChild(ansTextArea);
+	    
+	}
+	else if(feedbackForm.questions[i].type === "text") {
+	    var ansTextBox;
+	    renderQuesLabel();
+	    labelQues.innerHTML = feedbackForm.questions[i].name;
+	    labelQues1.innerHTML = feedbackForm.questions[i].id+".&nbsp;&nbsp;";
+	    if(feedbackForm.questions[i].mandatory == "Yes"){
+		labelQues2.innerHTML = "&nbsp;<font color='maroon'>*</font>";
+	    }
+	    ansTextBox = document.createElement("input");
+	    ansTextBox.className = "form-control"
+	    ansTextBox.placeholder = feedbackForm.questions[i].placeholder;
+	    ansTextBox.style.width = "25em";
+	    ansTextBox.id = feedbackForm.questions[i].id;
+	    formGroup.appendChild(ansTextBox);
+	}
+
+    }
+}
+
+function submitFeedback(event) {
+
+    event.preventDefault();
+    var feedback = {}; // the final feedback object
+    feedback.lab_name = feedbackForm.lab_name;
+    if(feedbackForm.exp_name){
+	feedback.exp_name = feedbackForm.exp_name;
+    }
+    feedback.user_id = feedbackForm.user_id;
+    feedback.version = feedbackForm.version;
+    feedback.key = feedbackForm.key;
+
+    feedback.responses = []; // the list of questions and user answers
+    var quesArray = feedbackForm.questions.length;
+    // loop over the questions
+    for (var i = 0; i < quesArray; i++) {
+	var questionElement = document.getElementById(feedbackForm.questions[i].id);
+	var answer = null;
+	if(feedbackForm.questions[i].type === 'radio') {
+	    answer = []
+	    var children = questionElement.querySelectorAll('input');
+	    for(var j = 0; j < children.length; j++) {
+		var child = children[j];
+		// console.log('child', child, child.type, child.checked);
+		if(child.type === 'radio' && child.checked === true) {
+
+		    if(children.length == 10){
+			var ans = child.value + "/"+ String(Number(children.length))
+			answer.push(ans);
+		    }
+		    else if(children.length == 11){
+                        var ans = child.value;
+			if(ans != "Not applicable"){
+			    var ans = child.value + "/"+ String(Number(children.length)-1)
+			    answer.push(ans);
+			}
+			else{
+			    answer.push(ans);
+			}
+		    }
+
+		    else{
+			if(i == 2 ){
+			    if(document.getElementById("bug-answer") != null){
+				var text = document.getElementById("bug-answer").value;
+				console.log(text);
+				answer.push(text);
+			    }
+			}
+			answer.push(child.value);
+		    }
+
+		}
+	    }
+	}
+	else if(feedbackForm.questions[i].type === 'checkbox') {
+	    answer = [];
+	    var children = questionElement.querySelectorAll('input');
+	    for(var j = 0; j < children.length; j++) {
+		var child = children[j];
+		if(child.checked === true) {
+		    // console.log('selected', child.value);
+		    answer.push(child.value);
+		}
+	    }
+	}
+	else if(feedbackForm.questions[i].type === 'textarea') {
+	    answer = [];
+	    var input = questionElement;
+	    answer.push(input.value);
+	}
+	else if(feedbackForm.questions[i].type === 'text') {
+	    answer = [];
+	    var input = questionElement;
+	    console.log(input);
+	    answer.push(input.value);
+	}
+	// create an object to insert the current question data
+	var question = {};
+	question.name = feedbackForm.questions[i].name;
+	//question.type = feedbackForm.questions[i].type;
+	question.answers = answer;
+	feedback.responses.push(question);
+    }
+    // Posting json data to /feedback api
+
+    console.log(feedback);
+    function add_feedback(){
+	$.ajax({
+	    url: '/feedback',
+	    type: 'POST',
+	    data: JSON.stringify(feedback),
+	    contentType: 'application/json',
+	    success: function (data) {
+		window.location.href="/success";
+		console.log(data);
+	    },
+
+	    error: function(data){
+		alert("error");
+		console.log("Error in submitted feedback");
+		console.log(data); 
+	    }
+
+	});  
+    }
+    function add_generic_feedback(){
+	$.ajax({
+	    url: '/',
+	    type: 'POST',
+	    data: JSON.stringify(feedback),
+	    contentType: 'application/json',
+	    success: function (data) {
+		window.location.href="/success";
+		console.log(data);
+	    },
+
+	    error: function(data){
+		alert("error");
+		console.log("Error in submitted feedback");
+		console.log(data); 
+	    }
+
+	});  
+    }
+    var count = 0;
+    var not_answered = []
+    for(var i=0;i<feedback.responses.length;i++){
+	if(feedbackForm.questions[i].mandatory == "Yes" && (feedback.responses[i].answers.length == 0 || feedback.responses[i].answers[0] == "")){
+	    //alert("Some of the questions are not answered");
+	    //alert("Quesion No " + (i+1) +" is not answered");
+	    count++;
+	    not_answered.push(i+1);
+//	      break;
+	}
+    }
+    if(count == 0){
+	if(feedbackForm.version == "generic-feedback-v2.0"){
+	    add_generic_feedback();
+	    }
+	else{
+	    add_feedback();
+	}
+    }
+    else{
+	alert(not_answered + " Question(s) are not answered");
+    }
+
+
+}
+
   
   
 #+END_SRC
    
+
 ** CSS 
 #+BEGIN_SRC css :tangle ./static/css/main.css :eval no :noweb yes
 @import url(https://fonts.googleapis.com/css?family=Raleway:400,300,700,500,600);
@@ -1155,7 +1405,7 @@ margin-top:120px;
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
-    width: 48%;
+    width: 32em;
 }
 
 td {
@@ -1171,7 +1421,7 @@ tr:nth-child(even) {
 
 #+END_SRC
 
-
+   
 * Infra                                                         :boilerplate:
 
 ** sources
@@ -1229,15 +1479,20 @@ if __name__ == '__main__':
 ** sources
 #+BEGIN_SRC python :tangle api.py :eval no :noweb yes
 <<imports_for_sources>>
-<<add_feedback>>
+<<get_add_generic_feedback>>
+<<get_success_template>>
+<<get_add_feedback>>
 <<get_feedback_usage>>
 <<get_feedback_dump>>
 <<get_gateway_ip>>
 #+END_SRC
 
+
 ** tests
 #+BEGIN_SRC python :tangle test_api.py :eval no :noweb yes
 <<imports_for_tests>>
+<<test_get_generic_feedback>>
+<<test_add_generic_feedback>>
 <<test_get_feedback>>
 <<test_add_feedback>>
 <<test_get_feedback_usage>>
