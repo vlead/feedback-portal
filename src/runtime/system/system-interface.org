@@ -605,6 +605,7 @@ if __name__ == '__main__':
 #+BEGIN_SRC python :tangle system_interface.py :eval no :noweb yes
 <<imports_for_sources>>
 <<class_system_interface>>
+<<get_generic_feedback_form>>
 <<get_feedback_form>>
 <<class_add_feedback>>
 <<class_si_get_feedback_usage>>
