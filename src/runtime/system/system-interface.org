@@ -125,7 +125,7 @@ class TestGetFeedbackForm(TestCase):
 #+NAME: get_generic_feedback_form
 #+BEGIN_SRC python
     @staticmethod
-    def get_feedback_generic_form()
+    def get_generic_feedback_form()
         return feedback_forms[2]
 
 #+END_SRC
