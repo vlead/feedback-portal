@@ -102,18 +102,14 @@ def populate():
 
     question21 = question_cls(name="Please provide any other feedback about this lab",
 			      question_type=q_type)
-    question22 = question_cls(name="How useful do you think Virtual Labs is for an engineering student ?",
-			      question_type=q_type)
-
-    question23 = question_cls(name="What are your suggestions about making Virtual Labs better ?",
+    question22 = question_cls(name="Please provide any other feedback about Virtual Labs",
 			      question_type=q_type)
     q_type = "radio"
-    question24 = question_cls(name="Designation",
+    question23 = question_cls(name="Designation",
 			      question_type=q_type)
-    q_type = "text"
-    question24 = question_cls(name="Email ID",
+    question24 = question_cls(name="Did you attempt any experiments ?",
 			      question_type=q_type)
-    question25 = question_cls(name="Name",
+    question25 = question_cls(name="Please rate your experience",
 			      question_type=q_type)
     
     
