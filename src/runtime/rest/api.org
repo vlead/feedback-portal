@@ -897,7 +897,6 @@ def get_gateway_ip():
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes
 
-
 var feedbackForm = window.data;
 var labelQues, formGroup;
 console.log(feedbackForm);
@@ -905,6 +904,8 @@ document.getElementById("version").innerHTML = "version : "+feedbackForm.version
 function renderQuesLabel() {
     formGroup = document.createElement("div");
     formGroup.className = "form-group"
+    newline = document.createElement('p');
+    formGroup.appendChild(newline);
     labelQues1 = document.createElement('label');
     formGroup.appendChild(labelQues1);
     labelQues = document.createElement('label');
@@ -1078,8 +1079,10 @@ function renderFeedbackform() {
 		radioOption = document.createElement('input');
 		radioOption.type = "radio";
 		radioOption.className = "";
-
-
+		
+		if(i == 0 && k == 0){
+		    radioOption.checked = true;
+		}
 		if(i == 1 && k == 0 && feedbackForm.questions[i].driver.length!=0){
 		    var questions = feedbackForm.questions[i].driver;
 		    radioOption.onclick = function(){driver(questions, 'Not applicable', 'false'); };
