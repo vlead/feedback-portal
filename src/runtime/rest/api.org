@@ -740,7 +740,7 @@ def get_gateway_ip():
         <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
       </div>
       <br><br><br><br><br>
-      <h2 align="center"><font color="green">Thank you for feedback</font></h2>
+      <h2 align="center"><font color="green">Thank you for the feedback</font></h2>
       <br>
       <h5 align="center"><font color="green">You may close this window</font></h5>
     </body>
@@ -1226,7 +1226,7 @@ function submitFeedback(event) {
 	    },
 
 	    error: function(data){
-		alert("error");
+		//alert("error");
 		console.log("Error in submitted feedback");
 		console.log(data); 
 	    }
@@ -1245,7 +1245,7 @@ function submitFeedback(event) {
 	    },
 
 	    error: function(data){
-		alert("error");
+		//alert("error");
 		console.log("Error in submitted feedback");
 		console.log(data); 
 	    }
