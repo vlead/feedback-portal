@@ -31,7 +31,7 @@ def get_generic_feedback():
             abort(500, "the request does not contain data in json")
 
         try:
-            gateway_ip = str(request.remote_addr)
+            gateway_ip = str(request.headers.getlist("X-Forwarded-For")[0].rpartition(' ')[-1])
             data_dict["gateway_ip"] = gateway_ip
             fb = SystemInterface.add_generic_feedback(data_dict)
             return jsonify('{"status":"sucess"}')
@@ -644,7 +644,7 @@ class TestGetFeedbackDump(TestCase):
 @api.route('/get_gateway_ip', methods=['GET'])
 def get_gateway_ip():
     try:
-        gateway_ip = str(request.remote_addr)
+        gateway_ip = str(request.headers.getlist("X-Forwarded-For")[0].rpartition(' ')[-1])
         return jsonify({'gateway_ip': gateway_ip}) 
     except Exception as e:
         return "Error in getting the gateway_ip"
