@@ -22,7 +22,7 @@ mkdir -p ~/emacs/lisp
 cd ~/emacs/lisp
 wget http://orgmode.org/org-8.3.6.tar.gz
 tar zxvf org-8.3.6.tar.gz
-
+ln -s org-8.3.6 org-8.2.10
 #+END_SRC
 
 *** Setup developement environment for feedback app to run
