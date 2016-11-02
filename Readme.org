@@ -1,5 +1,5 @@
 * Feedback Portal
-** Pre-requisites to build the sources
+** Pre-requisites to build the sources on Ubunut12.04
 *** Install =emacs v24.5=
 
 #+BEGIN_SRC 
