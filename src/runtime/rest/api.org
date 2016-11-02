@@ -652,7 +652,82 @@ def get_gateway_ip():
 #+END_SRC
 
 
+
+** Add Question
+   REST API to get and post question
+
+#+NAME: add_question
+#+BEGIN_SRC python
+@api.route('/questions', methods=['POST'])
+def add_question():
+    if request.method == 'POST':
+        if request.is_json:
+            data_json = json.dumps(request.get_json())
+            data_dict = yaml.safe_load(data_json)
+        else:
+            abort(500, "the request does not contain data in json")
+
+        try:
+            q1 = SystemInterface.add_question(data_dict)
+            return jsonify('{"status":"sucess"}')
+
+        except TypeError as err:
+            error_message = 'Malformed arguments, error: %s' % str(err)
+
+            return render_template('error.html', 
+                    data=error_message)
+
+        except Exception as err:
+            abort(500, 'error: %s' % str(err))
+            
+#+END_SRC
+
+
+*** TestAddQuestion
+ #+NAME: test_add_question
+ #+BEGIN_SRC python
+class TestAddQuestion(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_add_question(self):
+        print "test_question"
+        payload = {'name': 'How are you?',
+                   'question_type': 'radio',
+                   'key': KEY}
+
+        headers = {'Content-Type': 'application/json'}
+
+        response = self.client.post("/questions", data=json.dumps(payload),
+                                 headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+
+ #+END_SRC
    
+
 * WebApp
 
 ** Index HTML
@@ -756,6 +831,7 @@ def get_gateway_ip():
 #+BEGIN_SRC html :tangle ./templates/header.html :eval no :noweb yes
       <header>
         <!-- Navigation -->
+        <link rel="shortcut icon" href="http://vlabs.ac.in/images/favicon.ico">
         <nav class="navbar navbar-default " style="background-color: white !important; margin-bottom: 0px !important;">
           <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
@@ -1485,6 +1561,7 @@ if __name__ == '__main__':
 <<get_feedback_usage>>
 <<get_feedback_dump>>
 <<get_gateway_ip>>
+<<add_question>>
 #+END_SRC
 
 
@@ -1497,6 +1574,7 @@ if __name__ == '__main__':
 <<test_add_feedback>>
 <<test_get_feedback_usage>>
 <<test_get_feedback_dump>>
+<<test_add_question>>
 <<run_test_cases>>
 #+end_src
 
