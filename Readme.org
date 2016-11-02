@@ -26,11 +26,17 @@ tar zxvf org-8.3.6.tar.gz
 #+END_SRC
 
 *** Setup developement environment for feedback app to run
-- Run =make= command
+- Clone the repository
 #+BEGIN_SRC 
 git clone https://github.com/vlead/feedback-portal.git
 cd feedback-portal
 make
 #+END_SRC
+- Build the sources
+#+BEGIN_SRC 
+cd feedback-portal
+make
+#+END_SRC
+
 
 - Follow the  [[https://github.com/vlead/feedback-portal/blob/develop/src/deployment/run-feedback-in-developement-environment.org#running-feedback-portal-on-developement-environment][Documentation]] to setup developement environment.
