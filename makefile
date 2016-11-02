@@ -63,7 +63,7 @@ install-pep:
 	sudo pip install pep8
 
 lint:  install-pep
-	pep8 --ignore=E302 ${PWD}/${CODE_DIR} > ${LINT_FILE};
+	(pep8 --ignore=E302 ${PWD}/${CODE_DIR} > ${LINT_FILE}; ([ $$? -eq 0 ] && echo "no lint errors!") || echo "lint errors exist!")
 
 build-with-lint: build lint
 
