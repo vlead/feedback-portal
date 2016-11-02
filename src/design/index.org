@@ -231,6 +231,43 @@
       + Content: { error : "Date is mandatory and should be in 'mm-dd-yyyy' format" }
 
 	
+** Add the Question
+  :PROPERTIES:
+  :CUSTOM_ID: save_feedback_form
+  :END:    
+   The authentication for the =POST= is sent as part of header.
+   - URL :: /questions
+
+   - Method :: POST
+
+   - Data Params
+     {
+      'name':'question_name',
+      'question_type': 'question_type',
+      'key': 'key'
+     }
+
+   - Success Response
+     + Code: 200
+
+     + Content:
+       {
+         status: "success"
+       }
+
+   - Error Response:
+     + Code: 401 UNAUTHORIZED
+
+     + Content: { error : "Wrong Key configured" }
+
+     OR
+
+     + Code: 400 Bad Request
+
+     + Content: { error : "some of the parameters are not part of the
+       request" }
+
+
 * Services Interplay
   :PROPERTIES:
   :CUSTOM_ID: services_interplay
