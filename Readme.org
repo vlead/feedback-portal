@@ -1,7 +1,7 @@
 * Feedback Portal
 ** Install Pre-requisites to build the sources
 *** Install =emacs v24.5=
-- Following commands are well tested on =Ubuntu12.04 X64= bit
+
 #+BEGIN_SRC 
 sudo apt-get install checkinstall
 mkdir -p ~/src
@@ -14,18 +14,20 @@ make
 sudo checkinstall
 
 #+END_SRC
-More on documentation : http://wiki.vlead.vlabs.ac.in/index.php/How_to_setup_emacs_and_org_8
+- Following commands are well tested on =Ubuntu12.04 X64= bit
+- For More documentation visit http://wiki.vlead.vlabs.ac.in/index.php/How_to_setup_emacs_and_org_8
 *** Install =org v8.3.6=
 mkdir -p ~/emacs/lisp
 cd ~/emacs/lisp
 wget http://orgmode.org/org-8.3.6.tar.gz
 tar zxvf org-8.3.6.tar.gz
 
-*** Run =make= command
+*** Setup developement environment for feedback app to run
+- Run =make= command
 #+BEGIN_SRC 
 git clone https://github.com/vlead/feedback-portal.git
 cd feedback-portal
 make
 #+END_SRC
 
-** Running Feedback Portal =app=
+- Follow the  [[https://github.com/vlead/feedback-portal/blob/develop/src/deployment/run-feedback-in-developement-environment.org#running-feedback-portal-on-developement-environment][Documentation]] to setup developement environment.
