@@ -883,7 +883,7 @@ class TestGetFeedbackDump(TestCase):
         question = question_cls(name=data_dict['name'],
                                 question_type=data_dict['question_type'])
         try:
-            quesion = System.do("add_question", question=question, 
+            question = System.do("add_question", question=question, 
                                     session=session)
             return question
         except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
@@ -952,6 +952,76 @@ class TestAddQuestion(TestCase):
  #+END_SRC
 
 
+** UpdateQuestion
+
+#+NAME: class_update_question
+#+begin_src python
+    @staticmethod
+    def update_question(data_dict):
+        session_cls = System.delegate.entities['session']
+        question_cls = System.delegate.entities['question']
+
+        session = session_cls(key=data_dict['key'])
+        question = question_cls.get_by_id(data_dict['q_id'])
+        name=data_dict['name']
+        question_type=data_dict['question_type']
+
+        try:
+            question = System.do("update_question", question=question,
+                                    name=name, question_type=question_type,
+                                    session=session)
+            return question
+        except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
+
+        except Exception as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
+#+end_src
+
+*** TestUpateQuestion
+ #+NAME: test_class_update_question
+ #+BEGIN_SRC python
+class TestUpdateQuestion(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_update_question_in_system_interface(self):
+        print "test_update_question_in_system_interface"
+
+        data_dict = {
+                    'key' : KEY,
+                    'name': 'how are you?',
+                    'question_type': 'radio'
+                   }
+
+        data_dict1 = {
+                    'key' : KEY,
+                    'q_id': 1,
+                    'name': 'how are labs?',
+                    'question_type': 'text'
+                   }
+
+        question = SystemInterface.add_question(data_dict)
+        question1 = SystemInterface.update_question(data_dict1)
+        
+        self.assertEqual(question1.get("name"), data_dict1['name'])
+        self.assertEqual(question1.get("question_type"), 
+                             data_dict1['question_type'])
+
+ #+END_SRC
+
+
 * Infra                                                         :boilerplate:
   
 ** sources
@@ -1005,6 +1075,7 @@ if __name__ == '__main__':
 <<get_generic_feedback_form>>
 <<get_feedback_form>>
 <<class_add_feedback>>
+<<class_update_question>>
 <<class_add_generic_feedback>>
 <<class_si_get_feedback_usage>>
 <<class_si_get_feedback_dump>>
@@ -1021,5 +1092,6 @@ if __name__ == '__main__':
 <<test_class_si_get_feedback_usage>>
 <<test_class_si_get_feedback_dump>>
 <<test_class_add_question>>
+<<test_class_update_question>>
 <<run_test_cases>>
 #+end_src
