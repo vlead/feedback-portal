@@ -272,6 +272,36 @@ class TestPersistenceDelegate(TestCase):
 #+END_SRC
 
 
+***  Update question 
+    This function updates existing question.
+#+NAME: persistence_update_question
+#+BEGIN_SRC python
+    def update_question(self, question, name, question_type):
+        question.set(name=name, question_type=question_type)
+        question.save()
+        return question
+
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistence_update_question
+#+BEGIN_SRC python
+    def test_update_question(self):
+         print "test_update_question"
+         name = "how are labs?"
+         question_type = "radio"
+         question = Question(name=name, question_type=question_type)
+         question1 = self.persistence_delegate.add_question(question)
+         name1 = "how are experiments?"
+         question_type1 = "text"
+         question2 = self.persistence_delegate.update_question\
+           (question1, name1, question_type1),
+         question2 = Question.get_by_id(1)
+         self.assertEqual(question2.get("name"), name1)
+
+#+END_SRC
+
+
 ***  Add answer to the system
     This function adds question to the system.
 #+NAME: persistence_add_answer
@@ -1158,6 +1188,7 @@ if __name__ == '__main__':
 <<persistence_add_question>>
 <<persistence_add_answer>>
 <<persistence_add_feedback>>
+<<persistence_update_question>>
 <<persistence_get_feedbacks>>
 <<persistence_get_feedback_by_id>>
 <<persistence_get_feedback_usage>>
@@ -1183,6 +1214,7 @@ if __name__ == '__main__':
 <<test_persistence_add_question>>
 <<test_persistence_add_answer>>
 <<test_persistence_add_feedback>>
+<<test_persistence_update_question>>
 <<test_persistence_get_feedbacks>>
 <<test_persistence_get_feedback_by_id>>
 <<test_persistence_get_feedback_usage>>

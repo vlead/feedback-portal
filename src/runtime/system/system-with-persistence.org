@@ -54,6 +54,50 @@ class TestAddQuestion(TestCase):
 #+END_SRC
 
 
+* Test UpdateQuestion
+#+NAME: test_update_question
+#+BEGIN_SRC python
+class TestUpdateQuestion(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_update_question(self):
+        
+        print "test_update_question_in_system_persistence"
+        session_cls = System.delegate.entities['session']
+        question_cls = System.delegate.entities['question']
+
+        name="how are labs?"
+        radio="radio"
+        key = KEY
+        session = session_cls(key=key)
+        question = question_cls(name=name, question_type=radio)
+        question1 = System.do("add_question", question=question,
+                                  session=session)
+        name1="how are experiements?"
+        radio1="text"
+        question1 = System.do("update_question", question=question,
+                                  name=name1, question_type=radio1,
+                                  session=session)
+
+        new_question = question_cls.get_by_id(1)
+
+        self.assertEqual(new_question.get("name"), name1)
+        self.assertEqual(new_question.get("question_type"), radio1)
+            
+#+END_SRC
+
+
 * Test AddAnswer
 #+NAME: test_add_answer
 #+BEGIN_SRC python
@@ -352,6 +396,7 @@ if __name__ == '__main__':
 <<test_add_question>>
 <<test_add_answer>>
 <<test_add_feedback>>
+<<test_update_question>>
 <<test_get_feedback_usage>>
 <<test_get_feedback_dump>>
 <<test_add_responses_to_feedback>>
