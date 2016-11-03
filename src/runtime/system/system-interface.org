@@ -560,6 +560,141 @@ class TestAddFeedback(TestCase):
  #+END_SRC
 
 
+** AddGenericLabAndExpFeedback
+
+#+NAME: class_add_generic_lab_and_exp_feedback
+#+begin_src python
+    @staticmethod
+    def add_generic_lab_and_exp_feedback(data_dict):
+        session_cls = System.delegate.entities['session']
+        response_cls = System.delegate.entities['response']
+        question_cls = System.delegate.entities['question']
+        answer_cls = System.delegate.entities['answer']
+
+        data_dict['session'] = session_cls(key=KEY)
+        data_dict['date'] = datetime.datetime.now().date()
+
+        data_dict['user_id'] = "Null"
+
+        if 'exp_name' not in data_dict:
+            data_dict['exp_name'] = "Null"
+
+        responses = data_dict['responses']
+        data_dict['responses'] = []
+
+        fb = None
+        try:
+            fb = System.do("add_feedback", **data_dict)
+
+        except Exception as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
+
+        response_list = []
+        try:
+            for response in responses:
+                question = question_cls(name=str(response['name']),
+                                        question_type="")
+                answers = response['answers']
+                answer_list = []
+                for answer in answers:
+                    answer = answer_cls(name=str(answer))
+                    answer_list.append(answer)
+ 
+                res = response_cls(question=question, answers=answer_list,
+                                    feedbacks=[fb])
+                response_list.append(res)
+
+            feedback = System.do("add_responses_to_feedback",
+                                    responses=response_list,
+                                    fb_id=int(fb.id),
+                                    session=data_dict['session'])
+            return feedback
+        except Exception as e:
+            fb.delete()
+            current_app.logger.error("Exception = %s" % str(e))
+            raise e
+
+#+end_src
+
+*** TestAddGenericLabAndExpFeedback
+ #+NAME: test_class_add_generic_lab_and_exp_feedback
+ #+BEGIN_SRC python
+class TestAddGenericLabAndExpFeedback(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_add_generic_lab_feedback_in_system_interface(self):
+        print "test_add_generic_lab_feedback_in_system_interface"
+
+        version = "generic-lab-feedback-v2.0"
+
+        data_dict = {'lab_name': 'data structure',
+                    'gateway_ip': '10.4.12.24',
+                    'key' : KEY,
+                    'version': version,
+                    'responses': [{'name': 'How is your breakfast?',
+                                    'answers':['yes', 'no'] }]
+                   }
+
+        fb = SystemInterface.add_feedback(data_dict)
+        feedback_cls = System.delegate.entities['feedback']
+        fb = feedback_cls.get_all()[0]
+        
+        self.assertEqual(fb.get("lab_name"), data_dict['lab_name'])
+        self.assertEqual(fb.get("gateway_ip"), data_dict['gateway_ip'])
+        self.assertEqual(fb.get("responses")[0].get("question").get("name"),
+                             'How is your breakfast?')
+
+    def test_add_generic_exp_feedback_in_system_interface(self):
+        print "test_add_generic_exp_feedback_in_system_interface"
+
+        version = "generic-exp-feedback-v2.0"
+
+        data_dict = {'lab_name': 'Problem Solving',
+                     'exp_name': 'Number Systems',
+                    'gateway_ip': '10.4.12.24',
+                    'version': version,
+                    'key' : KEY,
+                    'responses': [{'name': 'How is your breakfast?',
+                                    'answers':['yes', 'no'] }]
+                   }
+
+        fb = SystemInterface.add_feedback(data_dict)
+        feedback_cls = System.delegate.entities['feedback']
+        fb = feedback_cls.get_all()[0]
+        
+        self.assertEqual(fb.get("lab_name"), data_dict['lab_name'])
+        self.assertEqual(fb.get("exp_name"), data_dict['exp_name'])
+        self.assertEqual(fb.get("gateway_ip"), data_dict['gateway_ip'])
+        self.assertEqual(fb.get("responses")[0].get("question").get("name"),
+                             'How is your breakfast?')
+
+ #+END_SRC
+
+
 ** GetFeedbackUsage
 
 #+NAME: class_si_get_feedback_usage
@@ -882,6 +1017,7 @@ if __name__ == '__main__':
 <<imports_for_tests>>
 <<test_class_get_feedback_form>>
 <<test_class_add_feedback>>
+<<test_class_add_generic_lab_and_exp_feedback>>
 <<test_class_si_get_feedback_usage>>
 <<test_class_si_get_feedback_dump>>
 <<test_class_add_question>>

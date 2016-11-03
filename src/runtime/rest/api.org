@@ -347,7 +347,7 @@ class TestAddFeedback(TestCase):
         db.session.remove()
         db.drop_all()
 
-    def test_add_lab_feedback(self):
+    def test_add_exp_feedback(self):
         print "test_add_lab_feedback"
         version = "open-edx-virtual-labs-v2.0"
         payload = {'lab_name': 'data structure',
@@ -367,7 +367,7 @@ class TestAddFeedback(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-    def test_add_exp_feedback(self):
+    def test_add_lab_feedback(self):
         print "test_add_exp_feedback"
         version = "open-edx-virtual-labs-v2.0"
         payload = {'lab_name': 'data structure',
@@ -412,6 +412,269 @@ class TestAddFeedback(TestCase):
 '''
  #+END_SRC
 
+
+** Get Generic Lab and Exp Feedback 
+   REST API to get lab and experiment feedback for non open-edx labs
+#+NAME: get_add_generic_lab_exp_feedback
+#+BEGIN_SRC python
+@api.route('/feedback/<string>', methods=['GET'])
+def get_add_generic_lab_and_exp_feedback(string):
+    if request.method == 'GET':
+        if string == 'lab':
+            response = SystemInterface.get_generic_feedback_form\
+              ('generic-lab-feedback-v2.0')
+            return render_template('index.html', 
+                                questions_data=response)
+        elif string == 'experiment':
+            response = SystemInterface.get_generic_feedback_form\
+              ('generic-exp-feedback-v2.0')
+            return render_template('index.html', 
+                                questions_data=response)
+
+    if request.method == 'POST':
+        if request.is_json:
+            data_json = json.dumps(request.get_json())
+            data_dict = yaml.safe_load(data_json)
+        else:
+            abort(500, "the request does not contain data in json")
+
+        try:
+            gateway_ip = str(request.access_route[-1])
+            data_dict["gateway_ip"] = gateway_ip
+            fb = SystemInterface.add_generic_lab_and_exp_feedback(data_dict)
+            return jsonify('{"status":"sucess"}')
+
+        except TypeError as err:
+            error_message = 'Malformed arguments, error: %s' % str(err)
+
+            return render_template('error.html', 
+                    data=error_message)
+
+        except Exception as err:
+            abort(500, 'error: %s' % str(err))
+
+#+END_SRC
+
+*** TestGetGenericLabAndExpFeedback
+ #+NAME: test_get_generic_lab_and_exp_feedback
+ #+BEGIN_SRC python
+class TestGetGenericLabAndExpFeedback(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_generic_lab_feedback_form_data(self):
+        print "test_get_generic_lab_feedback_form_data"
+
+        headers = {'Content-Type': 'application/json'}
+        request_str = "/feedback/lab"
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_get_generic_exp_feedback_form_data(self):
+        print "test_get_generic_exp_feedback_form_data"
+
+        headers = {'Content-Type': 'application/json'}
+        request_str = "/feedback/experiment"
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+#+END_SRC
+
+#+NAME: error_test_cases
+#+BEGIN_SRC python
+    def test_get_lab_feedback_with_401_error(self):
+        print "test_get_lab_feedback_with_401_error"
+        print "test not authorized error"
+
+        lab_name = "Data Structures"
+        exp_name = "binary search"
+        user_id = "123user"
+        key = "jigajiga"
+        version = None
+        headers = {'Content-Type': 'application/json'}
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s \
+                      &version=%s"\
+                      % (lab_name, exp_name, user_id, version, key)
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        self.assertEqual(response.status_code, 401)
+
+
+    def test_get_lab_feedback_with_400_error(self):
+        print "test_get_lab_feedback_with_400_error"
+        print "test bad request"
+
+        lab_name = "Data Sturtures"
+        exp_name = "binary search"
+        user_id = "123user"
+        headers = {'Content-Type': 'application/json'}
+        request_str = "/feedback?lab_name=%s&exp_name=%s&user_id=%s&key=%s" \
+          % (lab_name, exp_name, user_id, "default key")
+
+        print "request-str = %s" % request_str
+        response = self.client.get(request_str, headers=headers)
+        self.assertEqual(response.status_code, 400)
+
+ 
+#+END_SRC
+
+
+ #+NAME: test_add_generic_lab_and_exp_feedback
+ #+BEGIN_SRC python
+class TestAddGenericLabAndExpFeedback(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_add_generic_lab_feedback(self):
+        print "test_add_generic_lab_feedback"
+        version = "generic-lab-feedback-v2.0"
+        payload = {'version': version,
+                   'lab_name': 'data structure',
+            'responses': [{'name': 'How is your breakfast?',
+                            'answers':['yes', 'no'] }]
+           }
+
+        headers = {'Content-Type': 'application/json'}
+        ip_address = {'REMOTE_ADDR': '1.2.3.4'}
+
+        response = self.client.post("/feedback/lab", data=json.dumps(payload),
+                                 headers=headers,
+                                 environ_overrides=ip_address)
+
+        self.assertEqual(response.status_code, 200)
+
+
+
+'''
+    def test_get_lab_feedback_form_data(self):
+        print "test_get_lab_feedback_form_data"
+
+        headers = {'content-type': 'application/json'}
+        response = self.client.get("/feedback?lab_name=data structure&key=some"
+                                       " alphanumeric string",
+                                        headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(result['lab_name'], "data structure")
+
+    def test_get_exp_feedback_form_data(self):
+        print "test_get_exp_feedback_form_data"
+
+        headers = {'content-type': 'application/json'}
+        response = self.client.get("/feedback?lab_name=data structure&exp_name"
+                                       "=tuples&key=some alphanumeric string",
+                                        headers=headers)
+        result = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(result['lab_name'], "data structure")
+        self.assertEqual(result['exp_name'], "tuples")
+'''
+ #+END_SRC
+
+*** TestAddGenericLabAndExpFeedback
+ #+NAME: test_add_generic_lab_and_exp_feedback
+ #+BEGIN_SRC python
+class TestAddGenericLabandExpFeedback(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_add_generic_lab_feedback(self):
+        print "test_add_generic_lab_feedback"
+        version = "open-edx-virtual-labs-v2.0"
+        payload = {'version': version,
+                   'lab_name': 'Data Structures',
+            'responses': [{'name': 'How is your breakfast?',
+                            'answers':['yes', 'no'] }]
+           }
+
+        headers = {'Content-Type': 'application/json'}
+        ip_address = {'REMOTE_ADDR': '1.2.3.4'}
+
+        response = self.client.post("/feedback/lab", data=json.dumps(payload),
+                                 headers=headers,
+                                 environ_overrides=ip_address)
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_generic_exp_feedback(self):
+        print "test_add_generic_exp_feedback"
+        version = "open-edx-virtual-labs-v2.0"
+        payload = {'version': version,
+                   'lab_name': 'Problem Solving',
+                   'exp_name': 'Number Systems',
+            'responses': [{'name': 'How is your breakfast?',
+                            'answers':['yes', 'no'] }]
+           }
+
+        headers = {'Content-Type': 'application/json'}
+        ip_address = {'REMOTE_ADDR': '1.2.3.4'}
+
+        response = self.client.post("/feedback/experiment", data=json.dumps(payload),
+                                 headers=headers,
+                                 environ_overrides=ip_address)
+
+        self.assertEqual(response.status_code, 200)
+
+ #+END_SRC
 
 ** Get Feedback Usage
    This is the REST API method for getting the feedback usage. 
@@ -1556,6 +1819,7 @@ if __name__ == '__main__':
 #+BEGIN_SRC python :tangle api.py :eval no :noweb yes
 <<imports_for_sources>>
 <<get_add_generic_feedback>>
+<<get_add_generic_lab_exp_feedback>>
 <<get_success_template>>
 <<get_add_feedback>>
 <<get_feedback_usage>>
@@ -1569,6 +1833,7 @@ if __name__ == '__main__':
 #+BEGIN_SRC python :tangle test_api.py :eval no :noweb yes
 <<imports_for_tests>>
 <<test_get_generic_feedback>>
+<<test_get_generic_lab_and_exp_feedback>>
 <<test_add_generic_feedback>>
 <<test_get_feedback>>
 <<test_add_feedback>>
