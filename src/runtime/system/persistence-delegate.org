@@ -302,6 +302,49 @@ class TestPersistenceDelegate(TestCase):
 #+END_SRC
 
 
+***  Delete question 
+    This function updates existing question.
+#+NAME: persistence_delete_question
+#+BEGIN_SRC python
+    def delete_question(self, q_id):
+        record = Question.get_by_id(q_id)
+        if not record:
+            abort(404, 'No question with id %s' % (q_id))
+        else:
+            try:
+                record.delete()
+                #db.session.delete(record)
+                #db.session.commit()
+            except Exception, e:
+                print e
+                abort(500, str(e))
+
+        return q_id
+
+#+END_SRC
+
+**** Tests
+#+NAME: test_persistence_delete_question
+#+BEGIN_SRC python
+    def test_delete_question(self):
+         print "test_delete_question"
+         name = "how are labs?"
+         question_type = "radio"
+         question = Question(name=name, question_type=question_type)
+         question1 = self.persistence_delegate.add_question(question)
+
+         name1 = "how are experiments?"
+         question_type1 = "radio"
+         question1 = Question(name=name1, question_type=question_type1)
+         question2 = self.persistence_delegate.add_question(question1)
+
+         self.persistence_delegate.delete_question(1)
+
+         self.assertEqual(len(Question.get_all()), 1)
+
+#+END_SRC
+
+
 ***  Add answer to the system
     This function adds question to the system.
 #+NAME: persistence_add_answer
@@ -1186,6 +1229,7 @@ if __name__ == '__main__':
 <<persistence_feedback_exists>>
 <<persistence_response_exists>>
 <<persistence_add_question>>
+<<persistence_delete_question>>
 <<persistence_add_answer>>
 <<persistence_add_feedback>>
 <<persistence_update_question>>
@@ -1212,6 +1256,7 @@ if __name__ == '__main__':
 <<test_persistence_feedback_exists>>
 <<test_persistence_response_exists>>
 <<test_persistence_add_question>>
+<<test_persistence_delete_question>>
 <<test_persistence_add_answer>>
 <<test_persistence_add_feedback>>
 <<test_persistence_update_question>>

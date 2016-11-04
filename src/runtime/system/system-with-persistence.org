@@ -98,6 +98,50 @@ class TestUpdateQuestion(TestCase):
 #+END_SRC
 
 
+* Test DeleteQuestion
+#+NAME: test_delete_question
+#+BEGIN_SRC python
+class TestDeleteQuestion(TestCase):
+    TESTING = True
+
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_delete_question(self):
+        
+        print "test_delete_question_in_system_persistence"
+        session_cls = System.delegate.entities['session']
+        question_cls = System.delegate.entities['question']
+
+        name="how are labs?"
+        radio="radio"
+        key = KEY
+        session = session_cls(key=key)
+        question = question_cls(name=name, question_type=radio)
+        question1 = System.do("add_question", question=question,
+                                  session=session)
+
+        name1="how are experiments?"
+        radio1="text"
+        question1 = question_cls(name=name1, question_type=radio1)
+        question2 = System.do("add_question", question=question1,
+                                  session=session)
+
+        System.do("delete_question", q_id=1, session=session)
+
+        self.assertEqual(len(question_cls.get_all()), 1)
+            
+#+END_SRC
+
+
 * Test AddAnswer
 #+NAME: test_add_answer
 #+BEGIN_SRC python
@@ -394,6 +438,7 @@ if __name__ == '__main__':
 <<imports_for_tests>>
 <<populate_db>>
 <<test_add_question>>
+<<test_delete_question>>
 <<test_add_answer>>
 <<test_add_feedback>>
 <<test_update_question>>
