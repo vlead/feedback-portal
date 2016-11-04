@@ -952,6 +952,73 @@ class TestAddQuestion(TestCase):
  #+END_SRC
 
 
+** DeleteQuestion
+
+#+NAME: class_delete_question
+#+begin_src python
+    @staticmethod
+    def delete_question(data_dict):
+        session_cls = System.delegate.entities['session']
+
+        session = session_cls(key=data_dict['key'])
+        try:
+            question = System.do("delete_question", q_id=data_dict['q_id'], 
+                                    session=session)
+            return question
+        except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
+
+        except Exception as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
+#+end_src
+
+*** TestDeleteQuestion
+ #+NAME: test_class_delete_question
+ #+BEGIN_SRC python
+class TestDeleteQuestion(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_delete_question_in_system_interface(self):
+        print "test_delete_question_in_system_interface"
+
+        data_dict = {
+                    'key' : KEY,
+                    'name': 'how are labs?',
+                    'question_type': 'radio'
+                   }
+
+        data_dict1 = {
+                    'key' : KEY,
+                    'name': 'how are experiments?',
+                    'question_type': 'text'
+                   }
+
+        data_dict2 = {
+                    'key' : KEY,
+                    'q_id': 1
+                   }
+
+        question = SystemInterface.add_question(data_dict)
+        question1 = SystemInterface.add_question(data_dict1)
+        q_id = SystemInterface.delete_question(data_dict2)
+        
+        self.assertEqual(q_id, 1)
+
+ #+END_SRC
+
+
 ** UpdateQuestion
 
 #+NAME: class_update_question
@@ -1076,6 +1143,7 @@ if __name__ == '__main__':
 <<get_feedback_form>>
 <<class_add_feedback>>
 <<class_update_question>>
+<<class_delete_question>>
 <<class_add_generic_feedback>>
 <<class_si_get_feedback_usage>>
 <<class_si_get_feedback_dump>>
@@ -1093,5 +1161,6 @@ if __name__ == '__main__':
 <<test_class_si_get_feedback_dump>>
 <<test_class_add_question>>
 <<test_class_update_question>>
+<<test_class_delete_question>>
 <<run_test_cases>>
 #+end_src
