@@ -1089,6 +1089,71 @@ class TestUpdateQuestion(TestCase):
  #+END_SRC
 
 
+** GetQuestions
+
+#+NAME: class_get_questions
+#+begin_src python
+    @staticmethod
+    def get_questions():
+        question_cls = System.delegate.entities['question']
+        try:
+            questions = question_cls.get_all()
+            return questions
+        except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
+
+        except Exception as err:
+            current_app.logger.error("Exception = %s" % str(err))
+            raise err
+#+end_src
+
+*** TestGetQuestions
+ #+NAME: test_class_get_questions
+ #+BEGIN_SRC python
+class TestUpdateQuestion(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_questions_in_system_interface(self):
+        print "test_get_questions_in_system_interface"
+
+        data_dict = {
+                    'key' : KEY,
+                    'name': 'how are you?',
+                    'question_type': 'radio'
+                   }
+
+        data_dict1 = {
+                    'key' : KEY,
+                    'name': 'how are labs?',
+                    'question_type': 'text'
+                   }
+
+        question1 = SystemInterface.add_question(data_dict)
+        question2 = SystemInterface.add_question(data_dict1)
+
+        questions_list = SystemInterface.get_questions()
+        
+        self.assertEqual(questions_list[0].get("name"), data_dict['name'])
+        self.assertEqual(questions_list[1].get("name"), data_dict1['name'])
+        self.assertEqual(questions_list[0].get("question_type"), 
+                             data_dict['question_type'])
+        self.assertEqual(questions_list[1].get("question_type"), 
+                             data_dict1['question_type'])
+
+ #+END_SRC
+
+
 * Infra                                                         :boilerplate:
   
 ** sources
@@ -1148,6 +1213,8 @@ if __name__ == '__main__':
 <<class_si_get_feedback_usage>>
 <<class_si_get_feedback_dump>>
 <<class_add_question>>
+<<class_get_questions>>
+
 #+end_src
 
 
@@ -1162,5 +1229,6 @@ if __name__ == '__main__':
 <<test_class_add_question>>
 <<test_class_update_question>>
 <<test_class_delete_question>>
+<<test_class_get_questions>>
 <<run_test_cases>>
 #+end_src
