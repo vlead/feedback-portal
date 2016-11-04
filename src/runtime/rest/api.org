@@ -917,13 +917,27 @@ def get_gateway_ip():
 
 
 
-** Add Question
-   REST API to get and post question
+** Get and Add Question
+   REST API to get and add question.
 
-#+NAME: add_question
+#+NAME: get_and_add_question
 #+BEGIN_SRC python
-@api.route('/questions', methods=['POST'])
+@api.route('/questions', methods=['GET', 'POST'])
 def add_question():
+    if request.method == 'GET':
+        try:
+            questions = SystemInterface.get_questions()
+            return jsonify_list(questions)
+
+        except TypeError as err:
+            error_message = 'Malformed arguments, error: %s' % str(err)
+
+            return render_template('error.html', 
+                    data=error_message)
+
+        except Exception as err:
+            abort(500, 'error: %s' % str(err))
+       
     if request.method == 'POST':
         if request.is_json:
             data_json = json.dumps(request.get_json())
@@ -987,6 +1001,52 @@ class TestAddQuestion(TestCase):
         response = self.client.post("/questions", data=json.dumps(payload),
                                  headers=headers)
 
+        self.assertEqual(response.status_code, 200)
+
+ #+END_SRC
+   
+
+*** TestGetQuestions
+ #+NAME: test_get_questions
+ #+BEGIN_SRC python
+class TestGetQuestion(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_questions(self):
+        print "test_question"
+        payload = {'name': 'How are you?',
+                   'question_type': 'radio',
+                   'key': KEY}
+
+        headers = {'Content-Type': 'application/json'}
+
+        response = self.client.post("/questions", data=json.dumps(payload),
+                                 headers=headers)
+
+        response = self.client.get("/questions", headers=headers)
         self.assertEqual(response.status_code, 200)
 
  #+END_SRC
@@ -1980,7 +2040,7 @@ if __name__ == '__main__':
 <<get_feedback_usage>>
 <<get_feedback_dump>>
 <<get_gateway_ip>>
-<<add_question>>
+<<get_and_add_question>>
 <<update_and_delete_question>>
 #+END_SRC
 
@@ -1998,6 +2058,7 @@ if __name__ == '__main__':
 <<test_add_question>>
 <<test_update_question>>
 <<test_delete_question>>
+<<test_get_questions>>
 <<run_test_cases>>
 #+end_src
 
