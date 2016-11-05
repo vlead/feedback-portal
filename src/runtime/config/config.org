@@ -21,6 +21,7 @@ This holds the application's configuration parameters.
 #+NAME: feedback_forms
 #+BEGIN_SRC python
 
+
 feedback_forms = [
     {'version': 'open-edx-virtual-labs-v2.0_for_experiment',
      'questions': [
@@ -73,8 +74,8 @@ feedback_forms = [
 
     {'version': 'generic-exp-feedback-v2.0',
      'questions': [
-         {'id' : '1', 'name': 'Lab Name', 'type': 'text'},
-         {'id' : '2', 'name': 'Experiment Name', 'type': 'text'},
+         {'id' : '1', 'name': 'Lab Name', 'type': 'text','mandatory' : 'Yes','placeholder' : 'Enter lab name'},
+         {'id' : '2', 'name': 'Experiment Name', 'type': 'text','mandatory' : 'Yes','placeholder' : 'Enter experiment name'},
          {'id' : '3', 'name': 'Designation', 'type': 'radio',
           'options': ["Student", "Instructor", "Others"],'driver' : [], 'mandatory' : 'Yes'},
 	 {'id' : '4', 'name':'Did you attempt the experiment?', 'type':'radio',
@@ -96,7 +97,7 @@ feedback_forms = [
      ]},    
     {'version': 'generic-lab-feedback-v2.0',
      'questions': [
-         {'id' : '1', 'name': 'Lab Name', 'type': 'text'},
+         {'id' : '1', 'name': 'Lab Name', 'type': 'text','mandatory' : 'Yes','placeholder' : 'Enter lab name'},
          {'id' : '2', 'name': 'Designation', 'type': 'radio',
           'options': ["Student", "Instructor", "Others"],'driver' : [], 'mandatory' : 'Yes'},
 	 {'id' : '3', 'name': 'How much did you know about the lab?', 'type': 'radio',
@@ -112,10 +113,7 @@ feedback_forms = [
          'options': ["Yes"],'mandatory' : 'No'}
 ]}
 
-
-
 ]
-
 
 #+END_SRC
 
