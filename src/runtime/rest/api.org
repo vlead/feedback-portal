@@ -1886,7 +1886,7 @@ function submitFeedback(event) {
 	}
     }
     if(count == 0){
-	if(feedbackForm.version == "generic-feedback-v2.0"){
+	if(feedbackForm.version == "generic-feedback-v2.0" || feedbackForm.version == "generic-exp-feedback-v2.0" || feedbackForm.version == "generic-lab-feedback-v2.0"){
 	    add_generic_feedback();
 	    }
 	else{
