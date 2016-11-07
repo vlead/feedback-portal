@@ -263,7 +263,8 @@ class AddQuestion():
 #+NAME: class_update_question
 #+begin_src python
 class UpdateQuestion():
-    arg_types = {"question": is_question, "name": is_str, "question_type": is_str,
+    arg_types = {"question": is_question, "name": is_str_or_none,
+                     "question_type": is_str_or_none,
                      "session": is_session}
     arity_and_type_checks_needed = True
 

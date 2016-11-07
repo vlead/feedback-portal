@@ -1020,7 +1020,7 @@ class TestDeleteQuestion(TestCase):
 
 
 ** UpdateQuestion
-
+   
 #+NAME: class_update_question
 #+begin_src python
     @staticmethod
@@ -1030,9 +1030,16 @@ class TestDeleteQuestion(TestCase):
 
         session = session_cls(key=data_dict['key'])
         question = question_cls.get_by_id(data_dict['q_id'])
-        name=data_dict['name']
-        question_type=data_dict['question_type']
 
+        if 'name' not in data_dict:
+            name='Null'
+        else:
+            name=data_dict['name']
+
+        if 'question_type' not in data_dict:
+            question_type='Null'
+        else:
+            question_type=data_dict['question_type']
         try:
             question = System.do("update_question", question=question,
                                     name=name, question_type=question_type,
@@ -1063,8 +1070,50 @@ class TestUpdateQuestion(TestCase):
         db.session.remove()
         db.drop_all()
 
-    def test_update_question_in_system_interface(self):
-        print "test_update_question_in_system_interface"
+    def test_update_question_name_in_system_interface(self):
+        print "test_update_question_name_in_system_interface"
+
+        data_dict = {
+                    'key' : KEY,
+                    'name': 'how are you?',
+                    'question_type': 'radio'
+                   }
+
+        data_dict1 = {
+                    'key' : KEY,
+                    'q_id': 1,
+                    'name': 'how are labs?'
+                   }
+
+        question = SystemInterface.add_question(data_dict)
+        question1 = SystemInterface.update_question(data_dict1)
+        
+        self.assertEqual(question1.get("name"), data_dict1['name'])
+
+    def test_update_question_type_in_system_interface(self):
+        print "test_update_question_type_in_system_interface"
+
+        data_dict = {
+                    'key' : KEY,
+                    'name': 'how are you?',
+                    'question_type': 'radio'
+                   }
+
+        data_dict1 = {
+                    'key' : KEY,
+                    'q_id': 1,
+                    'question_type': 'text'
+                   }
+
+        question = SystemInterface.add_question(data_dict)
+        question1 = SystemInterface.update_question(data_dict1)
+        
+
+        self.assertEqual(question1.get("question_type"), 
+                             data_dict1['question_type'])
+
+    def test_update_question_name_and_type_in_system_interface(self):
+        print "test_update_question_name_and_type_in_system_interface"
 
         data_dict = {
                     'key' : KEY,
@@ -1084,7 +1133,7 @@ class TestUpdateQuestion(TestCase):
         
         self.assertEqual(question1.get("name"), data_dict1['name'])
         self.assertEqual(question1.get("question_type"), 
-                             data_dict1['question_type'])
+                                        data_dict1['question_type'])
 
  #+END_SRC
 
@@ -1116,7 +1165,7 @@ class TestUpdateQuestion(TestCase):
 *** TestGetQuestions
  #+NAME: test_class_get_questions
  #+BEGIN_SRC python
-class TestUpdateQuestion(TestCase):
+class TestGetQuestions(TestCase):
     TESTING = True
     def create_app(self):
         app = create_app(config)
@@ -1219,7 +1268,7 @@ if __name__ == '__main__':
 <<class_si_get_feedback_dump>>
 <<class_add_question>>
 <<class_get_questions>>
-
+<<class_get_question_by_id>>
 #+end_src
 
 
@@ -1235,5 +1284,6 @@ if __name__ == '__main__':
 <<test_class_update_question>>
 <<test_class_delete_question>>
 <<test_class_get_questions>>
+<<test_class_get_question_by_id>>
 <<run_test_cases>>
 #+end_src
