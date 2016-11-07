@@ -117,6 +117,71 @@
        request" }
 
 
+** Save generic lab feedback form. 
+  :PROPERTIES:
+  :CUSTOM_ID: save_feedback_form
+  :END:    
+   The authentication for the =POST= is sent as part of header.
+   - URL :: /feedback/lab
+
+   - Method :: POST
+
+   - Data Params
+     {
+        'version': '<version>',
+        'lab_name': '<lab_name>',
+        'responses': [{'name': '<question>', 
+                     'answers': ['<ans1>', ...]
+       }
+
+   - Success Response
+     + Code: 200
+
+     + Content:
+       {
+         status: "success"
+       }
+
+   - Error Response:
+     + Code: 400 Bad Request
+
+     + Content: { error : "some of the parameters are not part of the
+       request" }
+
+
+** Save generic exp feedback form. 
+  :PROPERTIES:
+  :CUSTOM_ID: save_feedback_form
+  :END:    
+   The authentication for the =POST= is sent as part of header.
+   - URL :: /feedback/experiment
+
+   - Method :: POST
+
+   - Data Params
+     {
+        'version': '<version>',
+        'lab_name': '<lab_name>',
+        'exp_name': '<exp_name>',
+        'responses': [{'name': '<question>', 
+                     'answers': ['<ans1>', ...]
+       }
+
+   - Success Response
+     + Code: 200
+
+     + Content:
+       {
+         status: "success"
+       }
+
+   - Error Response:
+     + Code: 400 Bad Request
+
+     + Content: { error : "some of the parameters are not part of the
+       request" }
+
+
 ** Save the feedback form. 
   :PROPERTIES:
   :CUSTOM_ID: save_feedback_form
