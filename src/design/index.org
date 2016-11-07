@@ -42,6 +42,60 @@
     [[http://localhost:5000/][example url]]
 
 
+** Display lab generic feedback form. 
+  :PROPERTIES:
+  :CUSTOM_ID: display_feedback_form
+  :END:    
+  - URL :: /feedback/lab
+
+  - Method :: GET
+
+  - URL Params
+    None
+
+  - Success Response
+    + Code: 200
+
+    + Content:
+      {
+       questions: [{name: 'question', 
+                    type: 'radio | checkbox | textbox',
+                    options: 'list of options' | 'size of text'}, ....]
+      }
+
+  - Error Response:
+    
+  - Example:
+    [[http://localhost:5000/feedback/lab][example url]]
+
+
+** Display experiment generic feedback form. 
+  :PROPERTIES:
+  :CUSTOM_ID: display_feedback_form
+  :END:    
+  - URL :: /feedback/experiment
+
+  - Method :: GET
+
+  - URL Params
+    None
+
+  - Success Response
+    + Code: 200
+
+    + Content:
+      {
+       questions: [{name: 'question', 
+                    type: 'radio | checkbox | textbox',
+                    options: 'list of options' | 'size of text'}, ....]
+      }
+
+  - Error Response:
+    
+  - Example:
+    [[http://localhost:5000/feedback/experiment][example url]]
+
+
 ** Display the feedback form. 
   :PROPERTIES:
   :CUSTOM_ID: display_feedback_form
@@ -331,6 +385,29 @@
 
      + Content: { error : "some of the parameters are not part of the
        request" }
+
+
+** Get all questions from the System
+  :PROPERTIES:
+  :CUSTOM_ID: get_feedback_on_a_day
+  :END:          
+    - URL :: /questions
+
+    - Method :: GET
+
+    - URL Params
+      None
+
+    - Success Response
+      + Code: 200
+
+      + Content:
+    [{"name": "<question1>", "question_type": "<radio>", "id":
+         <id>}, ... {"name": "<question n>", "question_type": "<text>", "id": <id>}] 
+ 
+    - Error Response:
+
+      + Code: 400 Bad Request
 
 
 * Services Interplay
