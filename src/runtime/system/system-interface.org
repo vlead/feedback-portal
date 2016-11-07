@@ -395,10 +395,15 @@ class TestAddFeedback(TestCase):
         answer_cls = System.delegate.entities['answer']
 
         data_dict['session'] = session_cls(key=KEY)
-        data_dict['lab_name'] = "generic feedback"
         data_dict['date'] = datetime.datetime.now().date()
-        data_dict['exp_name'] = "Null"
         data_dict['user_id'] = "Null"
+
+        if 'lab_name' not in data_dict:
+            data_dict['lab_name'] = "generic feedback"
+
+        if 'exp_name' not in data_dict:
+            data_dict['exp_name'] = "Null"
+
             
         responses = data_dict['responses']
         data_dict['responses'] = []
