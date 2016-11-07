@@ -173,7 +173,7 @@
 
 ** Save generic lab feedback form. 
   :PROPERTIES:
-  :CUSTOM_ID: save_feedback_form
+  :CUSTOM_ID: save_generic_lab_feedback_form
   :END:    
    The authentication for the =POST= is sent as part of header.
    - URL :: /feedback/lab
@@ -205,7 +205,7 @@
 
 ** Save generic exp feedback form. 
   :PROPERTIES:
-  :CUSTOM_ID: save_feedback_form
+  :CUSTOM_ID: save_generic_exp_feedback_form
   :END:    
    The authentication for the =POST= is sent as part of header.
    - URL :: /feedback/experiment
@@ -312,7 +312,7 @@
 
 ** Get all feedback forms for a date
   :PROPERTIES:
-  :CUSTOM_ID: get_feedback_on_a_day
+  :CUSTOM_ID: get_all_feedback_forms_for_a_date
   :END:          
     - URL :: /feedback_dump?date=:date&key=:key
 
@@ -352,7 +352,7 @@
 	
 ** Add the Question
   :PROPERTIES:
-  :CUSTOM_ID: save_feedback_form
+  :CUSTOM_ID: add_question
   :END:    
    The authentication for the =POST= is sent as part of header.
    - URL :: /questions
@@ -389,7 +389,7 @@
 
 ** Get all questions from the System
   :PROPERTIES:
-  :CUSTOM_ID: get_feedback_on_a_day
+  :CUSTOM_ID: get_all_questions
   :END:          
     - URL :: /questions
 
@@ -408,6 +408,39 @@
     - Error Response:
 
       + Code: 400 Bad Request
+
+
+** Delete Question
+  :PROPERTIES:
+  :CUSTOM_ID: delete_question
+  :END:    
+   The authentication for the =POST= is sent as part of header.
+   - URL :: /questions/<id>
+
+   - Method :: DELETE
+
+   - Data Params
+     None
+
+   - Success Response
+     + Code: 200
+
+     + Content:
+       {
+         status: "success"
+       }
+
+   - Error Response:
+     + Code: 401 UNAUTHORIZED
+
+     + Content: { error : "Wrong Key configured" }
+
+     OR
+
+     + Code: 400 Bad Request
+
+     + Content: { error : "some of the parameters are not part of the
+       request" }
 
 
 * Services Interplay
