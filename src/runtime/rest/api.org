@@ -1079,15 +1079,9 @@ def update_and_delete_question(id):
             abort(500, 'error: %s' % str(err))
 
     if request.method == 'DELETE':
-        if request.is_json:
-            data_json = json.dumps(request.get_json())
-            data_dict = yaml.safe_load(data_json)
-            data_dict['q_id']=int(id)
-        else:
-            abort(500, "the request does not contain data in json")
 
         try:
-            q1 = SystemInterface.delete_question(data_dict)
+            q1 = SystemInterface.delete_question(id)
             return jsonify('{"status":"sucess"}')
 
         except TypeError as err:
@@ -1188,18 +1182,12 @@ class TestDeleteQuestion(TestCase):
                    'key': KEY
                   }
 
-        payload1 = {
-                   'key': KEY
-                   }
-
         headers = {'Content-Type': 'application/json'}
 
         response = self.client.post("/questions", data=json.dumps(payload),
                                  headers=headers)
 
-        response = self.client.delete("/questions/1",
-                                          data=json.dumps(payload1),
-                                          headers=headers)
+        response = self.client.delete("/questions/1", headers=headers)
 
         self.assertEqual(response.status_code, 200)
 

@@ -957,12 +957,12 @@ class TestAddQuestion(TestCase):
 #+NAME: class_delete_question
 #+begin_src python
     @staticmethod
-    def delete_question(data_dict):
+    def delete_question(q_id):
         session_cls = System.delegate.entities['session']
 
-        session = session_cls(key=data_dict['key'])
+        session = session_cls(key=KEY)
         try:
-            question = System.do("delete_question", q_id=data_dict['q_id'], 
+            question = System.do("delete_question", q_id=int(q_id),
                                     session=session)
             return question
         except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
@@ -1005,14 +1005,9 @@ class TestDeleteQuestion(TestCase):
                     'question_type': 'text'
                    }
 
-        data_dict2 = {
-                    'key' : KEY,
-                    'q_id': 1
-                   }
-
         question = SystemInterface.add_question(data_dict)
         question1 = SystemInterface.add_question(data_dict1)
-        q_id = SystemInterface.delete_question(data_dict2)
+        q_id = SystemInterface.delete_question(1)
         
         self.assertEqual(q_id, 1)
 
