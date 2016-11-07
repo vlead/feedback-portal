@@ -676,7 +676,6 @@ class TestAddGenericLabandExpFeedback(TestCase):
 
  #+END_SRC
 
-
 ** Get Feedback Usage
    This is the REST API method for getting the feedback usage. 
 
@@ -927,6 +926,7 @@ def add_question():
     if request.method == 'GET':
         try:
             questions = SystemInterface.get_questions()
+
             return jsonify_list(questions)
 
         except TypeError as err:

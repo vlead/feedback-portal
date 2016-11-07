@@ -1098,7 +1098,12 @@ class TestUpdateQuestion(TestCase):
         question_cls = System.delegate.entities['question']
         try:
             questions = question_cls.get_all()
-            return questions
+            question_dict_list = []
+            for question in questions:
+                question_x = question.to_client()
+                question_dict_list.append(question_x)
+
+            return  question_dict_list
         except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
             current_app.logger.error("Exception = %s" % str(err))
             raise err
