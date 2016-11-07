@@ -175,7 +175,7 @@
   :PROPERTIES:
   :CUSTOM_ID: save_generic_lab_feedback_form
   :END:    
-   The authentication for the =POST= is sent as part of header.
+
    - URL :: /feedback/lab
 
    - Method :: POST
@@ -207,7 +207,7 @@
   :PROPERTIES:
   :CUSTOM_ID: save_generic_exp_feedback_form
   :END:    
-   The authentication for the =POST= is sent as part of header.
+
    - URL :: /feedback/experiment
 
    - Method :: POST
@@ -354,7 +354,7 @@
   :PROPERTIES:
   :CUSTOM_ID: add_question
   :END:    
-   The authentication for the =POST= is sent as part of header.
+
    - URL :: /questions
 
    - Method :: POST
@@ -414,13 +414,50 @@
   :PROPERTIES:
   :CUSTOM_ID: delete_question
   :END:    
-   The authentication for the =POST= is sent as part of header.
+
    - URL :: /questions/<id>
 
    - Method :: DELETE
 
    - Data Params
      None
+
+   - Success Response
+     + Code: 200
+
+     + Content:
+       {
+         status: "success"
+       }
+
+   - Error Response:
+     + Code: 401 UNAUTHORIZED
+
+     + Content: { error : "Wrong Key configured" }
+
+     OR
+
+     + Code: 400 Bad Request
+
+     + Content: { error : "some of the parameters are not part of the
+       request" }
+
+
+** Update the Question
+  :PROPERTIES:
+  :CUSTOM_ID: add_question
+  :END:    
+
+   - URL :: /questions
+
+   - Method :: PUT
+
+   - Data Params
+     {
+      'name':'question_name',
+      'question_type': 'question_type',
+      'key': 'key'
+     }
 
    - Success Response
      + Code: 200
