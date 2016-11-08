@@ -1278,11 +1278,13 @@ class TestDeleteQuestion(TestCase):
         <form class="form" id="feedback-form" onsubmit="submitFeedback(event)">
           <div class="form-group">
             <label class="" id="lab_name_label"></label>
+            <label class="" id="lab_mandatory"></label>
             <input class="form-control" id="lab_name_value" disabled="true">
           </div>
           
           <div class="form-group">
             <label class="" id="exp_name_label"></label>
+            <label class="" id="exp_mandatory"></label>
             <input class="form-control" id="exp_name_value" disabled="true">
           </div>
           <div class="form-group" id="questions_list"></div>
@@ -1499,7 +1501,9 @@ function renderFeedbackform() {
     else if(feedbackForm.version == "generic-lab-feedback-v2.0" || feedbackForm.version == "generic-exp-feedback-v2.0"){
 	$("#lab_name_label").html("Lab Name");
 	document.getElementById("lab_name_value").disabled = false;
-
+	document.getElementById("lab_name_value").required = true;
+	document.getElementById("lab_name_value").placeholder = "Enter Lab Name";
+	document.getElementById("lab_mandatory").innerHTML = "&nbsp;<font color='maroon'>*</font>";
     }
     else{
 	var elem = document.getElementById("lab_name_label");
@@ -1516,7 +1520,9 @@ function renderFeedbackform() {
     else if(feedbackForm.version == "generic-exp-feedback-v2.0"){
 	$("#exp_name_label").html("Experiment Name");
 	document.getElementById("exp_name_value").disabled = false;
-
+	document.getElementById("exp_name_value").required = true;
+	document.getElementById("exp_name_value").placeholder = "Enter Experiment Name";
+	document.getElementById("exp_mandatory").innerHTML = "&nbsp;<font color='maroon'>*</font>";
     }
     else
 	{
