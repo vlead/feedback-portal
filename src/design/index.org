@@ -474,7 +474,7 @@
   :CUSTOM_ID: add_question
   :END:    
 
-   - URL :: /questions
+   - URL :: /questions/<id>
 
    - Method :: PUT
 
