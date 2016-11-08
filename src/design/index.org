@@ -410,6 +410,32 @@
       + Code: 400 Bad Request
 
 
+** Get question by id from the System
+  :PROPERTIES:
+  :CUSTOM_ID: get_question_by_id
+  :END:          
+    - URL :: /questions/<id>
+
+    - Method :: GET
+
+    - URL Params
+      None
+
+    - Success Response
+      + Code: 200
+
+      + Content:
+    {
+     "name": "<question1>", 
+     "question_type": "<radio>", 
+     "id":<id>
+    }
+ 
+    - Error Response:
+
+      + Code: 400 Bad Request
+
+
 ** Delete Question
   :PROPERTIES:
   :CUSTOM_ID: delete_question
