@@ -309,7 +309,7 @@ class TestAddFeedback(TestCase):
         feedback_cls = System.delegate.entities['feedback']
         fb = feedback_cls.get_all()[0]
         
-#        self.assertEqual(fb.get("lab_name"), data_dict['lab_name'])
+        self.assertEqual(fb.get("lab_name"), data_dict['lab_name'])
         self.assertEqual(fb.get("exp_name"), data_dict['exp_name'])
         self.assertEqual(fb.get("gateway_ip"), data_dict['gateway_ip'])
         self.assertEqual(fb.get("responses")[0].get("question").get("name"),
@@ -491,7 +491,7 @@ class TestAddFeedback(TestCase):
         feedback_cls = System.delegate.entities['feedback']
         fb = feedback_cls.get_all()[0]
         
-#        self.assertEqual(fb.get("lab_name"), data_dict['lab_name'])
+        self.assertEqual(fb.get("lab_name"), data_dict['lab_name'])
         self.assertEqual(fb.get("exp_name"), data_dict['exp_name'])
         self.assertEqual(fb.get("gateway_ip"), data_dict['gateway_ip'])
         self.assertEqual(fb.get("responses")[0].get("question").get("name"),
@@ -1032,15 +1032,17 @@ class TestDeleteQuestion(TestCase):
         question = question_cls.get_by_id(data_dict['q_id'])
 
         if 'name' not in data_dict:
-            name='Null'
+            name=str(question.get("name"))
         else:
             name=data_dict['name']
 
         if 'question_type' not in data_dict:
-            question_type='Null'
+            question_type=str(question.get("question_type"))
         else:
             question_type=data_dict['question_type']
+
         try:
+            print name, question_type
             question = System.do("update_question", question=question,
                                     name=name, question_type=question_type,
                                     session=session)
@@ -1089,6 +1091,8 @@ class TestUpdateQuestion(TestCase):
         question1 = SystemInterface.update_question(data_dict1)
         
         self.assertEqual(question1.get("name"), data_dict1['name'])
+        self.assertEqual(question1.get("question_type"),
+                             data_dict['question_type'])
 
     def test_update_question_type_in_system_interface(self):
         print "test_update_question_type_in_system_interface"
@@ -1108,7 +1112,7 @@ class TestUpdateQuestion(TestCase):
         question = SystemInterface.add_question(data_dict)
         question1 = SystemInterface.update_question(data_dict1)
         
-
+        self.assertEqual(question1.get("name"), data_dict['name'])
         self.assertEqual(question1.get("question_type"), 
                              data_dict1['question_type'])
 

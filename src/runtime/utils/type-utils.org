@@ -51,6 +51,7 @@ class TestIsInstance(TestCase):
         self.assertEqual(is_bool(10), False)
         self.assertEqual(is_str('hello world'), True)
         self.assertEqual(is_str(False), False)
+        self.assertEqual(is_str_or_none(None), True)
         self.assertEqual(is_dict({'email': 'xyz@g.com'}), True)
         self.assertEqual(is_dict("{'email': 'xyz@g.com'}"), False)
 
