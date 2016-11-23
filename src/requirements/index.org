@@ -20,20 +20,20 @@
 :PROPERTIES:
 :CUSTOM_ID: provide_feedback
 :END: 
-** Feedback Form
+** Feedback 
 :PROPERTIES:
-:CUSTOM_ID: feedback_form
+:CUSTOM_ID: feedback
 :END: 
    A user is able to provide feedback after conducting an experiment.
 
-
+  Realized in data model as [[../data-model/index.org::#entity_feedback][Feedback]]
 ** Questions
 :PROPERTIES:
 :CUSTOM_ID: questions
 :END: 
    The feedback form consists of a set of questions
 
-
+  Realized in data model as [[../data-model/index.org::#entity_question][Question]]
 ** Answers
 :PROPERTIES:
 :CUSTOM_ID: answers
@@ -41,14 +41,14 @@
    The user either chooses an option or a set a options or types text for the
    questions posed. 
 
-
+  Realized in data model as [[../data-model/index.org::#entity_answer][Answer]]
 ** User Responses
 :PROPERTIES:
-:CUSTOM_ID: responses
+:CUSTOM_ID: user_responses
 :END: 
    The ability to pair the answer with the question for analysis is provided by
    the feedback service.
-
+  Realized in data model as [[../data-model/index.org::#entity_responses][Response]]
 
 * Capture =Workshop Usage= via feedback forms
 :PROPERTIES:
@@ -58,6 +58,7 @@
   workshop usage is defined as the number of feedback forms submitted by the
   students attending the workshop.
 
+  Realized in design as [[../design/index.org::#workshop_usage][Capturing workshop usage through feedback forms]]
 
 * Analytics
 :PROPERTIES:
@@ -66,6 +67,7 @@
   Provide an API to dump the data from outreach service to an elastic
   search engine
 
+  Realized in design as [[../design/index.org::#dump_to_elastic_search][Dump to Elastic Search]]
 
 * COMMENT Review Comments
 

@@ -13,18 +13,17 @@
   
 * Application Programming Interface
 
-** Display generic feedback form. 
+** Display generic feedback form
   :PROPERTIES:
-  :CUSTOM_ID: display_feedback_form
+  :CUSTOM_ID: display_generic_feedback_form
   :END:    
   - URL :: /
 
   - Method :: GET
 
-  - URL Params
-    None
+  - URL Params :: None
 
-  - Success Response
+  - Success Response :: 
     + Code: 200
 
     + Content:
@@ -34,13 +33,20 @@
                     options: 'list of options' | 'size of text'}, ....]
       }
 
-  - Error Response:
-    
-  - Example:
-    [[http://localhost:5000/][example url]]
+  - Error Response :: 
+
+    + Code: 404 Not Found
+    + Content: {"error": The requested URL was not found on the server.  If you
+      entered the URL manually please check your spelling and try again }
+
+  - Example ::
+#+BEGIN_EXAMPLE
+http://localhost:5000/
+#+END_EXAMPLE
 
 
-** Display lab generic feedback form. 
+
+** Display lab generic feedback form 
   :PROPERTIES:
   :CUSTOM_ID: display_lab_generic_feedback_form
   :END:    
@@ -48,10 +54,9 @@
 
   - Method :: GET
 
-  - URL Params
-    None
+  - URL Params ::  None
 
-  - Success Response
+  - Success Response ::
     + Code: 200
 
     + Content:
@@ -61,13 +66,20 @@
                     options: 'list of options' | 'size of text'}, ....]
       }
 
-  - Error Response:
+  - Error Response ::
+
+    + Code: 404 Not Found
+    + Content: {"error": The requested URL was not found on the server.  If you
+      entered the URL manually please check your spelling and try again }
     
-  - Example:
-    [[http://localhost:5000/feedback/lab][example url]]
+  - Example ::
+#+BEGIN_EXAMPLE
+http://localhost:5000/feedback/lab
+#+END_EXAMPLE
 
 
-** Display experiment generic feedback form. 
+
+** Display experiment generic feedback form
   :PROPERTIES:
   :CUSTOM_ID: display_experiment_generic_feedback_form
   :END:    
@@ -75,26 +87,32 @@
 
   - Method :: GET
 
-  - URL Params
+  - URL Params ::
     None
 
-  - Success Response
+  - Success Response ::
     + Code: 200
 
-    + Content:
+    + Content ::
       {
        questions: [{name: 'question', 
                     type: 'radio | checkbox | textbox',
                     options: 'list of options' | 'size of text'}, ....]
       }
 
-  - Error Response:
+  - Error Response ::
+    + Code: 404 Not Found
+    + Content: {"error": The requested URL was not found on the server.  If you
+      entered the URL manually please check your spelling and try again }
     
-  - Example:
-    [[http://localhost:5000/feedback/experiment][example url]]
+  - Example ::
+#+BEGIN_EXAMPLE
+http://localhost:5000/feedback/experiment
+#+END_EXAMPLE
 
 
-** Display the feedback form. 
+
+** Display the feedback form
   :PROPERTIES:
   :CUSTOM_ID: display_feedback_form
   :END:    
@@ -106,14 +124,14 @@
 
   - Method :: GET
 
-  - URL Params
+  - URL Params ::
     Required: lab_name=[string], key=[string]
     Optional: exp_name=[string], user_id=[string]
 
-  - Success Response
+  - Success Response ::
     + Code: 200
 
-    + Content:
+    + Content ::
       {
        lab_name: 'lab_name',
        exp_name: 'exp_name',
@@ -123,7 +141,7 @@
                     options: 'list of options' | 'size of text'}, ....]
       }
 
-  - Error Response:
+  - Error Response ::
     + Code: 401 UNAUTHORIZED
 
     + Content: { error : "Wrong Key configured" }
@@ -134,27 +152,30 @@
 
     + Content: { error : "lab name is mandatory and experiment is optional" }
 
-  - Example:
-    [[http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&user_id=temp124&key=defaultkey][example url]]
+  - Example ::
+#+BEGIN_EXAMPLE
+http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&user_id=temp124&key=defaultkey
+#+END_EXAMPLE
+
 
 
 ** Save generic feedback form. 
   :PROPERTIES:
-  :CUSTOM_ID: save_feedback_form
+  :CUSTOM_ID: save_generic_feedback_form
   :END:    
    The authentication for the =POST= is sent as part of header.
    - URL :: /
 
    - Method :: POST
 
-   - Data Params
+   - Data Params ::
      {
         version: <version>,
         questions: [{name: 'question', 
                      answers: [ans1, ...]
        }
 
-   - Success Response
+   - Success Response ::
      + Code: 200
 
      + Content:
@@ -162,7 +183,7 @@
          status: "success"
        }
 
-   - Error Response:
+   - Error Response ::
      + Code: 400 Bad Request
 
      + Content: { error : "some of the parameters are not part of the
@@ -178,7 +199,7 @@
 
    - Method :: POST
 
-   - Data Params
+   - Data Params ::
      {
         'version': '<version>',
         'lab_name': '<lab_name>',
@@ -186,7 +207,7 @@
                      'answers': ['<ans1>', ...]
        }
 
-   - Success Response
+   - Success Response ::
      + Code: 200
 
      + Content:
@@ -194,7 +215,7 @@
          status: "success"
        }
 
-   - Error Response:
+   - Error Response ::
      + Code: 400 Bad Request
 
      + Content: { error : "some of the parameters are not part of the
@@ -210,7 +231,7 @@
 
    - Method :: POST
 
-   - Data Params
+   - Data Params ::
      {
         'version': '<version>',
         'lab_name': '<lab_name>',
@@ -219,7 +240,7 @@
                      'answers': ['<ans1>', ...]
        }
 
-   - Success Response
+   - Success Response ::
      + Code: 200
 
      + Content:
@@ -227,7 +248,7 @@
          status: "success"
        }
 
-   - Error Response:
+   - Error Response ::
      + Code: 400 Bad Request
 
      + Content: { error : "some of the parameters are not part of the
@@ -243,7 +264,7 @@
 
    - Method :: POST
 
-   - Data Params
+   - Data Params ::
      {
         lab_name: 'lab_name',
         exp_name: 'exp_name',
@@ -252,7 +273,7 @@
                      answers: [ans1, ...]
        }
 
-   - Success Response
+   - Success Response ::
      + Code: 200
 
      + Content:
@@ -260,7 +281,7 @@
          status: "success"
        }
 
-   - Error Response:
+   - Error Response ::
      + Code: 401 UNAUTHORIZED
 
      + Content: { error : "Wrong Key configured" }
@@ -281,13 +302,13 @@
 
     - Method :: GET
 
-    - URL Params
+    - URL Params ::
       Required: ip=[string]
                 date=[string], the format of the date string is in
       'mm-dd-yyyy' format. 
                 key=[string]
 
-    - Success Response
+    - Success Response ::
       + Code: 200
 
       + Content:
@@ -295,7 +316,7 @@
          usage: 'usage_number'
         }
 
-    - Error Response:
+    - Error Response ::
       + Code: 401 UNAUTHORIZED
 
       + Content: { error : "Wrong Key configured" }
@@ -316,12 +337,12 @@
 
     - Method :: GET
 
-    - URL Params
+    - URL Params ::
       Required: date=[string], the format of the string is in 'mm-dd-yyyy'
       format
                 key=[string]
 
-    - Success Response
+    - Success Response ::
       + Code: 200
 
       + Content:
@@ -336,7 +357,7 @@
                      }, ...]
         }
 
-    - Error Response:
+    - Error Response ::
       + Code: 401 UNAUTHORIZED
 
       + Content: { error : "Wrong Key configured" }
@@ -357,14 +378,14 @@
 
    - Method :: POST
 
-   - Data Params
+   - Data Params ::
      {
       'name':'question_name',
       'question_type': 'question_type',
       'key': 'key'
      }
 
-   - Success Response
+   - Success Response ::
      + Code: 200
 
      + Content:
@@ -372,7 +393,7 @@
          status: "success"
        }
 
-   - Error Response:
+   - Error Response ::
      + Code: 401 UNAUTHORIZED
 
      + Content: { error : "Wrong Key configured" }
@@ -393,17 +414,17 @@
 
     - Method :: GET
 
-    - URL Params
+    - URL Params ::
       None
 
-    - Success Response
+    - Success Response ::
       + Code: 200
 
       + Content:
     [{"name": "<question1>", "question_type": "<radio>", "id":
          <id>}, ... {"name": "<question n>", "question_type": "<text>", "id": <id>}] 
  
-    - Error Response:
+    - Error Response ::
 
       + Code: 400 Bad Request
 
@@ -416,10 +437,10 @@
 
     - Method :: GET
 
-    - URL Params
+    - URL Params ::
       None
 
-    - Success Response
+    - Success Response ::
       + Code: 200
 
       + Content:
@@ -429,7 +450,7 @@
      "id":<id>
     }
  
-    - Error Response:
+    - Error Response ::
 
       + Code: 400 Bad Request
 
@@ -443,10 +464,10 @@
 
    - Method :: DELETE
 
-   - Data Params
+   - Data Params ::
      None
 
-   - Success Response
+   - Success Response ::
      + Code: 200
 
      + Content:
@@ -454,7 +475,7 @@
          status: "success"
        }
 
-   - Error Response:
+   - Error Response ::
      + Code: 401 UNAUTHORIZED
 
      + Content: { error : "Wrong Key configured" }
@@ -469,21 +490,21 @@
 
 ** Update the Question
   :PROPERTIES:
-  :CUSTOM_ID: add_question
+  :CUSTOM_ID: update_question
   :END:    
 
    - URL :: /questions/<id>
 
    - Method :: PUT
 
-   - Data Params
+   - Data Params ::
      {
       'name':'question_name',
       'question_type': 'question_type',
       'key': 'key'
      }
 
-   - Success Response
+   - Success Response ::
      + Code: 200
 
      + Content:
@@ -491,7 +512,7 @@
          status: "success"
        }
 
-   - Error Response:
+   - Error Response ::
      + Code: 401 UNAUTHORIZED
 
      + Content: { error : "Wrong Key configured" }
@@ -558,7 +579,7 @@
     To edit the feedback relations image click [[https://docs.google.com/drawings/d/10nfQZtJ7NJaDYKZru5DiXlS-YZaXQ1nlLoYb5-oRaCY/edit?usp=sharing][here]]
     
 
-* Dumping the data from the feedback service to elastic search
+* Dumping the data from the feedback service to Elastic Search
   :PROPERTIES:
   :CUSTOM_ID: dump_to_elastic_search
   :END:          
@@ -569,3 +590,4 @@
   submitted the previous day and posts each feedback to the elastic search
   engine.
     
+  Realizes the requirement [[../requirements/index.org::#analytics][Analytics]]
