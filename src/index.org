@@ -8,18 +8,17 @@
 
 * Version/Branch History
 
-
 * Application
-  The outreach portal helps conduct workshops on Virtual Labs.  The development
+  The Feedback portal helps to provide feedback on Virtual Labs.  The development
   of the application is divided into the following phases:
 
 ** [[./requirements/index.org][Requirements]]
+
 
 ** [[./design/index.org][Design]]
 
 
 ** [[./data-model/index.org][Data Model]]
-
 
 ** [[./runtime/index.org][Runtime]]
 

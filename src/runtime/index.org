@@ -14,7 +14,7 @@ The =runtime= of the application is defined by:
 
  - [[./system/index.org][=System=]]
 
- - =REST API=
+ - [[./rest/index.org][=REST API=]]
 
  - =Web Front End=
 

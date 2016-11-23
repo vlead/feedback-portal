@@ -10,11 +10,9 @@
 * Introduction 
   The =design= of the =Feedback Portal/Service= is captured here.
 
-
+  
 * Application Programming Interface
-  :PROPERTIES:
-  :CUSTOM_ID: api
-  :END: 
+
 ** Display generic feedback form. 
   :PROPERTIES:
   :CUSTOM_ID: display_feedback_form
@@ -44,7 +42,7 @@
 
 ** Display lab generic feedback form. 
   :PROPERTIES:
-  :CUSTOM_ID: display_feedback_form
+  :CUSTOM_ID: display_lab_generic_feedback_form
   :END:    
   - URL :: /feedback/lab
 
@@ -71,7 +69,7 @@
 
 ** Display experiment generic feedback form. 
   :PROPERTIES:
-  :CUSTOM_ID: display_feedback_form
+  :CUSTOM_ID: display_experiment_generic_feedback_form
   :END:    
   - URL :: /feedback/experiment
 
@@ -527,7 +525,7 @@
   :CUSTOM_ID: workshop_usage
   :END:          
   Realizes the [[../requirements/index.org::#workshop_usage][workshop usage]] requirement
-  Feebback forms are submitted by the students attending a workshop after
+  Feeback forms are submitted by the students attending a workshop after
   completion of each experiment.  Outreach facilitates conducting of workshops.
   The scenario below shows the way to capture the usage from the feedback forms
   submitted for a workshop.
@@ -545,11 +543,11 @@
   :PROPERTIES:
   :CUSTOM_ID: form_generation
   :END:          
-  Feebback form is buult on the browser from the data that is sent as part of
+  Feebback form is built on the browser from the data that is sent as part of
   the [[./index.org::#display_feedback_form][=GET=]] response.  The response contains all the relevant data to build the
   form.  It will hold the questions, the =type= of the question like if the
   question is a radio button or a check box etc. and the values of all the
-  oprions a question can have.
+  options a question can have.
 
 #+BEGIN_HTML
 <img src="https://docs.google.com/drawings/d/10nfQZtJ7NJaDYKZru5DiXlS-YZaXQ1nlLoYb5-oRaCY/pub?w=960&amp;h=720">
