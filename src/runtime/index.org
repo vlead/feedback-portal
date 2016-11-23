@@ -8,19 +8,17 @@
 
 The =runtime= of the application is defined by:
 
- - [[./objects/index.org][=Objects=]]  
+ 1. [[./objects/index.org][=Objects=]]  
 
- - [[./persistence/index.org][=Persistence=]]
+ 2. [[./persistence/index.org][=Persistence=]]
 
- - [[./system/index.org][=System=]]
+ 3. [[./system/index.org][=System=]]
 
- - [[./rest/index.org][=REST API=]]
+ 4. [[./rest/index.org][=REST API=]]
 
- - =Web Front End=
+ 5. [[./utils/index.org][=Utilities=]]
 
- - [[./utils/index.org][=Utilities=]]
-
- - [[./exceptions/exceptions.org][=Exceptions=]]
+ 6. [[./exceptions/custom_exceptions.org][=Exceptions=]]
 
 
 * Tangle                                       :boilerplate:

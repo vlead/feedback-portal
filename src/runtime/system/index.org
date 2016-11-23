@@ -1,4 +1,4 @@
-#+TITLE: The =objects= Package
+#+TITLE: The =System= Package
 #+AUTHOR: VLEAD
 #+DATE: [2016-06-07 Tue] 
 #+SETUPFILE: ../../org-templates/level-2.org
@@ -6,9 +6,9 @@
 #+EXCLUDE_TAGS: boilerplate
 #+OPTIONS: ^:nil
 
-The =objects= package holds two modules
+The =System= package hold the following modules
 
- - [[./system.org][=system=]]  
+1. [[./system.org][=system=]]  
 
 
 * Tangle :boilerplate:

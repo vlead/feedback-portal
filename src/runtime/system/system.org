@@ -230,6 +230,12 @@ class TestSystemConstructor(TestCase):
   Once these checks are satisfied, either the system state is modified or retrieved.
 
 ** =AddQuestion=
+   The =AddQuestion= Operation takes the =question= and =session= as inputs and
+   performs the =arity=, =type=, =auth= and =state= checks before adding the
+   question. if any of the check fails, then the corresponding errors will
+   be raised. If there are no errors, then =action= method will add the
+   question to the system.
+
 #+NAME: class_addquestion
 #+begin_src python
 class AddQuestion():
@@ -260,6 +266,12 @@ class AddQuestion():
 
 
 ** =UpdateQuestion=
+   The =UpdateQuestion= Operation takes the =question=, =name=, =question_type=
+   and =session= as inputs and performs the =arity=, =type=, and =auth= checks
+   before updating the question. if any of the check fails, then the
+   corresponding errors will be raised. If there are no errors, then =action=
+   method will =update= the question.
+
 #+NAME: class_update_question
 #+begin_src python
 class UpdateQuestion():
@@ -292,6 +304,12 @@ class UpdateQuestion():
 
 
 ** =DeleteQuestion=
+   The =DeleteQuestion= Operation takes the =q_id=, and =session= as inputs and
+   performs the =arity=, =type=, and =auth= checks before deleting the
+   question. if any of the check fails, then the corresponding errors will
+   be raised. If there are no errors, then =action= method will delete the
+   question from system.
+
 #+NAME: class_delete_question
 #+begin_src python
 class DeleteQuestion():
@@ -318,6 +336,12 @@ class DeleteQuestion():
 
 
 ** =AddAnswer=
+   The =AddAnswer= Operation takes the =answer= and =session= as inputs and
+   performs the =arity=, =type=, =auth= and =state= checks before adding the
+   answer. if any of the check fails, then the corresponding errors will
+   be raised. If there are no errors, then =action= method will add the
+   answer to the system.
+
 #+NAME: class_addanswer
 #+begin_src python
 class AddAnswer():
@@ -348,6 +372,13 @@ class AddAnswer():
 
 
 ** =AddFeedback=
+   The =AddFeedback= Operation takes the =gateway_ip=, =lab_name=, =date=,
+   =exp_name=, =responses=, =version=, =user_id= and =session= as inputs and
+   performs the =arity=, =type= and =auth= checks before adding the
+   feedback. if any of the check fails, then the corresponding errors will be
+   raised. If there are no errors, then =action= method will add the feedback
+   to the system.
+
 #+NAME: class_addfeedback
 #+begin_src python
 class AddFeedback():
@@ -394,6 +425,12 @@ class AddFeedback():
 
 
 ** =AddResponsesToFeedBack=
+   The =AddResponsesToFeedback= Operation takes the =responses=, =feebdack id=
+   and =session= as inputs and performs the =arity=, =type=, =auth= and =state=
+   checks before adding the responses to feedback. if any of the check fails,
+   then the corresponding errors will be raised. If there are no errors, then
+   =action= method will add the responses to feedback.
+
 #+NAME: class_addresponses_to_feedback
 #+begin_src python
 class AddResponsesToFeedback():
@@ -435,6 +472,12 @@ class AddResponsesToFeedback():
 
 
 ** =GetFeedbackUsage=
+   The =GetFeebdackUsage= Operation takes the =gateway_ip=, =date= and
+   =session= as inputs and performs the =arity=, =type=, and =auth= checks
+   before adding the responses to feedback. if any of the check fails, then the
+   corresponding errors will be raised. If there are no errors, then =action=
+   method will return the total feedback usage.
+
 #+NAME: class_get_feedback_usage
 #+begin_src python
 class GetFeedbackUsage():
@@ -464,6 +507,11 @@ class GetFeedbackUsage():
 
 
 ** =GetFeedbackDump=
+   The =GetFeebdackDump= Operation takes the =date= and =session= as inputs and
+   performs the =arity=, =type=, and =auth= checks.  If any of the check fails,
+   then the corresponding errors will be raised. If there are no errors, then
+   =action= method will return all the feedback for a given date.
+
 #+NAME: class_get_feedback_dump
 #+begin_src python
 class GetFeedbackDump():
@@ -491,6 +539,12 @@ class GetFeedbackDump():
 
 
 ** =GetFeedbackForm=
+   The =GetFeebdackForm= Operation takes the =lab_name=, =exp_name=, =version=,
+   =user_id= and =session= as inputs and performs the =arity=, =type=, and
+   =auth= checks.  If any of the check fails, then the corresponding errors
+   will be raised. If there are no errors, then =action= method will return the
+   feedback form for a given version.
+
 #+NAME: class_get_feedback_form
 #+begin_src python
 class GetFeedbackForm():

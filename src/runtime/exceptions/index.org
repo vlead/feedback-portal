@@ -8,7 +8,7 @@
 
 The =exceptions= package hold custom_exceptions
 
- - [[./custom_exceptions.org][=custom_exceptions=]]
+1. [[./custom_exceptions.org][=custom_exceptions=]]
 
 * Tangle                          :boilerplate:
 #+BEGIN_SRC python :eval no :tangle __init__.py

@@ -164,6 +164,7 @@ class TestAddGenericFeedback(TestCase):
 
  #+END_SRC
 
+
 ** Get Success Template
    Rest API to render a template on success.
 #+NAME: get_success_template
@@ -451,8 +452,9 @@ class TestAddFeedback(TestCase):
 '''
  #+END_SRC
 
+
 ** Get Generic Lab and Exp Feedback 
-   REST API to get lab and experiment feedback for non open-edx labs
+   REST API to get generic lab and experiment feedback. 
 #+NAME: get_add_generic_lab_exp_feedback
 #+BEGIN_SRC python
 @api.route('/feedback/<string>', methods=['GET'])
@@ -713,6 +715,7 @@ class TestAddGenericLabandExpFeedback(TestCase):
         self.assertEqual(response.status_code, 200)
 
  #+END_SRC
+
 
 ** Get Feedback Usage
    This is the REST API method for getting the feedback usage. 
@@ -1091,6 +1094,7 @@ class TestGetQuestion(TestCase):
    
 
 ** Update and Delete Question
+   REST API to update and delete question.
 #+NAME: update_and_delete_question
 #+BEGIN_SRC python
 @api.route('/questions/<id>', methods=['GET', 'PUT', 'DELETE'])
@@ -1251,7 +1255,7 @@ class TestDeleteQuestion(TestCase):
 
  #+END_SRC
    
-
+ 
 * WebApp
 
 ** Index HTML
@@ -1310,6 +1314,7 @@ class TestDeleteQuestion(TestCase):
   
 #+END_SRC
 
+
 ** Error Page Template
 #+BEGIN_SRC html :tangle ./templates/error.html :eval no :noweb yes
 
@@ -1323,6 +1328,7 @@ class TestDeleteQuestion(TestCase):
 </html>
 
 #+END_SRC
+
 
 ** Success Page Template
   #+BEGIN_SRC html :tangle ./templates/success.html :eval no :noweb yes
@@ -1394,6 +1400,7 @@ class TestDeleteQuestion(TestCase):
       </header>
 
 #+END_SRC
+
 
 ** Footer HTML
 #+BEGIN_SRC html :tangle ./templates/footer.html :eval no :noweb yes
@@ -1469,6 +1476,7 @@ class TestDeleteQuestion(TestCase):
 
 
 #+END_SRC
+
 
 ** JS
 #+BEGIN_SRC javascript :tangle ./static/js/main.js :eval no :noweb yes

@@ -12,9 +12,9 @@
 
 
 * Question
-
-=Question= is a class with an attribute name of type =is_alphabetic_str=.
-
+  A =Question= entity is defined as table =question= with attributes as =name= of type
+  string, =question_type= of type string.
+  
 #+NAME: class_Question
 #+begin_src python
 args = {"__tablename__": "question",
@@ -62,7 +62,7 @@ class TestPersistentQuestion(TestCase):
 
 
 * Answer
-  =Answer= is a class an attribute email of type =is_email_str=.
+  A =Answer= entity is defined as table =answer= with attribute =name= of type string. 
 #+NAME: class_Answer
 #+begin_src python
 args = {"__tablename__": "answer",
@@ -103,7 +103,9 @@ class TestPersistenceAnswer(TestCase):
 
 
 * Feedback
-  A =Feedback= entity has fields =response= of type =Response=.
+  A =Feedback= entity is defined as =feedback= table with attributes as
+  =gateway_ip=, =lab_name=, =exp_name=, =user_id=, =version=, and =date= of
+  type date.
 
 #+NAME: class_Feedback
 #+BEGIN_SRC python
@@ -167,8 +169,9 @@ class TestPersistenceFeedback(TestCase):
 
 
 * Response
-  =Response= is an entity that has fields =question= of type =Question=,
-  =answers= of type =Answer=, and =feedbacks= of type =Feedback=
+  A =Response= entity is defined as =response= table that has fields =question=
+  of type =Question=, =answers= of type =Answer=, and =feedbacks= of type
+  =Feedback=
 
 #+NAME: class_association_Table
 #+BEGIN_SRC python

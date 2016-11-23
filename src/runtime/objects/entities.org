@@ -11,28 +11,15 @@
 In the object implementation of the Feedback Portal, 
 all entities are Objects.  In addition, there is an object 
 called =System= that holds the state of the application 
-(=user-set=, =session-set=, etc.).
+(eg: =session-set=).
 
 Each of the entities of the data model is implemented as
 an object.  Each entity is defined via a class definition, a
 constructor and getter and setter methods that access and
 mutate the fields of the entity. 
 
-The main idea in the object model is that certain relations
-of the data model (those that are total functions) are
-implemented as /fields/.  For example the =User= object has
-a field called =email= that holds an object of type =Email=.
-
-As a start, we do not implement all relations of the data
-model.  For example, the relation =user: Email > User?= is
-not implemented.  It should be, if we desire to have an
-implementation that is /complete/ with respect to the data
-model.  Which elements of the data model are implemented and
-which are not are decisions based on the end user
-requirements of the application.
-
-
 * Base Classes
+  Each Entity is represented as class. 
 #+NAME: base_classes
 #+BEGIN_SRC python
 Question = ClassTemplate.mk_class("Question")
@@ -45,6 +32,9 @@ Session = ClassTemplate.mk_class("Session")
 
 
 * Type Predicates
+  
+  The =Type Predicates= checks the type of the given input(s).
+
 #+NAME: type_predicates
 #+BEGIN_SRC python
 is_question = is_inst(Question)
@@ -105,7 +95,8 @@ check_session = check_pred(is_session)
 
 
 * Question
-   =Question= is an entity that has a field =name= which is a string
+  A =Question= entity has fields =name= and =question_type= of type string.
+ 
 #+NAME: class_Question
 #+begin_src python
 Question.add_attributes(name=is_str, question_type=is_str)
@@ -133,6 +124,7 @@ class TestQuestion(TestCase):
 
 * Answer
    =Answer= is an entity that has a field =name= which is a string
+
 #+NAME: class_Answer
 #+begin_src python
 Answer.add_attributes(name=is_str)
@@ -159,7 +151,8 @@ class TestAnswer(TestCase):
 
 * Feedback
   A =Feedback= entity has fields =gateway= of type string, =lab_name= of type
-  string, =exp_name= of type sting and responses of type =Response=.
+  string, =exp_name= of type string and responses of type list of =Responses=
+  or an empty list.
 
 #+NAME: class_Feedback
 #+BEGIN_SRC python

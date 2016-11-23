@@ -6,9 +6,9 @@
 #+EXCLUDE_TAGS: boilerplate
 #+OPTIONS: ^:nil
 
-The =persistence= package holds two modules
+The =persistence= package holds the following modules
 
- - [[./entities.org][=entities=]]  
+ 1. [[./entities.org][=entities=]]  
 
 
 * Tangle :boilerplate:
