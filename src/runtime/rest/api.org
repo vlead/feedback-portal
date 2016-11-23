@@ -20,7 +20,8 @@
 @api.route('/', methods=['GET', 'POST'])
 def get_generic_feedback():
     if request.method == 'GET':
-        response = SystemInterface.get_generic_feedback_form('generic-feedback-v2.0')
+        response = SystemInterface.get_generic_feedback_form\
+          (GENERIC_FEEDBACK_VERSION)
         return render_template('index.html', 
                             questions_data=response)
     if request.method == 'POST':
@@ -462,12 +463,12 @@ def get_add_generic_lab_and_exp_feedback(string):
     if request.method == 'GET':
         if string == 'lab':
             response = SystemInterface.get_generic_feedback_form\
-              ('generic-lab-feedback-v2.0')
+              (GENERIC_LAB_FEEDBACK_VERSION)
             return render_template('index.html', 
                                 questions_data=response)
         elif string == 'experiment':
             response = SystemInterface.get_generic_feedback_form\
-              ('generic-exp-feedback-v2.0')
+              (GENERIC_EXP_FEEDBACK_VERSION)
             return render_template('index.html', 
                                 questions_data=response)
 
@@ -1129,7 +1130,7 @@ def update_and_delete_question(id):
 
         try:
             q1 = SystemInterface.update_question(data_dict)
-            return jsonify('{"status":"sucess"}')
+            return jsonify(q1)
 
         except TypeError as err:
             error_message = 'Malformed arguments, error: %s' % str(err)
@@ -2072,6 +2073,9 @@ from flask import Flask
 from runtime.utils.type_utils import jsonify_list
 from runtime.exceptions.custom_exceptions import *
 from runtime.system.system_interface import SystemInterface
+from runtime.config.flask_app_config import GENERIC_FEEDBACK_VERSION,\
+     GENERIC_LAB_FEEDBACK_VERSION, GENERIC_EXP_FEEDBACK_VERSION
+
 import yaml
 
 api = Blueprint('APIs', __name__)

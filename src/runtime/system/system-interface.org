@@ -1046,7 +1046,7 @@ class TestDeleteQuestion(TestCase):
             question = System.do("update_question", question=question,
                                     name=name, question_type=question_type,
                                     session=session)
-            return question
+            return question.to_client()
         except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
             current_app.logger.error("Exception = %s" % str(err))
             raise err
@@ -1222,7 +1222,7 @@ class TestGetQuestions(TestCase):
         try:
             question = question_cls.get_by_id(id)
             if not question:
-                abort(404, "No question found with id: %s found." % (id))
+                return ("No question found with id: %s" % (id))
 
             return question.to_client()
 

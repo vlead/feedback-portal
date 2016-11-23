@@ -147,6 +147,11 @@ LOG_FILE = 'feedback.log'
 #10=DEBUG, 20=INFO, 30=WARNING, 40=ERROR, 50=CRITICAL",
 LOG_LEVEL = 10
 
+#Configure the versions of generic feedback forms
+GENERIC_FEEDBACK_VERSION = 'generic-feedback-v2.0'
+GENERIC_LAB_FEEDBACK_VERSION = 'generic-lab-feedback-v2.0'
+GENERIC_EXP_FEEDBACK_VERSION = 'generic-exp-feedback-v2.0'
+
 #+END_SRC
 
 
