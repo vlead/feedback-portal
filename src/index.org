@@ -12,18 +12,19 @@
   The Feedback portal helps to provide feedback on Virtual Labs.  The development
   of the application is divided into the following phases:
 
-** [[./requirements/index.org][Requirements]]
+ 1. [[./requirements/index.org][Requirements]]
 
 
-** [[./design/index.org][Design]]
+ 2. [[./design/index.org][Design]]
 
 
-** [[./data-model/index.org][Data Model]]
-
-** [[./runtime/index.org][Runtime]]
+ 3. [[./data-model/index.org][Data Model]]
 
 
-** [[./deployment/index.org][Deployment]]
+ 4. [[./runtime/index.org][Runtime]]
+
+
+ 5. [[./deployment/index.org][Deployment]]
        
 
 * Tangle                                       :boilerplate:
