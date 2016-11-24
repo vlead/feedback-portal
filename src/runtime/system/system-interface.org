@@ -890,7 +890,7 @@ class TestGetFeedbackDump(TestCase):
         try:
             question = System.do("add_question", question=question, 
                                     session=session)
-            return question
+            return question.to_client()
         except (ArityError, TypeError, NotAuthorizedError, StateError) as err:
             current_app.logger.error("Exception = %s" % str(err))
             raise err
@@ -1042,7 +1042,6 @@ class TestDeleteQuestion(TestCase):
             question_type=data_dict['question_type']
 
         try:
-            print name, question_type
             question = System.do("update_question", question=question,
                                     name=name, question_type=question_type,
                                     session=session)
