@@ -126,14 +126,19 @@ class TestPersistenceDelegate(TestCase):
 #+NAME: persistence_response_exists
 #+BEGIN_SRC python
     def response_exists(self, response):
-        ret_val = False
+        ret_val_dict = {'exists' : False,
+                        'value' : None
+                       }
+            
         
         question = response.get("question")
         answers = response.get("answers")
-        if self.get_response(question=question, answers=answers) is not None:
-            ret_val = True
+        response = self.get_response(question=question, answers=answers)
+        if response is not None:
+            ret_val_dict['exists'] = True
+            ret_val_dict['value'] = response
 
-        return ret_val
+        return ret_val_dict
 
 
 #+END_SRC
@@ -177,12 +182,14 @@ class TestPersistenceDelegate(TestCase):
 
         res3 = Response(question=question1, answers=[ans2], feedbacks=[fb])
 
-        self.assertEqual(self.persistence_delegate.response_exists(res1),
-                             True)
-        self.assertEqual(self.persistence_delegate.response_exists(res2),
-                             True)
-        self.assertEqual(self.persistence_delegate.response_exists(res3),
-                             False)
+        ret_val_dict = self.persistence_delegate.response_exists(res1)
+        self.assertEqual(ret_val_dict['exists'], True)
+
+        ret_val_dict = self.persistence_delegate.response_exists(res2)
+        self.assertEqual(ret_val_dict['exists'], True)
+
+        ret_val_dict = self.persistence_delegate.response_exists(res3)
+        self.assertEqual(ret_val_dict['exists'], False)
 
 #+END_SRC
 
@@ -435,9 +442,9 @@ class TestPersistenceDelegate(TestCase):
         response_list = []
         for response in responses:
             answers = response.get("answers")
-            if self.response_exists(response):
-                response = self.get_response(question=response.get('question'),
-                                             answers=response.get('answers'))
+            ret_val_dict = self.response_exists(response)
+            if ret_val_dict['exists']:
+                response = ret_val_dict['value']
             else:
                 answer_list = []
                 for answer in answers:
@@ -984,17 +991,37 @@ class TestPersistenceDelegate(TestCase):
 #+BEGIN_SRC python
     def get_response(self, **args):
         ret_val = None
+
+        def equality(responses, answers):
+            ret_val = None
+
+            for response in responses:
+                loop_val = True
+                s_r_a = sorted(response.get("answers"))
+                s_a = sorted(answers)
+
+                if len(s_r_a) != len(s_a):
+                    continue
+
+                for val in s_r_a:
+                    if val not in s_a:
+                        loop_val = False
+                        break
+
+                    if loop_val:
+                        ret_val = response
+                        break
+                    else:
+                        continue
+
+            return ret_val
+        
         if "question" in args.keys() and "answers" in args.keys():
             question = args["question"]
             answers = args["answers"]
             responses = self.get_responses(question=question)
             if responses:
-                filtered_responses = filter(lambda response: \
-                                            sorted(response.get("answers")) \
-                                            == sorted(answers), responses)
-
-                if filtered_responses:
-                    ret_val = filtered_responses[0]
+                ret_val = equality(responses, answers)
 
         return ret_val
 
