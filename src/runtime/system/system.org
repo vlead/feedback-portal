@@ -245,20 +245,26 @@ class AddQuestion():
     @staticmethod
     def auth_check(args):
         session = args['session']
+        current_app.logger.debug("checking authorization")
         if not System.is_session_valid(session):
+            current_app.logger.debug("authorization is failed")
             raise NotAuthorizedError("Not Authorized to perform this action")
-
+        current_app.logger.debug("authorization check is done")
     @staticmethod
     def state_check(args):
         question = args["question"]
+        current_app.logger.debug("checking state")
         if System.delegate.question_exists(question):
+            current_app.logger.debug("state check is failed")
             raise StateError("question %s already exists in System"
                                  % question.to_client())
-
+        current_app.logger.debug("state check is done")
     @staticmethod
     def action(args):
         question = args["question"]
+        current_app.logger.debug("running delegate.add_question")
         question = System.delegate.add_question(question)
+        current_app.logger.debug("completed delegate.add_question")
         return question
 
 #+end_src
@@ -283,9 +289,11 @@ class UpdateQuestion():
     @staticmethod
     def auth_check(args):
         session = args['session']
+        current_app.logger.debug("checking authorization")
         if not System.is_session_valid(session):
+            current_app.logger.debug("authorization is failed")
             raise NotAuthorizedError("Not Authorized to perform this action")
-
+        current_app.logger.debug("authorization check is done")
     @staticmethod
     def state_check(args):
         pass
@@ -295,9 +303,10 @@ class UpdateQuestion():
         question = args["question"]
         name = args["name"]
         question_type = args["question_type"]
-
+        current_app.logger.debug("running delegate.update_question")
         question = System.delegate.update_question(question, name,\
             question_type)
+        current_app.logger.debug("completed delegate.update_question")
         return question
 
 #+end_src
@@ -319,7 +328,9 @@ class DeleteQuestion():
     @staticmethod
     def auth_check(args):
         session = args['session']
+        current_app.logger.debug("checking authorization")
         if not System.is_session_valid(session):
+            current_app.logger.debug("authorization is failed")
             raise NotAuthorizedError("Not Authorized to perform this action")
 
     @staticmethod
@@ -329,7 +340,9 @@ class DeleteQuestion():
     @staticmethod
     def action(args):
         q_id = args["q_id"]
+        current_app.logger.debug("running delegate.delete_question")
         q_id = System.delegate.delete_question(q_id)
+        current_app.logger.debug("completed delegate.delete_question")
         return q_id
 
 #+end_src
@@ -351,20 +364,26 @@ class AddAnswer():
     @staticmethod
     def auth_check(args):
         session = args['session']
+        current_app.logger.debug("checking authorization")
         if not System.is_session_valid(session):
+            current_app.logger.debug("authorization is failed")
             raise NotAuthorizedError("Not Authorized to perform this action")
 
     @staticmethod
     def state_check(args):
         answer = args["answer"]
+        current_app.logger.debug("checking state")
         if System.delegate.answer_exists(answer):
+            current_app.logger.debug("state check is failed")
             raise StateError("answer %s already exists in System"
                                  % answer.to_client())
-
+        current_app.logger.debug("state check is done")
     @staticmethod
     def action(args):
         answer = args["answer"]
+        current_app.logger.debug("running delegate.add_answer")
         answer = System.delegate.add_answer(answer)
+        current_app.logger.debug("completed delegate.add_answer")
         return answer
 
 #+end_src
@@ -390,11 +409,12 @@ class AddFeedback():
     @staticmethod
     def auth_check(args):
         session = args['session']
+        current_app.logger.debug("checking authorization")
         if not System.is_session_valid(session):
             current_app.logger.error("auth error raised, session = %s" % 
                                         session.to_client())
             raise NotAuthorizedError("Not Authorized to perform this action")
-
+        current_app.logger.debug("authorization check is done")
     @staticmethod
     def state_check(args):
         pass
@@ -409,6 +429,7 @@ class AddFeedback():
         user_id = args["user_id"]
         responses = args['responses']
         try:
+            current_app.logger.debug("running delegate.add_feedback")
             feedback = System.delegate.add_feedback(gateway_ip, 
                                                         lab_name,
                                                         exp_name,
@@ -416,6 +437,7 @@ class AddFeedback():
                                                         version,
                                                         user_id,
                                                         responses)
+            current_app.logger.debug("completed delegate.add_feedback")
             return feedback
         except Exception as err:
             current_app.logger.error("Exception = %s" % str(err))
@@ -441,27 +463,31 @@ class AddResponsesToFeedback():
     @staticmethod
     def auth_check(args):
         session = args['session']
+        current_app.logger.debug("checking authorization")
         if not System.is_session_valid(session):
             current_app.logger.error("auth error raised, session = %s" % 
                                         session.to_client())
             raise NotAuthorizedError("Not Authorized to perform this action")
-
+        current_app.logger.debug("authorization check is done")
     @staticmethod
     def state_check(args):
         fb_id = args["fb_id"]
+        current_app.logger.debug("checking state")
         if not System.delegate.feedback_exists(fb_id):
             current_app.logger.error("feedback with id = %d does not exist"
                                      " in System" % fb_id)
             raise StateError("feedback with id = %d does not exist in System"
                                  % fb_id)
-
+        current_app.logger.debug("state check is done")
     @staticmethod
     def action(args):
         fb_id = args["fb_id"]
         responses = args["responses"]
         try:
+            current_app.logger.debug("running delegate.add_response_to_feedback")
             feedback = System.delegate.add_responses_to_feedback(fb_id, 
                                                                  responses)
+            current_app.logger.debug("completed delegate.add_response_to_feedback")
             return feedback
         except Exception as err:
             current_app.logger.error("Exception = %s" % str(err))
@@ -488,9 +514,11 @@ class GetFeedbackUsage():
     @staticmethod
     def auth_check(args):
         session = args['session']
+        current_app.logger.debug("checking authorization")
         if not System.is_session_valid(session):
+            current_app.logger.debug("authorization is failed")
             raise NotAuthorizedError("Not Authorized to perform this action")
-
+        current_app.logger.debug("authorization check is done")
     @staticmethod
     def state_check(args):
         pass
@@ -499,7 +527,9 @@ class GetFeedbackUsage():
     def action(args):
         gateway_ip = args["gateway_ip"]
         date = args["date"]
+        current_app.logger.debug("running delegate.get_feedback_usage")
         usage = System.delegate.get_feedback_usage(gateway_ip, date) 
+        current_app.logger.debug("completed delegate.get_feedback_usage")
         return usage
 
 #+end_src
@@ -521,8 +551,11 @@ class GetFeedbackDump():
     @staticmethod
     def auth_check(args):
         session = args['session']
+        current_app.logger.debug("checking authorization")
         if not System.is_session_valid(session):
+            current_app.logger.debug("authorization is failed")
             raise NotAuthorizedError("Not Authorized to perform this action")
+        current_app.logger.debug("authorization check is done")
 
     @staticmethod
     def state_check(args):
@@ -531,7 +564,9 @@ class GetFeedbackDump():
     @staticmethod
     def action(args):
         date = args["date"]
+        current_app.logger.debug("running delegate.get_feedback_dump")
         feedbacks = System.delegate.get_feedback_dump(date) 
+        current_app.logger.debug("completed delegate.get_feedback_dump")
         return feedbacks
 
 #+end_src
@@ -559,8 +594,11 @@ class GetFeedbackForm():
     @staticmethod
     def auth_check(args):
         session = args['session']
+        current_app.logger.debug("checking authorization")
         if not System.is_session_valid(session):
+            current_app.logger.debug("authorization is failed")
             raise NotAuthorizedError("Not Authorized to perform this action")
+        current_app.logger.debug("authorization check is done")
 
     @staticmethod
     def state_check(args):
