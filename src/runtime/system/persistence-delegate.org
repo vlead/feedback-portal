@@ -990,62 +990,62 @@ class TestPersistenceDelegate(TestCase):
 #+NAME: persistence_get_response
 #+BEGIN_SRC python
     def get_response(self, **args):
-        ret_val = None
-        if "question" in args.keys() and "answers" in args.keys():
-            question = args["question"]
-            answers = args["answers"]
-            responses = self.get_responses(question=question)
-            if responses:
-
-                def equality_of_response(response):
-                    response_answers = response.get("answers")
-                    if (len(response_answers) == len(answers) and
-                            sorted(response_answers) == sorted(answers)):
-                        return True
-                    else:
-                        return False
-                    
-                filtered_responses = filter(equality_of_response, responses)
-
-                if filtered_responses:
-                    ret_val = filtered_responses[0]
-
-        return ret_val
-
         # ret_val = None
-
-        # def equality(responses, answers):
-        #     ret_val = None
-
-        #     for response in responses:
-        #         loop_val = True
-        #         s_r_a = sorted(response.get("answers"))
-        #         s_a = sorted(answers)
-
-        #         if len(s_r_a) != len(s_a):
-        #             continue
-
-        #         for val in s_r_a:
-        #             if val not in s_a:
-        #                 loop_val = False
-        #                 break
-
-        #             if loop_val:
-        #                 ret_val = response
-        #                 break
-        #             else:
-        #                 continue
-
-        #     return ret_val
-        
         # if "question" in args.keys() and "answers" in args.keys():
         #     question = args["question"]
         #     answers = args["answers"]
         #     responses = self.get_responses(question=question)
         #     if responses:
-        #         ret_val = equality(responses, answers)
+
+        #         def equality_of_response(response):
+        #             response_answers = response.get("answers")
+        #             if (len(response_answers) == len(answers) and
+        #                     sorted(response_answers) == sorted(answers)):
+        #                 return True
+        #             else:
+        #                 return False
+                    
+        #         filtered_responses = filter(equality_of_response, responses)
+
+        #         if filtered_responses:
+        #             ret_val = filtered_responses[0]
 
         # return ret_val
+
+        ret_val = None
+
+        def equality(responses, answers):
+            ret_val = None
+
+            for response in responses:
+                loop_val = True
+                s_r_a = sorted(response.get("answers"))
+                s_a = sorted(answers)
+
+                if len(s_r_a) != len(s_a):
+                    continue
+
+                for val in s_r_a:
+                    if val not in s_a:
+                        loop_val = False
+                        break
+
+                    if loop_val:
+                        ret_val = response
+                        break
+                    else:
+                        continue
+
+            return ret_val
+        
+        if "question" in args.keys() and "answers" in args.keys():
+            question = args["question"]
+            answers = args["answers"]
+            responses = self.get_responses(question=question)
+            if responses:
+                ret_val = equality(responses, answers)
+
+        return ret_val
 
 #+END_SRC
 
