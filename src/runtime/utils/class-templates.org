@@ -261,7 +261,7 @@ class ClassTemplate():
                             to_client_var[key].append("Not Printing")
                         
                 elif hasattr(value, 'to_client'):
-                    to_client_var[key] = value.to_client()
+                    to_client_var[key] = value.to_client(level=level+1)
                 else:
                     to_client_var[key] = value
 

@@ -155,7 +155,7 @@
                     val_list = []
                     for val in value:
                         if hasattr(val.__class__, 'set_state') and \
-                          level <= 3:
+                          level <= 2:
                             val.__class__.set_state(val, level+1)
                             
                         val_list.append(val)
@@ -164,7 +164,7 @@
                
                 else:
                     if hasattr(value.__class__, 'set_state') and \
-                      level <= 3:
+                      level <= 2:
                         value.__class__.set_state(value, level+1)
                        
                     obj.state[key] = value
