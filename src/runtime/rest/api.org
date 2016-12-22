@@ -20,11 +20,13 @@
 @api.route('/', methods=['GET', 'POST'])
 def get_generic_feedback():
     if request.method == 'GET':
+        current_app.logger.debug("get generic feedback")
         response = SystemInterface.get_generic_feedback_form\
           (GENERIC_FEEDBACK_VERSION)
         return render_template('index.html', 
                             questions_data=response)
     if request.method == 'POST':
+        current_app.logger.debug("generic feedback post")
         if request.is_json:
             data_json = json.dumps(request.get_json())
             data_dict = yaml.safe_load(data_json)
@@ -34,16 +36,19 @@ def get_generic_feedback():
         try:
             gateway_ip = str(request.access_route[-1])
             data_dict["gateway_ip"] = gateway_ip
+            current_app.logger.debug("execute add_generic_feedback")
             fb = SystemInterface.add_generic_feedback(data_dict)
+            current_app.logger.debug("exectued add_generic_feedback")
             return jsonify('{"status":"sucess"}')
 
         except TypeError as err:
             error_message = 'Malformed arguments, error: %s' % str(err)
-
+            current_app.logger.error("%s" %(error_message))
             return render_template('error.html', 
                     data=error_message)
 
         except Exception as err:
+            current_app.logger.error("Exception : %s" %(err))
             abort(500, 'error: %s' % str(err))
             
 #+END_SRC
@@ -172,6 +177,7 @@ class TestAddGenericFeedback(TestCase):
 #+BEGIN_SRC  python
 @api.route('/success', methods=['GET'])
 def get_success_template():
+    current_app.logger.debug("")
     return render_template('success.html')
 
 #+END_SRC
@@ -184,6 +190,7 @@ def get_success_template():
 @api.route('/feedback', methods=['GET', 'POST'])
 def get_add_feedback():
     if request.method == 'GET':
+        current_app.logger.debug("")
         if 'lab_name' not in request.args or 'key' not in request.args:
             error_message = 'Either lab_name or key or both arguments are not passed'
             return render_template('error.html', data=error_message)
@@ -213,29 +220,30 @@ def get_add_feedback():
             current_app.logger.debug("lab_name = %s, exp_name=%s, user_id=%s, "
                         "key=%s" % (lab_name, exp_name, user_id, key))
         try:
+            current_app.logger.debug("execute get_feedback_form")
             response = SystemInterface.get_feedback_form(key, 
                                 lab_name, 
                                 exp_name,
                                 version,
                                 user_id)
-                            
+            current_app.logger.debug("executed get_feedback_form")                            
             return render_template('index.html', 
                     questions_data=response)
 
         except NotAuthorizedError as err:
             error_message = 'Not Authorized error: %s' % str(err)
-
+            current_app.logger.error("%s" %(error_message))
             return render_template('error.html', 
                     data=error_message)
             
         except TypeError as err:
             error_message = 'Malformed arguments, error: %s' % str(err)
-
+            current_app.logger.error("%s" %(error_message))
             return render_template('error.html', 
                     data=error_message)
         except Exception as err:
             error_message = 'error: %s' % str(err)
-
+            current_app.logger.error("%s" %(error_message))
             return render_template('error.html', 
                     data=error_message)
 
@@ -259,14 +267,19 @@ def get_add_feedback():
 
             data_dict["gateway_ip"] = gateway_ip
         try:
+            current_app.logger.debug("execute add_feedback")
             fb = SystemInterface.add_feedback(data_dict)
+            current_app.logger.debug("execute add_feedback")
             return jsonify('{"status":"sucess"}')
 
         except NotAuthorizedError as err:
+            current_app.logger.error("%s" %(err))
             abort(401, 'Not Authorized error: %s' % str(err))
         except TypeError as err:
+            current_app.logger.error("%s" %(err))
             abort(400, 'Malformed arguments, error: %s' % str(err))
         except Exception as err:
+            current_app.logger.error("%s" %(err))
             abort(500, 'error: %s' % str(err))
   
 #+END_SRC
@@ -462,13 +475,17 @@ class TestAddFeedback(TestCase):
 def get_add_generic_lab_and_exp_feedback(string):
     if request.method == 'GET':
         if string == 'lab':
+            current_app.logger.debug("execute get_generic_feedback_form")
             response = SystemInterface.get_generic_feedback_form\
               (GENERIC_LAB_FEEDBACK_VERSION)
+            current_app.logger.debug("executed get_generic_feedback_form")
             return render_template('index.html', 
                                 questions_data=response)
         elif string == 'experiment':
+            current_app.logger.debug("execute get_generic_feedback_form")
             response = SystemInterface.get_generic_feedback_form\
               (GENERIC_EXP_FEEDBACK_VERSION)
+            current_app.logger.debug("executed get_generic_feedback_form")
             return render_template('index.html', 
                                 questions_data=response)
 
@@ -482,16 +499,19 @@ def get_add_generic_lab_and_exp_feedback(string):
         try:
             gateway_ip = str(request.access_route[-1])
             data_dict["gateway_ip"] = gateway_ip
+            current_app.logger.debug("execute add_generic_lab_and_exp_feedback")
             fb = SystemInterface.add_generic_lab_and_exp_feedback(data_dict)
+            current_app.logger.debug("executed add_generic_lab_and_exp_feedback")
             return jsonify('{"status":"sucess"}')
 
         except TypeError as err:
             error_message = 'Malformed arguments, error: %s' % str(err)
-
+            current_app.logger.error("%s" %(error_message))
             return render_template('error.html', 
                     data=error_message)
 
         except Exception as err:
+            current_app.logger.error("%s" %(error_message))
             abort(500, 'error: %s' % str(err))
 
 #+END_SRC
@@ -732,8 +752,10 @@ def get_feedback_usage():
             date  = request.args['date']
             key = request.args['key']
             try:
+                current_app.logger.debug("execute get_feedback_usage")
                 usage_count = SystemInterface.get_feedback_usage(gateway_ip,\
                                                                  date, key)
+                current_app.logger.debug("executed get_feedback_usage")
                 usage = {'usage': usage_count}
                 return jsonify(usage)
             except NotAuthorizedError as err:
@@ -743,6 +765,7 @@ def get_feedback_usage():
                     abort(401, error_message)
                 else:
                 """
+                current_app.logger.error("%s" %(error_message))
                 return render_template('error.html', 
                                        data=error_message)
             except TypeError as err:
@@ -752,6 +775,7 @@ def get_feedback_usage():
                 abort(400, error_message)
                 else:
                 """
+                current_app.logger.error("%s" %(error_message))
                 return render_template('error.html', 
                                        data=error_message)
             except Exception as err:
@@ -761,6 +785,7 @@ def get_feedback_usage():
                 abort(400, error_message)
                 else:
                 """
+                current_app.logger.error("%s" %(error_message))
                 return render_template('error.html', 
                                     data=error_message)
 
@@ -843,7 +868,9 @@ def get_feedback_dump():
             key = request.args['key']
             
             try:
+                current_app.logger.debug("execute get_feedback_dump")
                 feedbacks = SystemInterface.get_feedback_dump(date, key)
+                current_app.logger.debug("executed get_feedback_dump")
                 return jsonify_list(feedbacks)
                 
             except NotAuthorizedError as err:
@@ -853,15 +880,17 @@ def get_feedback_dump():
                     abort(401, error_message)
                 else:
                 """
+                current_app.logger.error("%s" %(error_message))
                 return render_template('error.html', 
                                        data=error_message)
             except TypeError as err:
                 error_message = 'Malformed arguments, error: %s' % str(err)
                 """
-                if request.headers['Content-Type'] == "application/json":
+                if request.headerscurrent_app.logger.error("%s" %(error_message)))['Content-Type'] == "application/json":
                 abort(400, error_message)
                 else:
                 """
+                current_app.logger.error("%s" %(error_message))
                 return render_template('error.html', 
                                        data=error_message)
             except Exception as err:
@@ -871,6 +900,7 @@ def get_feedback_dump():
                 abort(400, error_message)
                 else:
                 """
+                current_app.logger.error("%s" %(error_message))
                 return render_template('error.html', 
                                        data=error_message)
             
@@ -949,9 +979,11 @@ class TestGetFeedbackDump(TestCase):
 @api.route('/get_gateway_ip', methods=['GET'])
 def get_gateway_ip():
     try:
+        current_app.logger.debug("")
         gateway_ip = str(request.access_route[-1])
         return jsonify({'gateway_ip': gateway_ip}) 
     except Exception as e:
+        current_app.logger.error("%s" %(str(e)))
         return "Error in getting the gateway_ip"
   
 #+END_SRC
@@ -967,17 +999,20 @@ def get_gateway_ip():
 def add_question():
     if request.method == 'GET':
         try:
+            current_app.logger.debug("execute get_questions")
             questions = SystemInterface.get_questions()
+            current_app.logger.debug("executed get_questions")
 
             return jsonify_list(questions)
 
         except TypeError as err:
             error_message = 'Malformed arguments, error: %s' % str(err)
-
+            current_app.logger.error("%s" %(error_message))
             return render_template('error.html', 
                     data=error_message)
 
         except Exception as err:
+            current_app.logger.error("%s" %(err))
             abort(500, 'error: %s' % str(err))
        
     if request.method == 'POST':
@@ -988,16 +1023,19 @@ def add_question():
             abort(500, "the request does not contain data in json")
 
         try:
+            current_app.logger.debug("execute add_question")
             q1 = SystemInterface.add_question(data_dict)
+            current_app.logger.debug("executed add_question")
             return jsonify(q1)
 
         except TypeError as err:
             error_message = 'Malformed arguments, error: %s' % str(err)
-
+            current_app.logger.error("%s" %(err))
             return render_template('error.html', 
                     data=error_message)
 
         except Exception as err:
+            current_app.logger.error("%s" %(err))
             abort(500, 'error: %s' % str(err))
             
 #+END_SRC
@@ -1102,22 +1140,25 @@ class TestGetQuestion(TestCase):
 def update_and_delete_question(id):
     if request.method == 'GET':
         try:
+            current_app.logger.debug("execute get_question_by_id(id)")
             question = SystemInterface.get_question_by_id(id)
+            current_app.logger.debug("executed get_question_by_id(id)")
             return jsonify(question)
 
         except NotFoundError as err:
             error_message = "No question found with id: %s found." % id
-
+            current_app.logger.error("%s" %(error_message))
             return render_template('error.html',
                     data=error_message)
 
         except TypeError as err:
             error_message = 'Malformed arguments, error: %s' % str(err)
-
+            current_app.logger.error("%s" %(error_message))
             return render_template('error.html', 
                     data=error_message)
 
         except Exception as err:
+            current_app.logger.error("%s" %(err))
             abort(500, 'error: %s' % str(err))
     
     if request.method == 'PUT':
@@ -1129,31 +1170,38 @@ def update_and_delete_question(id):
             abort(500, "the request does not contain data in json")
 
         try:
+            current_app.logger.debug("execute update_question")
             q1 = SystemInterface.update_question(data_dict)
+            current_app.logger.debug("execute update_question")
             return jsonify(q1)
 
         except TypeError as err:
             error_message = 'Malformed arguments, error: %s' % str(err)
-
+            current_app.logger.error("%s" %(err))
             return render_template('error.html', 
                     data=error_message)
 
         except Exception as err:
+            current_app.logger.error("%s" %(err))
             abort(500, 'error: %s' % str(err))
 
     if request.method == 'DELETE':
 
         try:
+            
+            current_app.logger.debug("execute delete_question")
             q1 = SystemInterface.delete_question(id)
+            current_app.logger.debug("executed delete_question")
             return jsonify('{"status":"sucess"}')
 
         except TypeError as err:
             error_message = 'Malformed arguments, error: %s' % str(err)
-
+            current_app.logger.error("%s" %(error_message))
             return render_template('error.html', 
                     data=error_message)
 
         except Exception as err:
+            current_app.logger.error("%s" %(err))
             abort(500, 'error: %s' % str(err))
 
 #+END_SRC
