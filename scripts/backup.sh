@@ -4,7 +4,7 @@ DB_NAME="feedback"
 DB_PASS="root"
 
 OUT_FILE_NAME="feedbackbackup"
-VERSION="v1.0.0"
+VERSION="V2.1.0"
 OUT_FILE="$OUT_FILE_NAME-$VERSION.tar"
 
 

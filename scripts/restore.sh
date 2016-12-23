@@ -2,7 +2,7 @@
 
 DB_NAME="feedback"
 DB_PASS="xxx"
-VERSION="v1.0.0"
+VERSION="V2.1.0"
 
 BACKUP_FILE=$1
 
