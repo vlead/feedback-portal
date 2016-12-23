@@ -1,4 +1,4 @@
-#+TITLE: Feedback Portal Version V2.1.0
+#+TITLE: Feedback Portal Version V2.2.0
 #+AUTHOR: VLEAD
 #+DATE: [2016-11-18 Fri]
 
@@ -6,5 +6,8 @@
   This document will describes the release notes of =Feedback Portal=
   version =v2.2.0=.
   
-* Resolved github issues
-  Resolved Issues : [[https://github.com/vlead/feedback-portal/issues/30][30]]
+* New Features
+  - No features
+  
+* Bug fixes
+  Resolved github issues : [[https://github.com/vlead/feedback-portal/issues/30][30]]
