@@ -1822,7 +1822,7 @@ function submitFeedback(event) {
 	feedback.lab_name = document.getElementById("lab_name_value").value;
     }
     if(document.getElementById("exp_name_value")){
-	feedback.lab_name = document.getElementById("exp_name_value").value;
+	feedback.exp_name = document.getElementById("exp_name_value").value;
     }
     feedback.responses = []; // the list of questions and user answers
     var quesArray = feedbackForm.questions.length;
