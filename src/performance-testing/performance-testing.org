@@ -1,0 +1,43 @@
+#+TITLE: Performance Testing for Feedback Portal/Service
+#+AUTHOR: VLEAD
+#+DATE: [2016-08-29 Mon]
+#+PROPERTY: results output
+#+PROPERTY: exports code
+#+SETUPFILE: ../org-templates/level-1.org
+#+options: ^:nil
+#+LATEX: Literal LaTeX code for export
+
+* Introduction
+  This document provides the details about the performance tests that are done
+  on feedback-portal version v2.1.0
+* Tests
+** Scenarios
+*** Test Results when feedback portal is accessed with VLEAD wifi. 
+
+|----------------------------------------+--------+------------+---------+--------|
+| Asset Name                             | Status | Type       | Size    | Time   |
+|----------------------------------------+--------+------------+---------+--------|
+| feedback.vlabs.ac.in                   |    200 | document   | 2.8 KB  | 640 ms |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 238 ms |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 181 ms |
+| main.js                                |    200 | script     | 3.5 KB  | 460 ms |
+| jquery.min.js                          |    200 | script     | 33.2 KB | 87 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 696 B   | 228 ms |
+|----------------------------------------+--------+------------+---------+--------|
+
+Time taken to load complete page is: 1.27 s
+
+*** Test Results when feedback portal is accessed with GPRS(500ms, . 
+
+|----------------------------------------+--------+------------+---------+--------|
+| Asset Name                             | Status | Type       | Size    | Time   |
+|----------------------------------------+--------+------------+---------+--------|
+| feedback.vlabs.ac.in                   |    200 | document   | 2.8 KB  | 640 ms |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 238 ms |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 181 ms |
+| main.js                                |    200 | script     | 3.5 KB  | 460 ms |
+| jquery.min.js                          |    200 | script     | 33.2 KB | 87 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 696 B   | 228 ms |
+|----------------------------------------+--------+------------+---------+--------|
+
+Time taken to load complete page is: 1.27 s
