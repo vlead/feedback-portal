@@ -8,36 +8,173 @@
 #+LATEX: Literal LaTeX code for export
 
 * Introduction
-  This document provides the details about the performance tests that are done
-  on feedback-portal version v2.1.0
-* Tests
-** Scenarios
-*** Test Results when feedback portal is accessed with VLEAD wifi. 
+  This document describes the observations while feedback portal
+  v2.1.0 is accessed with different bandwidth data.
+* Vocabulary
+  - Throattling
+    + In =google-chrome= browser throattling is an option
+      which will allows to set different levels of bandwidth for loading
+      the web page
+    + Throattling helps to check web pages performance with variant in
+      network speed.
+* Observations
+** On Testing Server (hosted on base2 Container)
+*** Scenario 1 :
+    This scenario describes the observations of feedback portal v2.1.0
+    which is running on testing server (version is same as production
+    one)
+**** Without throattling
 
 |----------------------------------------+--------+------------+---------+--------|
 | Asset Name                             | Status | Type       | Size    | Time   |
 |----------------------------------------+--------+------------+---------+--------|
-| feedback.vlabs.ac.in                   |    200 | document   | 2.8 KB  | 640 ms |
-| main.css                               |    200 | stylesheet | 1.2 KB  | 238 ms |
-| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 181 ms |
-| main.js                                |    200 | script     | 3.5 KB  | 460 ms |
-| jquery.min.js                          |    200 | script     | 33.2 KB | 87 ms  |
-| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 696 B   | 228 ms |
-|----------------------------------------+--------+------------+---------+--------|
+| jquery.min.js                          |    200 | script     | 33.2 KB | 421 ms |
+| main.js                                |    200 | script     | 3.4 KB  | 37 ms  |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 239 ms |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 36 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 678 B   | 243 ms |
 
-Time taken to load complete page is: 1.27 s
+**** With GPRS (50kb/s)
 
-*** Test Results when feedback portal is accessed with GPRS(500ms, . 
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 35.7 KB | 18.28 s |
+| main.js                                |    200 | script     | 3.4 KB  | 3.51 s  |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 8.66 s  |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 691 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 884 B   | 1.17 s  |
 
+**** With 30kbps
+
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 39.9 KB | 1.5 min |
+| main.js                                |    200 | script     | 3.4 KB  | 22.26 s |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 43.35 s |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 2.33 s  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 884 B   | 2.34 s  |
+**** With 20kbps
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 35.8 KB | 1.6 min |
+| main.js                                |    200 | script     | 3.4 KB  | 16.41 s |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 39.83 s |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 2.33 s  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 884 B   | 3.52 s  |
+*** Scenario 2
+    This scenario describes the observations of feedback portal v2.1.0
+    which is runnning on testing server when =main.js= content is
+    moved into the =index.html= as inline javascript code.
+**** Without thoattling
 |----------------------------------------+--------+------------+---------+--------|
 | Asset Name                             | Status | Type       | Size    | Time   |
 |----------------------------------------+--------+------------+---------+--------|
-| feedback.vlabs.ac.in                   |    200 | document   | 2.8 KB  | 640 ms |
-| main.css                               |    200 | stylesheet | 1.2 KB  | 238 ms |
-| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 181 ms |
-| main.js                                |    200 | script     | 3.5 KB  | 460 ms |
-| jquery.min.js                          |    200 | script     | 33.2 KB | 87 ms  |
-| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 696 B   | 228 ms |
-|----------------------------------------+--------+------------+---------+--------|
+| jquery.min.js                          |    200 | script     | 33.2 KB | 231 ms |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 247 ms |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 56 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 678 B   | 85 ms  |
+|                                        |        |            |         |        |
+**** With GPRS (50kb/s)
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 33.2 KB | 17.57 s |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 8.19 s  |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 924 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 678 B   | 1.17 s  |
+**** With 30kbps
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 33.2 KB | 26.56 s |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 14.83 s |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 763 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 678 B   | 1.17 s  |
+**** With 20kbps
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 38.4 KB | 32.81 s |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 14.84 s |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 771 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 884 B   | 1.17 s  |
 
-Time taken to load complete page is: 1.27 s
+*** Scenario 3 
+    This scenario describes the observation of feedback portal v2.1.0
+    which is running on testing server when all assets =bootstrap.css=
+    and =jquery.js= are moved into local machine.
+**** No throattling
+|----------------------------------------+--------+------------+---------+-------|
+| Asset Name                             | Status | Type       | Size    | Time  |
+|----------------------------------------+--------+------------+---------+-------|
+| jquery.min.js                          |    200 | script     | 33.5 KB | 99 ms |
+| bootstrap.min.css                      |    200 | stylesheet | 19.8 KB | 87 ms |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 76 ms |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 678 B   | 72 ms |
+**** With GPRS (50kb/s)
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 33.5 KB | 14.53 s |
+| bootstrap.min.css                      |    200 | stylesheet | 19.8 KB | 6.55 s  |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 1.17 s  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 1.2 KB  | 1.17 s  |
+**** With 30kbps
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 33.5 KB | 24.22 s |
+| bootstrap.min.css                      |    200 | stylesheet | 19.8 KB | 11.71 s |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 779 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 884 B   | 1.17 s  |
+**** With 20kbps
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 33.5 KB | 24.22 s |
+| bootstrap.min.css                      |    200 | stylesheet | 19.8 KB | 11.71 s |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 780 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 884 B   | 1.17 s  |
+** Production
+   This section describes the observations of feedback portal v2.1.0
+   which is running on production server for different levels of
+   bandwidth data.
+*** Without throattling
+|----------------------------------------+--------+------------+---------+--------|
+| Asset Name                             | Status | Type       | Size    | Time   |
+|----------------------------------------+--------+------------+---------+--------|
+| jquery.min.js                          |    200 | script     | 33.4 KB | 81 ms  |
+| main.js                                |    200 | script     | 3.4 KB  | 223 ms |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 234 ms |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 216 ms |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 884 B   | 70 ms  |
+*** With GPRS (50kb/s)
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 37.1 KB | 14.30 s |
+| main.js                                |    200 | script     | 3.4 KB  | 3.05 s  |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 8.66 s  |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 925 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 884 B   | 1.41 s  |
+*** With 30kbps
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 33.2 KB | 31.64 s |
+| main.js                                |    200 | script     | 3.4 KB  | 4.29 s  |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 14.43 s |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 758 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 678 B   | 1.56 s  |
+*** With 20kbps
+|----------------------------------------+--------+------------+---------+---------|
+| Asset Name                             | Status | Type       | Size    | Time    |
+|----------------------------------------+--------+------------+---------+---------|
+| jquery.min.js                          |    200 | script     | 35.8 KB | 26.56 s |
+| main.js                                |    200 | script     | 3.4 KB  | 3.90 s  |
+| bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 14.83 s |
+| main.css                               |    200 | stylesheet | 1.2 KB  | 764 ms  |
+| css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 884 B   | 1.17 s  |
