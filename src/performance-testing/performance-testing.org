@@ -178,3 +178,14 @@
 | bootstrap.min.css                      |    200 | stylesheet | 22.9 KB | 14.83 s |
 | main.css                               |    200 | stylesheet | 1.2 KB  | 764 ms  |
 | css?family=Raleway:400,300,700,500,600 |    200 | stylesheet | 884 B   | 1.17 s  |
+* Conclusion
+  - Server side :: 
+    By observing logs from server side it is clear that
+    there is no delay in sending feedback form to the client this is
+    happending in =ms=.
+  - Client side (browser side) :: 
+    From the above scenarios it is clear that assets
+    =bootstrap.min.css= and =jquery.min.js= libraraies
+    are taking time to load into the client browser
+    which is based on bandwidth that client browser is
+    getting. This causes loading the feedback form is getting delayed.
