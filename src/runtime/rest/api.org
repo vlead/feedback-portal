@@ -1421,7 +1421,7 @@ class TestDeleteQuestion(TestCase):
                 <span class="icon-bar" style="background-color: #77BB41"></span>
                 <span class="icon-bar" style="background-color: #77BB41"></span>
               </button>
-              <a class="navbar-brand main-logo-a" href="https://vlabs.ac.in"><img src="/static/img/logo.png" class="img-responsive main-logo" /></a>
+              <a class="navbar-brand main-logo-a" href="https://vlabs.ac.in"><img src="/static/img/logo.png"  style="width:5em" class="img-responsive main-logo" /></a>
             </div>                  
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
@@ -1448,7 +1448,7 @@ class TestDeleteQuestion(TestCase):
 
 #+END_SRC
    
-
+   
 ** Footer HTML
 #+BEGIN_SRC html :tangle ./templates/footer.html :eval no :noweb yes
 <head>
