@@ -1314,6 +1314,7 @@ class TestDeleteQuestion(TestCase):
   <html>
     <head>
       <title>Feedback Portal</title>
+        <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
     </head>
     
     <body onload="renderFeedbackform();">
@@ -1385,6 +1386,7 @@ class TestDeleteQuestion(TestCase):
       <title>Feedback Portal</title>
       <!-- Latest compiled and minified CSS -->
       <link rel = "stylesheet" href = "/static/css/main.css">
+      <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
     </head>
     <body onload="renderFeedbackform();">
       <div id="header">
