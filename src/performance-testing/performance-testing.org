@@ -112,7 +112,7 @@
 *** Scenario 3 
     This scenario describes the observation of feedback portal v2.1.0
     which is running on testing server when all assets =bootstrap.css=
-    and =jquery.js= are server from local machine.
+    and =jquery.js= are served from local machine.
 **** With GPRS (50kb/s)
 |----------------------------------------+--------+------------+---------+---------|
 | Asset Name                             | Status | Type       | Size    | Time    |
@@ -198,13 +198,13 @@
   landing page.
 ** Observations
 *** For Testing server
-    URL : http://feedback-stage.vlabs.ac.in/
-    Result for Desktop : 94/100
-    Result for Mobile : 84/100
+    - URL : http://feedback-stage.vlabs.ac.in/
+    - Result for Desktop : 94/100
+    - Result for Mobile : 84/100
 *** For Production server
-    URL : http://feedback.vlabs.ac.in/
-    Result for Desktop : 87/100
-    Result for Mobile : 67/100
+    - URL : http://feedback.vlabs.ac.in/
+    - Result for Desktop : 87/100
+    - Result for Mobile : 67/100
 * Conclusion
   - Server side :: 
     By observing logs from server side it is clear that
