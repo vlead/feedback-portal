@@ -1454,7 +1454,48 @@ class TestDeleteQuestion(TestCase):
 ** Footer HTML
 #+BEGIN_SRC html :tangle ./templates/footer.html :eval no :noweb yes
 <head>
-  <link rel="stylesheet" type="text/css" href="static/css/style.css">
+<script type="text/css">
+.text-h2-lightblue-small
+{
+	color: #2C99CE;
+	font-size: 1.5em;
+}
+.border-right-green-dotted
+{
+	border-right: 2px dotted;
+	 margin-top: 30px;
+	 border-right-color: #678f48;
+	 min-height: 115px;
+	line-height:1em;
+	height:15em;
+
+	
+}
+.border-right-green-dotted a{
+	/*padding-left: 10px;*/
+	display: block;
+	/*margin-bottom: 10px;*/
+	line-height:1.2em;
+}
+a:focus
+{
+	color: #72AB44 !important;
+}
+
+.footer-div
+{
+margin-top:120px;
+}
+.text-normal-gray-small
+{
+	color: #888;
+	font-size: 16px;
+}
+.text-normal-gray-small:hover{
+color:green;
+}
+
+</script>
 </head>
 <div class="container-fluid footer-div" style="background: #404040; margin-top: 40px;  padding: 20px;">
   <div class="col-md-4 border-right-green-dotted">
@@ -1972,7 +2013,8 @@ function submitFeedback(event) {
 #+BEGIN_SRC css :tangle ./static/css/main.css :eval no :noweb yes
 @import url(https://fonts.googleapis.com/css?family=Raleway:400,300,700,500,600);
 body {
-    font-family:  sans-serif;
+    font-family:'Raleway' !important;
+#    font-family:  sans-serif;
     font-size: 14px;
     color: #767676;
 }
