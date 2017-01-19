@@ -8,20 +8,18 @@
 
 * Introduction
 * Implementation
-** Config
+** Configuration
 #+BEGIN_SRC python :tangle config.py
-
 ELASTIC_SEARCH_URL = "http://10.2.56.2:9200"
 ELASTIC_SEARCH_INDEX_NAME = "feedback"
 ELASTIC_SEARCH_DOCUMENT_TYPE = "feedback_dump"
 FEEDBACK_URL = "http://feedback.vlabs.ac.in"
-FEEDBACK_KEY = "defaultkey"
-
+FEEDBACK_KEY = "place-key-here"
 #+END_SRC
-** feedback-elastic-search.py
+** Implementation of methods
 
 #+BEGIN_SRC python :tangle feedback-elastic-search.py
-
+import os
 import requests
 import json
 from config import *
@@ -54,17 +52,15 @@ def post_feedback_to_kebana(ELASTIC_SEARCH_URL, feedback):
     except Exception as e:
 	print str(e)
 	return False
-
 (status_code, feedback_dump) = get_feedback_dump(FEEDBACK_DUMP_URL)
 
 if(status_code == 200):
     for feedback in feedback_dump:
 	if(post_feedback_to_kebana(ELASTIC_SEARCH_URL, feedback)):
 	    print "Feedback : %s is added" % (feedback)
-
+	else:
+	    print status_code
 else:
     print "Error in getting feedback dump"
-
-#+END_SRC
-* Cron Jon Setup
   
+#+END_SRC
