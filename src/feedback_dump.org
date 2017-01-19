@@ -1,0 +1,70 @@
+#+TITLE: Integration of Feedback with Kebana
+#+AUTHOR: VLEAD
+#+DATE: [2016-07-26 Tue]
+#+SETUPFILE: ../../org-templates/level-2.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+* Implementation
+** Config
+#+BEGIN_SRC python :tangle config.py
+
+ELASTIC_SEARCH_URL = "http://10.2.56.2:9200"
+ELASTIC_SEARCH_INDEX_NAME = "feedback"
+ELASTIC_SEARCH_DOCUMENT_TYPE = "feedback_dump"
+FEEDBACK_URL = "http://feedback.vlabs.ac.in"
+FEEDBACK_KEY = "defaultkey"
+
+#+END_SRC
+** feedback-elastic-search.py
+
+#+BEGIN_SRC python :tangle feedback-elastic-search.py
+
+import requests
+import json
+from config import *
+from datetime import datetime, timedelta
+
+yestr_day = datetime.now() - timedelta(days=1)
+yestr_day_date = yestr_day.strftime('%d-%m-%Y')
+
+FEEDBACK_DUMP_URL = "%s/feedback_dump?date=%s&key=%s" % (FEEDBACK_URL, yestr_day_date, KEY)
+ELASTIC_SEARCH_URL = "%s/%s/%s" % (ELASTIC_SEARCH_URL, ELASTIC_SEARCH_INDEX_NAME, ELASTIC_SEARCH_DOCUMENT_TYPE)
+
+def get_feedback_dump(API_URL):
+    try:
+	resp = requests.get(API_URL)
+	if resp.status_code == 200:
+	    feedback_dump = resp.json()
+	    return (resp.status_code, feedback_dump)
+	else:
+	    return (resp.status_code, feedback_dump)
+    except Exception as e:
+	print str(e)
+
+def post_feedback_to_kebana(ELASTIC_SEARCH_URL, feedback):
+    try:
+	resp = requests.post(ELASTIC_SEARCH_URL, data=json.dumps(feedback))
+	if not resp.status_code == 201:
+	    return False
+	else:
+	    return True
+    except Exception as e:
+	print str(e)
+	return False
+
+(status_code, feedback_dump) = get_feedback_dump(FEEDBACK_DUMP_URL)
+
+if(status_code == 200):
+    for feedback in feedback_dump:
+	if(post_feedback_to_kebana(ELASTIC_SEARCH_URL, feedback)):
+	    print "Feedback : %s is added" % (feedback)
+
+else:
+    print "Error in getting feedback dump"
+
+#+END_SRC
+* Cron Jon Setup
+  
