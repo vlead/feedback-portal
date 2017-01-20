@@ -14,7 +14,7 @@ ELASTIC_SEARCH_URL = "http://10.2.56.2:9200"
 ELASTIC_SEARCH_INDEX_NAME = "feedback"
 ELASTIC_SEARCH_DOCUMENT_TYPE = "feedback_dump"
 FEEDBACK_URL = "http://feedback.vlabs.ac.in"
-FEEDBACK_KEY = "place-key-here"
+KEY = "place-key-here"
 #+END_SRC
 ** Implementation of methods
 
