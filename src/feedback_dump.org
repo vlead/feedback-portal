@@ -19,8 +19,8 @@ FEEDBACK_URL = "http://feedback.vlabs.ac.in"
 KEY = "place-key-here"
 #+END_SRC
 ** Implementation of methods
-   This code computes the date of previous day (server time) and make then invoke http request
-   to =feedback= service for given day to get the feedback dump and pushes them to =elasticsearch= service
+   Follwing code computes the date of previous day (based on server time) and invoke http request
+   to =feedback= service for computed date to get the feedback dump and pushes them to =elasticsearch= service
 #+BEGIN_SRC python :tangle feedback-elastic-search.py
 import os
 import requests
