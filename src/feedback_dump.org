@@ -7,6 +7,7 @@
 #+OPTIONS: ^:nil
 
 * Introduction
+  This document explains the code snippet which is integrated to =elasticsearch= service 
 * Implementation
 ** Configuration
 #+BEGIN_SRC python :tangle config.py
