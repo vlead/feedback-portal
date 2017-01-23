@@ -338,7 +338,7 @@ http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&use
     - Method :: GET
 
     - URL Params ::
-      Required: date=[string], the format of the string is in 'mm-dd-yyyy'
+      Required: date=[string], the format of the string is in 'dd-mm-yyyy'
       format
                 key=[string]
 
@@ -349,7 +349,7 @@ http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&use
         {
          feedbacks: [{lab_name: 'lab_name',
                       exp_name: 'exp_name',
-                      date: 'mm-dd-yyyy',
+                      date: 'dd-mm-yyyy',
                       IP: 'ip',
                       responses: [{question: 'name',
                                    answers: ['val1',..]
@@ -366,7 +366,7 @@ http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&use
 
       + Code: 400 Bad Request
 
-      + Content: { error : "Date is mandatory and should be in 'mm-dd-yyyy' format" }
+      + Content: { error : "Date is mandatory and should be in 'dd-mm-yyyy' format" }
 
 	
 ** Add the Question
