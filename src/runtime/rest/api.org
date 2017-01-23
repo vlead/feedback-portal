@@ -874,35 +874,20 @@ def get_feedback_dump():
                 return jsonify_list(feedbacks)
                 
             except NotAuthorizedError as err:
-                error_message =  'Not Authorized error: %s' % str(err)
-                """
-                if request.headers['Content-Type'] == "application/json":
-                    abort(401, error_message)
-                else:
-                """
+                error_message =  'Not Authorized error: %s' % str(err)                
                 current_app.logger.error("%s" %(error_message))
-                return render_template('error.html', 
-                                       data=error_message)
+                abort(401, error_message)
+
             except TypeError as err:
                 error_message = 'Malformed arguments, error: %s' % str(err)
-                """
-                if request.headerscurrent_app.logger.error("%s" %(error_message)))['Content-Type'] == "application/json":
-                abort(400, error_message)
-                else:
-                """
                 current_app.logger.error("%s" %(error_message))
-                return render_template('error.html', 
-                                       data=error_message)
+                abort(400, error_message)                
+
             except Exception as err:
                 error_message = 'error: %s' % str(err)
-                """
-                if request.headers['Content-Type'] == "application/json":
-                abort(400, error_message)
-                else:
-                """
                 current_app.logger.error("%s" %(error_message))
-                return render_template('error.html', 
-                                       data=error_message)
+                abort(404, error_message)
+                
             
 
 #+END_SRC
