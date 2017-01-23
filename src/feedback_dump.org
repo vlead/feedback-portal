@@ -26,7 +26,8 @@ import os
 import requests
 import json
 from config import *
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
+from dateutil.rrule import rrule, DAILY
 
 yestr_day = datetime.now() - timedelta(days=1)
 yestr_day_date = yestr_day.strftime('%d-%m-%Y')
@@ -55,6 +56,7 @@ def post_feedback_to_kebana(ELASTIC_SEARCH_URL, feedback):
     except Exception as e:
 	print str(e)
 	return False
+"""
 (status_code, feedback_dump) = get_feedback_dump(FEEDBACK_DUMP_URL)
 
 if(status_code == 200):
@@ -65,5 +67,25 @@ if(status_code == 200):
 	    print status_code
 else:
     print "Error in getting feedback dump"
+"""
+def dump_historic_feedback_data(start_date, end_date):
+
+    for dt in rrule(DAILY, dtstart=start_date, until=end_date):
+	date = dt.strftime("%d-%m-%Y")
+	FEEDBACK_DUMP_URL = "%s/feedback_dump?date=%s&key=%s" % (FEEDBACK_URL, date, KEY)
+	(status_code, feedback_dump) = get_feedback_dump(FEEDBACK_DUMP_URL)
+
+	if(status_code == 200):
+	    for feedback in feedback_dump:
+		if(post_feedback_to_kebana(ELASTIC_SEARCH_URL, feedback)):
+		    print "Feedback : %s is added" % (feedback)
+		else:
+		    print status_code
+	else:
+	    print "Error in getting feedback dump on date : " % (date)
+
+start_date = date(2009, 5, 30)
+end_date = date(2009, 6, 9)
+dump_historic_feedback_data(start_date, end_date)
   
 #+END_SRC
