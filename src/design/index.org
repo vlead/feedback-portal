@@ -525,6 +525,80 @@ http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&use
        request" }
 
 
+** Dump feedback to ELK stack
+  :PROPERTIES:
+  :CUSTOM_ID: dump_feedback
+  :END:    
+
+   - URL :: /dump_feedback_to_elk
+
+   - Method :: POST
+
+   - Payload ::
+     {
+      'tag_name': 'college_name',
+      'feedbacks': ['list_of_feedbacks'],
+      'server_name' : 'http://<elastic-search-domain>',
+      'key': 'key'
+     }
+
+   - Success Response ::
+     + Code: 200
+     + Content:
+       {
+         status: "successfully added feedback records"
+       }
+
+   - Error Response ::
+     + Code: 401 UNAUTHORIZED
+
+     + Content: { error : "Wrong Key configured" }
+
+     OR
+
+     + Code: 400 Bad Request
+
+     + Content: { error : "some of the parameters are not part of the
+       request" }
+
+
+** Dump usage to ELK stack
+  :PROPERTIES:
+  :CUSTOM_ID: dump_usage
+  :END:    
+
+   - URL :: /dump_usage_to_elk
+
+   - Method :: POST
+
+   - Payload ::
+     {
+      'tag_name': 'college_name',
+      'usages': ['list_of_usages'],
+      'server_name' : 'http://<elastic-search-domain>',
+      'key': 'key'
+     }
+
+   - Success Response ::
+     + Code: 200
+     + Content:
+       {
+         status: "successfully added usage records"
+       }
+
+   - Error Response ::
+     + Code: 401 UNAUTHORIZED
+
+     + Content: { error : "Wrong Key configured" }
+
+     OR
+
+     + Code: 400 Bad Request
+
+     + Content: { error : "some of the parameters are not part of the
+       request" }
+
+
 * Services Interplay
   :PROPERTIES:
   :CUSTOM_ID: services_interplay
