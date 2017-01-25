@@ -1289,6 +1289,128 @@ class TestDeleteQuestion(TestCase):
 
  #+END_SRC
    
+
+** Dump Feedback to ELK
+   REST API to get and add question.
+
+#+NAME: get_and_add_question
+#+BEGIN_SRC python
+@api.route('/dump_feedback_to_elk', methods=['GET', 'POST'])
+def dump_feedback_to_elk():
+    if request.method == 'GET':
+	return True
+    if request.method == 'POST':
+	if request.is_json:
+	    data_json = json.dumps(request.get_json())
+	    data_dict = yaml.safe_load(data_json)
+	    print data_dict
+	    feedbacks = data_dict['feedbacks']
+
+	else:
+	    abort(500, "the request does not contain data in json")
+	    """
+	    for feedback in feedback_dump:
+		if(post_feedback_to_kebana(ELASTIC_SEARCH_URL, feedback)):
+		    print "Feedback : %s is added" % (feedback)
+		else:
+		    print status_code
+	    """
+          
+  
+              
+#+END_SRC
+
+
+*** TestAddQuestion
+ #+NAME: test_add_question
+ #+BEGIN_SRC python
+class TestAddQuestion(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_add_question(self):
+        print "test_question"
+        payload = {'name': 'How are you?',
+                   'question_type': 'radio',
+                   'key': KEY}
+
+        headers = {'Content-Type': 'application/json'}
+
+        response = self.client.post("/questions", data=json.dumps(payload),
+                                 headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+
+ #+END_SRC
+   
+
+*** TestGetQuestions
+ #+NAME: test_get_questions
+ #+BEGIN_SRC python
+class TestGetQuestion(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_questions(self):
+        print "test_question"
+        payload = {'name': 'How are you?',
+                   'question_type': 'radio',
+                   'key': KEY}
+
+        headers = {'Content-Type': 'application/json'}
+
+        response = self.client.post("/questions", data=json.dumps(payload),
+                                 headers=headers)
+
+        response = self.client.get("/questions", headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+ #+END_SRC
+   
  
 * WebApp
 
