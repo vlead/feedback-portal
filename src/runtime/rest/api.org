@@ -1329,6 +1329,7 @@ def dump_feedback_to_elk():
 
             else:
                 current_app.logger.error("failed to add feedback: %s " % (feedback))
+                abort(500)
         return jsonify({"status" : "success"})
                 
 #+END_SRC
@@ -1445,9 +1446,9 @@ def dump_usage_to_elk():
 	for usage in usages:
 	    if(post_data_to_elastic_search(index_name, doc_name, server_name, usage)):
 		current_app.logger.debug("Added usage : %s " % (usage))
-
             else:
                 current_app.logger.error("failed to add usage: %s " % (usage))
+                abort(500)
         return jsonify({"status" : "success"})
                 
 #+END_SRC
