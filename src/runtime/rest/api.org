@@ -24,10 +24,10 @@ def post_data_to_elastic_search(index_name, doc_name, server_name, record):
         current_app.logger.debug("ELASTIC_SEARCH_URL : %s" %(ELASTIC_SEARCH_URL))
 	resp = requests.post(ELASTIC_SEARCH_URL, data=json.dumps(record))
 	if not resp.status_code == 201:
-            current_app.logger.debug("status_code : %s" % (resp.status_code))
+            current_app.logger.debug("Error_code : %s" % (resp.status_code))
 	    return False
 	else:
-            current_app.logger.debug("Erro_code : %s" % (resp.status_code))
+            current_app.logger.debug("Status_code : %s" % (resp.status_code))
 	    return True
     except Exception as e:
 	print str(e)
