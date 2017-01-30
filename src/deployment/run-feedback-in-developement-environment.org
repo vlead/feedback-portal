@@ -17,7 +17,7 @@
     #+END_EXAMPLE
   - If <feedback> database is not present, create it
     #+BEGIN_EXAMPLE
-    create database feedback
+    create database feedback;
     #+END_EXAMPLE
   
     Exit out of the mysql console
@@ -54,6 +54,9 @@ wget https://pypi.python.org/packages/8c/88/9f53a314a2af6f56c0a1249c5673ee384b85
 tar xvf oursql-0.9.3.2.tar.gz
 cd oursql-0.9.3.2
 python setup.py install
+cd ../..
+python setup.py install
+
 
 #+END_EXAMPLE
 
@@ -65,11 +68,15 @@ python setup.py install
   SQLALCHEMY_DATABASE_URI = 'mysql+oursql://root:pswd@localhost/feedback'
   #+END_EXAMPLE
 
+  
+
 
 * Insert Dafault data
   Run db_setup.py to insert roles and an admin user. 
   #+BEGIN_EXAMPLE
-  cd build/code/deployment
+  cd build/code/
+  export PYTHONPATH=$(pwd)
+  cd deployment/
   python db_setup.py
   #+END_EXAMPLE
 
