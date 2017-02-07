@@ -26,7 +26,7 @@
 :END: 
    A user is able to provide feedback after conducting an experiment.
 
-  Realized in data model as [[../data-model/index.org::#entity_feedback][Feedback]]
+  Realized in data model as [[../data-model/index.org#entity_feedback][Feedback]]
 ** Questions
 :PROPERTIES:
 :CUSTOM_ID: questions
