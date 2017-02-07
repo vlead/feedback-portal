@@ -33,7 +33,7 @@
 :END: 
    The feedback form consists of a set of questions
 
-  Realized in data model as [[../data-model/index.org::#entity_question][Question]]
+  Realized in data model as [[../data-model/index.org#entity_question][Question]]
 ** Answers
 :PROPERTIES:
 :CUSTOM_ID: answers
