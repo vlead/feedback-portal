@@ -39,4 +39,7 @@ make
 #+END_SRC
 
 
-- Follow the  [[https://github.com/vlead/feedback-portal/blob/develop/src/deployment/run-feedback-in-developement-environment.org#running-feedback-portal-on-developement-environment][Documentation]] to setup developement environment.
+- Follow the
+  [[https://github.com/vlead/feedback-portal/blob/develop/src/deployment/run-feedback-in-developement-environment.org#running-feedback-portal-on-developement-environment][Documentation]]
+  to setup developement environment.
+test the hook
