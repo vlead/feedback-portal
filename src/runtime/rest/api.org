@@ -1306,6 +1306,122 @@ class TestDeleteQuestion(TestCase):
  #+END_SRC
    
 
+** Dump College Details to ELK
+   REST API to add college details to ELK
+
+#+NAME: add_college_details_to_elk
+#+BEGIN_SRC python
+@api.route('/dump_college_details_to_elk', methods=['GET', 'POST'])
+def dump_feedback_to_elk():
+    if request.method == 'GET':
+	return True
+    if request.method == 'POST':
+        data_json = json.dumps(request.get_json())
+	data_dict = yaml.safe_load(data_json)
+	config = data_dict
+	key = data_dict['key']
+	if(post_data_to_elastic_search(index_name, doc_name, server_name, feedback)):
+	    current_app.logger.debug("Added college_details : %s " % (config))
+
+        else:
+            current_app.logger.error("failed to add config: %s " % (config))
+            abort(500)
+        return jsonify({"status" : "success"})
+                
+#+END_SRC
+
+
+*** TestAddQuestion
+ #+NAME: test_add_question
+ #+BEGIN_SRC python
+class TestAddQuestion(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_add_question(self):
+        print "test_question"
+        payload = {'name': 'How are you?',
+                   'question_type': 'radio',
+                   'key': KEY}
+
+        headers = {'Content-Type': 'application/json'}
+
+        response = self.client.post("/questions", data=json.dumps(payload),
+                                 headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+
+ #+END_SRC
+   
+
+*** TestGetQuestions
+ #+NAME: test_get_questions
+ #+BEGIN_SRC python
+class TestGetQuestion(TestCase):
+    TESTING = True
+    def create_app(self):
+        app = create_app(config)
+        return app
+
+    def setUp(self):
+        db.create_all()
+        q_type = "radio"
+        question_cls = System.delegate.entities['question']
+        question1 = question_cls(name="How is your breakfast?", 
+                                  question_type=q_type)
+        question2 = question_cls(name="How is your lunch?", 
+                                 question_type=q_type)
+        question3 = question_cls(name="How is your dinner?", 
+                                 question_type=q_type)
+
+        question1.save()
+        question2.save()
+        question3.save()
+
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+
+    def test_get_questions(self):
+        print "test_question"
+        payload = {'name': 'How are you?',
+                   'question_type': 'radio',
+                   'key': KEY}
+
+        headers = {'Content-Type': 'application/json'}
+
+        response = self.client.post("/questions", data=json.dumps(payload),
+                                 headers=headers)
+
+        response = self.client.get("/questions", headers=headers)
+        self.assertEqual(response.status_code, 200)
+
+ #+END_SRC
+   
+
 ** Dump Feedback to ELK
    REST API to get and add feedback to ELK stack
 
@@ -1318,11 +1434,10 @@ def dump_feedback_to_elk():
     if request.method == 'POST':
         data_json = json.dumps(request.get_json())
 	data_dict = yaml.safe_load(data_json)
-	feedbacks = data_dict['feedbacks']
-	index_name = data_dict['tag_name']
-	doc_name = "feedback"
-	server_name = data_dict['server_name']
+	feedbacks = data_dict
+	mac_id = data_dict['mac_id']
 	key = data_dict['key']
+        college_name = requests.get("url/college_details?id=mac_id")
 	for feedback in feedbacks:
 	    if(post_data_to_elastic_search(index_name, doc_name, server_name, feedback)):
 		current_app.logger.debug("Added Feedback : %s " % (feedback))
@@ -1438,10 +1553,9 @@ def dump_usage_to_elk():
     if request.method == 'POST':
         data_json = json.dumps(request.get_json())
 	data_dict = yaml.safe_load(data_json)
-	usages = data_dict['usages']
-	index_name = data_dict['tag_name']
-	doc_name = "usage"
-	server_name = data_dict['server_name']
+	usages = data_dict
+	mac_id = data_dict['mac_id']
+        #college_name = requests.get("url/college_details?id=mac_id")
 	key = data_dict['key']
 	for usage in usages:
 	    if(post_data_to_elastic_search(index_name, doc_name, server_name, usage)):
