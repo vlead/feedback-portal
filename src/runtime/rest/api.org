@@ -11,27 +11,27 @@
 
   
 * REST
-
+  
 ** Get and Add Generic Feedback
    REST API to get and post generic feedback
 
 #+NAME: get_add_generic_feedback
 #+BEGIN_SRC python
-def post_data_to_elastic_search(index_name, doc_name, server_name, record):
-    try:
-        current_app.logger.debug("index_name: %s, doc_name: %s, server_name: %s, record: %s" % (index_name, doc_name, server_name, record))
-        ELASTIC_SEARCH_URL = "%s/%s/%s" % (server_name, index_name, doc_name)
-        current_app.logger.debug("ELASTIC_SEARCH_URL : %s" %(ELASTIC_SEARCH_URL))
-	resp = requests.post(ELASTIC_SEARCH_URL, data=json.dumps(record))
-	if not resp.status_code == 201:
-            current_app.logger.debug("Error_code : %s" % (resp.status_code))
-	    return False
-	else:
-            current_app.logger.debug("Status_code : %s" % (resp.status_code))
-	    return True
-    except Exception as e:
-	print str(e)
-	return False
+def post_data_to_elastic_search(index_name, doc_name, record):                                                                                          
+    try:                                                                                                                                                
+        current_app.logger.debug("index_name: %s, doc_name: %s, record: %s" % (index_name, doc_name, record))                                           
+        ELASTIC_SEARCH_URL = "%s/%s/%s" % ("http://10.100.0.15:9200", index_name, doc_name)                                                             
+        current_app.logger.debug("ELASTIC_SEARCH_URL : %s" %(ELASTIC_SEARCH_URL))                                                                       
+        resp = requests.post(ELASTIC_SEARCH_URL, data=json.dumps(record))                                                                               
+        if not resp.status_code == 201:                                                                                                                 
+            current_app.logger.debug("Error_code : %s" % (resp.status_code))                                                                            
+            return False                                                                                                                                
+        else:                                                                                                                                           
+            current_app.logger.debug("Status_code : %s" % (resp.status_code))                                                                           
+            return True                                                                                                                                 
+    except Exception as e:                                                                                                                              
+        print str(e)
+        return False
 
 @api.route('/', methods=['GET', 'POST'])
 def get_generic_feedback():
@@ -1311,22 +1311,31 @@ class TestDeleteQuestion(TestCase):
 
 #+NAME: add_college_details_to_elk
 #+BEGIN_SRC python
-@api.route('/dump_college_details_to_elk', methods=['GET', 'POST'])
-def dump_feedback_to_elk():
+@api.route('/dump_cc_details_to_elk', methods=['GET', 'POST'])
+def dump_cc_details_to_elk():
     if request.method == 'GET':
-	return True
+        return True
     if request.method == 'POST':
         data_json = json.dumps(request.get_json())
-	data_dict = yaml.safe_load(data_json)
-	config = data_dict
-	key = data_dict['key']
-	if(post_data_to_elastic_search(index_name, doc_name, server_name, feedback)):
-	    current_app.logger.debug("Added college_details : %s " % (config))
-
+        data_dict = yaml.safe_load(data_json)
+        cc_details = data_dict['college_details']
+        key = data_dict['key']
+        current_app.logger.debug("Config data : %s " % (cc_details))
+        mac_id = cc_details['mac_id']
+        URL = "http://10.100.0.15:9200/college_cloud/details"
+        current_app.logger.debug("URL : %s " % (URL))
+        r = requests.get(URL+"/id="+str(mac_id))
+        if r.json()['found'] == False:
+            r = requests.post(URL+"/id="+mac_id, data=json.dumps(cc_details))
+            if r.status_code == 201:
+                current_app.logger.debug("Added college details : %s " % (cc_details))
+                return jsonify({"status" : "success"})
+            else:
+                current_app.logger.debug("Error in adding college details : %s " % (cc_details))
+                return jsonify({"status" : "success"})
         else:
-            current_app.logger.error("failed to add config: %s " % (config))
-            abort(500)
-        return jsonify({"status" : "success"})
+            current_app.logger.debug("College details already exists : %s " % (cc_details))
+            return jsonify({"status" : "success"})
                 
 #+END_SRC
 
@@ -1421,7 +1430,7 @@ class TestGetQuestion(TestCase):
 
  #+END_SRC
    
-
+    
 ** Dump Feedback to ELK
    REST API to get and add feedback to ELK stack
 
@@ -1430,22 +1439,33 @@ class TestGetQuestion(TestCase):
 @api.route('/dump_feedback_to_elk', methods=['GET', 'POST'])
 def dump_feedback_to_elk():
     if request.method == 'GET':
-	return True
+        return True
     if request.method == 'POST':
         data_json = json.dumps(request.get_json())
-	data_dict = yaml.safe_load(data_json)
-	feedbacks = data_dict
-	mac_id = data_dict['mac_id']
-	key = data_dict['key']
-        college_name = requests.get("url/college_details?id=mac_id")
-	for feedback in feedbacks:
-	    if(post_data_to_elastic_search(index_name, doc_name, server_name, feedback)):
-		current_app.logger.debug("Added Feedback : %s " % (feedback))
+        data_dict = yaml.safe_load(data_json)
+        feedbacks = data_dict['feedbacks']
+        mac_id = data_dict['mac_id']
+        key = data_dict['key']
+        URL = "http://10.100.0.15:9200/college_cloud/details"
+        current_app.logger.debug("URL : %s " % (URL))
+        r = requests.get(URL+"/id="+str(mac_id))
+        if r.json()['found'] == False:
+            current_app.logger.debug("URL : %s " % (URL))
+            return jsonify({"status" : "failed", "error" : "College cloud details not registered"})
+        else:
+            current_app.logger.debug("Data : %s " % (r.json()))
+            index_name = str(mac_id) + "_"+ str(r.json()['_source']['college_name'])
+            doc_name = "feedback"
+            current_app.logger.debug("index_name : %s " % (index_name))
 
-            else:
-                current_app.logger.error("failed to add feedback: %s " % (feedback))
-                abort(500)
-        return jsonify({"status" : "success"})
+            for feedback in feedbacks:
+                if(post_data_to_elastic_search(index_name, doc_name, feedback)):
+                    current_app.logger.debug("Added Feedback : %s " % (feedback))
+                else:
+                    current_app.logger.error("failed to add feedback: %s " % (feedback))
+                    abort(500)
+
+            return jsonify({"status" : "success"})
                 
 #+END_SRC
 
@@ -1549,21 +1569,33 @@ class TestGetQuestion(TestCase):
 @api.route('/dump_usage_to_elk', methods=['GET', 'POST'])
 def dump_usage_to_elk():
     if request.method == 'GET':
-	return True
+        return True
     if request.method == 'POST':
         data_json = json.dumps(request.get_json())
-	data_dict = yaml.safe_load(data_json)
-	usages = data_dict
-	mac_id = data_dict['mac_id']
-        #college_name = requests.get("url/college_details?id=mac_id")
-	key = data_dict['key']
-	for usage in usages:
-	    if(post_data_to_elastic_search(index_name, doc_name, server_name, usage)):
-		current_app.logger.debug("Added usage : %s " % (usage))
-            else:
-                current_app.logger.error("failed to add usage: %s " % (usage))
-                abort(500)
-        return jsonify({"status" : "success"})
+        data_dict = yaml.safe_load(data_json)
+        usages = data_dict['usages']
+        mac_id = data_dict['mac_id']
+        key = data_dict['key']
+        URL = "http://10.100.0.15:9200/college_cloud/details"
+        current_app.logger.debug("URL : %s " % (URL))
+        r = requests.get(URL+"/id="+str(mac_id))
+        if r.json()['found'] == False:
+            current_app.logger.debug("URL : %s " % (URL))
+            return jsonify({"status" : "failed", "error" : "College cloud details not registered"})
+        else:
+            current_app.logger.debug("Data : %s " % (r.json()))
+            index_name = str(mac_id) + "_"+ str(r.json()['_source']['college_name'])
+            doc_name = "usages"
+            current_app.logger.debug("index_name : %s " % (index_name))
+
+            for usage in usages:
+                if(post_data_to_elastic_search(index_name, doc_name, usage)):
+                    current_app.logger.debug("Added usage : %s " % (usage))
+                else:
+                    current_app.logger.error("failed to add usage: %s " % (usage))
+                    abort(500)
+
+            return jsonify({"status" : "success"})
                 
 #+END_SRC
 
