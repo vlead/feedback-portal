@@ -33,12 +33,12 @@ yestr_day = datetime.now() - timedelta(days=1)
 yestr_day_date = yestr_day.strftime('%d-%m-%Y')
 
 FEEDBACK_DUMP_URL = "%s/feedback_dump?date=%s&key=%s" % (FEEDBACK_URL, yestr_day_date, KEY)
-ELASTIC_SEARCH_URL = "%s/%s/%s" % (ELASTIC_SEARCH_URL, ELASTIC_SEARCH_INDEX_NAME, ELASTIC_SEARCH_DOCUMENT_TYPE)
+ELASTIC_DUMP_URL = "%s/dump_feedback_to_elk" % (FEEDBACK_URL)
 
 def get_feedback_dump(API_URL):
     try:
 	resp = requests.get(API_URL)
-        feedback_dump = None
+	feedback_dump = None
 	if resp.status_code == 200:
 	    feedback_dump = resp.json()
 	    return (resp.status_code, feedback_dump)
@@ -47,48 +47,53 @@ def get_feedback_dump(API_URL):
     except Exception as e:
 	print str(e)
 
-def post_feedback_to_kebana(ELASTIC_SEARCH_URL, feedback):
+def post_feedback_to_elastic_db(feedbacks):
     try:
-	resp = requests.post(ELASTIC_SEARCH_URL, data=json.dumps(feedback))
-	if not resp.status_code == 201:
+	resp = requests.post(ELASTIC_DUMP_URL, data=json.dumps(feedbacks))
+	if not resp.status_code == 200:
 	    return False
 	else:
 	    return True
     except Exception as e:
 	print str(e)
 	return False
-"""
+
 (status_code, feedback_dump) = get_feedback_dump(FEEDBACK_DUMP_URL)
 
 if(status_code == 200):
-    for feedback in feedback_dump:
-	if(post_feedback_to_kebana(ELASTIC_SEARCH_URL, feedback)):
-	    print "Feedback : %s is added" % (feedback)
-	else:
-	    print status_code
+    data_dict = {
+	"feedbacks" : feedback_dump,
+	"key" : FEEDBACK_KEY
+    }
+    if(post_feedback_to_elastic_db(data_dict)):
+	print "Feedbacks : %s is added" % (feedback_dump)
+    else:
+	print status_code
 else:
     print "Error in getting feedback dump"
 """
 def dump_historic_feedback_data(start_date, end_date):
-    
+
     for dt in rrule(DAILY, dtstart=start_date, until=end_date):
 	date = dt.strftime("%d-%m-%Y")
 	FEEDBACK_DUMP_URL = "%s/feedback_dump?date=%s&key=%s" % (FEEDBACK_URL, date, KEY)
-        print FEEDBACK_DUMP_URL
+	print FEEDBACK_DUMP_URL
 	(status_code, feedback_dump) = get_feedback_dump(FEEDBACK_DUMP_URL)
-        print status_code
-        """
+	print status_code
 	if(status_code == 200):
-	    for feedback in feedback_dump:
-		if(post_feedback_to_kebana(ELASTIC_SEARCH_URL, feedback)):
-		    print "Feedback : %s is added" % (feedback)
-		else:
-		    print status_code
-        else:
-            print "Error in getting feedback dump on date :%s " % (date)
-        """
+	    data_dict = {
+		"feedbacks" : feedback_dump,
+		"key" : FEEDBACK_KEY
+	    }
+	    if(post_feedback_to_elastic_db(data_dict)):
+		print "Feedbacks : %s is added" % (feedback_dump)
+	    else:
+		print status_code
+	else:
+	    print "Error in getting feedback dump on date :%s " % (date)
+
 start_date = date(2016, 10, 23)
 end_date = date(2016, 10, 30)
 dump_historic_feedback_data(start_date, end_date)
-  
+"""
 #+END_SRC

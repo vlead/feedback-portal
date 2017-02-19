@@ -1314,382 +1314,138 @@ class TestDeleteQuestion(TestCase):
 @api.route('/dump_cc_details_to_elk', methods=['GET', 'POST'])
 def dump_cc_details_to_elk():
     if request.method == 'GET':
-        return True
+	return True
     if request.method == 'POST':
-        data_json = json.dumps(request.get_json())
-        data_dict = yaml.safe_load(data_json)
-        cc_details = data_dict['college_details']
-        key = data_dict['key']
-        current_app.logger.debug("Config data : %s " % (cc_details))
-        mac_id = cc_details['mac_id']
-        URL = "http://10.100.0.15:9200/college_cloud/details"
-        current_app.logger.debug("URL : %s " % (URL))
-        r = requests.get(URL+"/id="+str(mac_id))
-        if r.json()['found'] == False:
-            r = requests.post(URL+"/id="+mac_id, data=json.dumps(cc_details))
-            if r.status_code == 201:
-                current_app.logger.debug("Added college details : %s " % (cc_details))
-                return jsonify({"status" : "success"})
-            else:
-                current_app.logger.debug("Error in adding college details : %s " % (cc_details))
-                return jsonify({"status" : "success"})
-        else:
-            current_app.logger.debug("College details already exists : %s " % (cc_details))
-            return jsonify({"status" : "success"})
-                
+	try:
+	    #ELASTIC_SEARCH_URL = "http://10.100.0.15:9200/college_cloud/details"
+	    data_json = json.dumps(request.get_json())
+	    data_dict = yaml.safe_load(data_json)
+            if 'college_details' not in data_dict:
+                abort(400, 'college_details attribute is not passed')
+
+            if 'key' not in data_dict:
+                abort(401, 'Unauthorized to perform this operation')
+
+	    cc_details = data_dict['college_details']
+	    key = data_dict['key']
+	    current_app.logger.debug("College Data : %s " % (cc_details))
+	    mac_id = cc_details['mac_id']            
+	    ELASTIC_SEARCH_GET_URL = "%s/id=%s" %(ELASTIC_SEARCH_URL, str(mac_id))
+	    current_app.logger.debug("ELASTIC SEARCH GET URL : %s " % (ELASTIC_SEARCH_GET_URL))
+	    college_data = requests.get(ELASTIC_SEARCH_GET_URL)
+	    if college_data.json()['found'] == False:
+		ELASTIC_SEARCH_POST_URL = "%s/id=%s" % (ELASTIC_SEARCH_URL, str(mac_id))
+		create_college = requests.post(ELASTIC_SEARCH_POST_URL, data=json.dumps(cc_details))
+		if create_college.status_code == 201:
+		    current_app.logger.debug("Added college details : %s " % (cc_details))
+		    return jsonify({"status" : "success"})
+		else:
+		    current_app.logger.debug("Error in adding college details : %s " % (cc_details))
+		    abort(int(college_data.status_code), "{'status' : 'Error in adding college details'}")
+	    else:
+		current_app.logger.debug("College details already exists : %s " % (cc_details))
+		return jsonify({"status" : "College details already present"})
+	except Exception as e:
+	    abort(500, str(e))
 #+END_SRC
 
-
-*** TestAddQuestion
- #+NAME: test_add_question
- #+BEGIN_SRC python
-class TestAddQuestion(TestCase):
-    TESTING = True
-    def create_app(self):
-        app = create_app(config)
-        return app
-
-    def setUp(self):
-        db.create_all()
-        q_type = "radio"
-        question_cls = System.delegate.entities['question']
-        question1 = question_cls(name="How is your breakfast?", 
-                                  question_type=q_type)
-        question2 = question_cls(name="How is your lunch?", 
-                                 question_type=q_type)
-        question3 = question_cls(name="How is your dinner?", 
-                                 question_type=q_type)
-
-        question1.save()
-        question2.save()
-        question3.save()
-
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-
-    def test_add_question(self):
-        print "test_question"
-        payload = {'name': 'How are you?',
-                   'question_type': 'radio',
-                   'key': KEY}
-
-        headers = {'Content-Type': 'application/json'}
-
-        response = self.client.post("/questions", data=json.dumps(payload),
-                                 headers=headers)
-
-        self.assertEqual(response.status_code, 200)
-
- #+END_SRC
-   
-
-*** TestGetQuestions
- #+NAME: test_get_questions
- #+BEGIN_SRC python
-class TestGetQuestion(TestCase):
-    TESTING = True
-    def create_app(self):
-        app = create_app(config)
-        return app
-
-    def setUp(self):
-        db.create_all()
-        q_type = "radio"
-        question_cls = System.delegate.entities['question']
-        question1 = question_cls(name="How is your breakfast?", 
-                                  question_type=q_type)
-        question2 = question_cls(name="How is your lunch?", 
-                                 question_type=q_type)
-        question3 = question_cls(name="How is your dinner?", 
-                                 question_type=q_type)
-
-        question1.save()
-        question2.save()
-        question3.save()
-
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-
-    def test_get_questions(self):
-        print "test_question"
-        payload = {'name': 'How are you?',
-                   'question_type': 'radio',
-                   'key': KEY}
-
-        headers = {'Content-Type': 'application/json'}
-
-        response = self.client.post("/questions", data=json.dumps(payload),
-                                 headers=headers)
-
-        response = self.client.get("/questions", headers=headers)
-        self.assertEqual(response.status_code, 200)
-
- #+END_SRC
-   
-    
 ** Dump Feedback to ELK
    REST API to get and add feedback to ELK stack
 
-#+NAME: get_and_add_feedback_to_elk
+#+NAME: add_feedback_to_elk
 #+BEGIN_SRC python
 @api.route('/dump_feedback_to_elk', methods=['GET', 'POST'])
 def dump_feedback_to_elk():
     if request.method == 'GET':
-        return True
+	return True
     if request.method == 'POST':
-        data_json = json.dumps(request.get_json())
-        data_dict = yaml.safe_load(data_json)
-        feedbacks = data_dict['feedbacks']
-        mac_id = data_dict['mac_id']
-        key = data_dict['key']
-        URL = "http://10.100.0.15:9200/college_cloud/details"
-        current_app.logger.debug("URL : %s " % (URL))
-        r = requests.get(URL+"/id="+str(mac_id))
-        if r.json()['found'] == False:
-            current_app.logger.debug("URL : %s " % (URL))
-            return jsonify({"status" : "failed", "error" : "College cloud details not registered"})
-        else:
-            current_app.logger.debug("Data : %s " % (r.json()))
-            index_name = str(mac_id) + "_"+ str(r.json()['_source']['college_name'])
-            doc_name = "feedback"
-            current_app.logger.debug("index_name : %s " % (index_name))
+	#URL = "http://10.100.0.15:9200/college_cloud/details"
+	data_json = json.dumps(request.get_json())
+	data_dict = yaml.safe_load(data_json)
+	if 'feedbacks' not in data_dict:
+	    abort(400, 'feedbacks attribute is not passed')
 
-            for feedback in feedbacks:
-                if(post_data_to_elastic_search(index_name, doc_name, feedback)):
-                    current_app.logger.debug("Added Feedback : %s " % (feedback))
-                else:
-                    current_app.logger.error("failed to add feedback: %s " % (feedback))
-                    abort(500)
+	if 'key' not in data_dict:
+	    abort(401, 'Unauthorized to perform this operation')
 
-            return jsonify({"status" : "success"})
-                
+	feedbacks = data_dict['feedbacks']
+	key = data_dict['key']        
+	current_app.logger.debug("Elastic Search URL : %s " % (ELASTIC_SEARCH_URL))
+
+	if 'mac_id' in data_dict:
+	    mac_id = str(data_dict['mac_id'])
+	    r = requests.get(ELASTIC_SEARCH_URL+"/id="+mac_id)
+	    if r.json()['found'] == False:
+		current_app.logger.debug("ELASTIC SEARCH URL : %s " % (ELASTIC_SEARCH_URL))
+		return jsonify({"status" : "failed", "error" : "College cloud is not registered"})
+	    else:
+		current_app.logger.debug("College Cloud Details : %s " % (r.json()))
+		index_name = str(mac_id) + "_"+ str(r.json()['_source']['college_name'])
+		doc_name = "feedback"
+		current_app.logger.debug("index_name : %s, doc_name : %s " % (index_name, doc_name))
+	else:
+	    index_name = "vlabs"
+	    doc_name = "feedback"
+	    current_app.logger.debug("index_name : %s, doc_name : %s " % (index_name, doc_name))
+
+	for feedback in feedbacks:
+	    if(post_data_to_elastic_search(index_name, doc_name, feedback)):
+		current_app.logger.debug("Added Feedback : %s " % (feedback))
+	    else:
+		current_app.logger.error("failed to add feedback: %s " % (feedback))
+		abort(500)
+
+	return jsonify({"status" : "success"})
+                  
 #+END_SRC
-
-
-*** TestAddQuestion
- #+NAME: test_add_question
- #+BEGIN_SRC python
-class TestAddQuestion(TestCase):
-    TESTING = True
-    def create_app(self):
-        app = create_app(config)
-        return app
-
-    def setUp(self):
-        db.create_all()
-        q_type = "radio"
-        question_cls = System.delegate.entities['question']
-        question1 = question_cls(name="How is your breakfast?", 
-                                  question_type=q_type)
-        question2 = question_cls(name="How is your lunch?", 
-                                 question_type=q_type)
-        question3 = question_cls(name="How is your dinner?", 
-                                 question_type=q_type)
-
-        question1.save()
-        question2.save()
-        question3.save()
-
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-
-    def test_add_question(self):
-        print "test_question"
-        payload = {'name': 'How are you?',
-                   'question_type': 'radio',
-                   'key': KEY}
-
-        headers = {'Content-Type': 'application/json'}
-
-        response = self.client.post("/questions", data=json.dumps(payload),
-                                 headers=headers)
-
-        self.assertEqual(response.status_code, 200)
-
- #+END_SRC
-   
-
-*** TestGetQuestions
- #+NAME: test_get_questions
- #+BEGIN_SRC python
-class TestGetQuestion(TestCase):
-    TESTING = True
-    def create_app(self):
-        app = create_app(config)
-        return app
-
-    def setUp(self):
-        db.create_all()
-        q_type = "radio"
-        question_cls = System.delegate.entities['question']
-        question1 = question_cls(name="How is your breakfast?", 
-                                  question_type=q_type)
-        question2 = question_cls(name="How is your lunch?", 
-                                 question_type=q_type)
-        question3 = question_cls(name="How is your dinner?", 
-                                 question_type=q_type)
-
-        question1.save()
-        question2.save()
-        question3.save()
-
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-
-    def test_get_questions(self):
-        print "test_question"
-        payload = {'name': 'How are you?',
-                   'question_type': 'radio',
-                   'key': KEY}
-
-        headers = {'Content-Type': 'application/json'}
-
-        response = self.client.post("/questions", data=json.dumps(payload),
-                                 headers=headers)
-
-        response = self.client.get("/questions", headers=headers)
-        self.assertEqual(response.status_code, 200)
-
- #+END_SRC
-   
 
 ** Dump Usage to ELK
    REST API to get and add usage to ELK stack
 
-#+NAME: get_and_add_usage_to_elk
+#+NAME: add_usage_to_elk
 #+BEGIN_SRC python
 @api.route('/dump_usage_to_elk', methods=['GET', 'POST'])
 def dump_usage_to_elk():
     if request.method == 'GET':
-        return True
+	return True
     if request.method == 'POST':
-        data_json = json.dumps(request.get_json())
-        data_dict = yaml.safe_load(data_json)
-        usages = data_dict['usages']
-        mac_id = data_dict['mac_id']
-        key = data_dict['key']
-        URL = "http://10.100.0.15:9200/college_cloud/details"
-        current_app.logger.debug("URL : %s " % (URL))
-        r = requests.get(URL+"/id="+str(mac_id))
-        if r.json()['found'] == False:
-            current_app.logger.debug("URL : %s " % (URL))
-            return jsonify({"status" : "failed", "error" : "College cloud details not registered"})
-        else:
-            current_app.logger.debug("Data : %s " % (r.json()))
-            index_name = str(mac_id) + "_"+ str(r.json()['_source']['college_name'])
-            doc_name = "usages"
-            current_app.logger.debug("index_name : %s " % (index_name))
+	#URL = "http://10.100.0.15:9200/college_cloud/details"
+	data_json = json.dumps(request.get_json())
+	data_dict = yaml.safe_load(data_json)
 
-            for usage in usages:
-                if(post_data_to_elastic_search(index_name, doc_name, usage)):
-                    current_app.logger.debug("Added usage : %s " % (usage))
-                else:
-                    current_app.logger.error("failed to add usage: %s " % (usage))
-                    abort(500)
+	if 'usages' not in data_dict or 'mac_id' not in data_dict:
+	    abort(400, 'usages attribute or mac_id attribute is not passed')
 
-            return jsonify({"status" : "success"})
-                
+	if 'key' not in data_dict:
+	    abort(401, 'Unauthorized to perform this operation')
+
+	usages = data_dict['usages']
+	mac_id = data_dict['mac_id']
+	key = data_dict['key']
+	current_app.logger.debug("ELASTIC SEARCH URL : %s " % (ELASTIC_SEARCH_URL))
+	try:
+	    r = requests.get(ELASTIC_SEARCH_URL+"/id="+str(mac_id))
+	    if r.json()['found'] == False:
+		current_app.logger.debug("ELASTIC SEARCH URL : %s " % (ELASTIC_SEARCH_URL))
+		return jsonify({"status" : "failed", "error" : "College cloud is not registered"})
+	    else:
+		current_app.logger.debug("College Cloud Details : %s " % (r.json()))
+		index_name = str(mac_id) + "_"+ str(r.json()['_source']['college_name'])
+		doc_name = "usages"
+		current_app.logger.debug("index_name : %s, doc_name: %s " % (index_name, doc_name))
+
+		for usage in usages:
+		    if(post_data_to_elastic_search(index_name, doc_name, usage)):
+			current_app.logger.debug("Added usage : %s " % (usage))
+		    else:
+			current_app.logger.error("failed to add usage: %s " % (usage))
+			abort(500)
+
+		return jsonify({"status" : "success"})
+	except Exception as e:
+	    abort(500, str(e))
 #+END_SRC
 
-
-*** TestAddQuestion
- #+NAME: test_add_question
- #+BEGIN_SRC python
-class TestAddQuestion(TestCase):
-    TESTING = True
-    def create_app(self):
-        app = create_app(config)
-        return app
-
-    def setUp(self):
-        db.create_all()
-        q_type = "radio"
-        question_cls = System.delegate.entities['question']
-        question1 = question_cls(name="How is your breakfast?", 
-                                  question_type=q_type)
-        question2 = question_cls(name="How is your lunch?", 
-                                 question_type=q_type)
-        question3 = question_cls(name="How is your dinner?", 
-                                 question_type=q_type)
-
-        question1.save()
-        question2.save()
-        question3.save()
-
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-
-    def test_add_question(self):
-        print "test_question"
-        payload = {'name': 'How are you?',
-                   'question_type': 'radio',
-                   'key': KEY}
-
-        headers = {'Content-Type': 'application/json'}
-
-        response = self.client.post("/questions", data=json.dumps(payload),
-                                 headers=headers)
-
-        self.assertEqual(response.status_code, 200)
-
- #+END_SRC
-   
-
-*** TestGetQuestions
- #+NAME: test_get_questions
- #+BEGIN_SRC python
-class TestGetQuestion(TestCase):
-    TESTING = True
-    def create_app(self):
-        app = create_app(config)
-        return app
-
-    def setUp(self):
-        db.create_all()
-        q_type = "radio"
-        question_cls = System.delegate.entities['question']
-        question1 = question_cls(name="How is your breakfast?", 
-                                  question_type=q_type)
-        question2 = question_cls(name="How is your lunch?", 
-                                 question_type=q_type)
-        question3 = question_cls(name="How is your dinner?", 
-                                 question_type=q_type)
-
-        question1.save()
-        question2.save()
-        question3.save()
-
-
-    def tearDown(self):
-        db.session.remove()
-        db.drop_all()
-
-    def test_get_questions(self):
-        print "test_question"
-        payload = {'name': 'How are you?',
-                   'question_type': 'radio',
-                   'key': KEY}
-
-        headers = {'Content-Type': 'application/json'}
-
-        response = self.client.post("/questions", data=json.dumps(payload),
-                                 headers=headers)
-
-        response = self.client.get("/questions", headers=headers)
-        self.assertEqual(response.status_code, 200)
-
- #+END_SRC
-   
  
 * WebApp
 
@@ -2504,7 +2260,7 @@ from runtime.utils.type_utils import jsonify_list
 from runtime.exceptions.custom_exceptions import *
 from runtime.system.system_interface import SystemInterface
 from runtime.config.flask_app_config import GENERIC_FEEDBACK_VERSION,\
-     GENERIC_LAB_FEEDBACK_VERSION, GENERIC_EXP_FEEDBACK_VERSION
+     GENERIC_LAB_FEEDBACK_VERSION, GENERIC_EXP_FEEDBACK_VERSION, ELASTIC_SEARCH_URL
 
 import yaml
 

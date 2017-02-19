@@ -152,6 +152,7 @@ GENERIC_FEEDBACK_VERSION = 'generic-feedback-v2.0'
 GENERIC_LAB_FEEDBACK_VERSION = 'generic-lab-feedback-v2.0'
 GENERIC_EXP_FEEDBACK_VERSION = 'generic-exp-feedback-v2.0'
 
+ELASTIC_SEARCH_URL = "http://10.100.0.15:9200/college_cloud/details"
 #+END_SRC
 
 
