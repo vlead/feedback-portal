@@ -1451,6 +1451,7 @@ def dump_usage_to_elk():
 
 ** Index HTML
 #+BEGIN_SRC html :tangle ./templates/index.html :eval no :noweb yes
+
   <!DOCTYPE html>
   <html>
     <head>
@@ -1459,7 +1460,8 @@ def dump_usage_to_elk():
     </head>
     <body onload="renderFeedbackform();">
       <div id="header">
-        {% include 'header.html' %}        
+        {% include 'header.html' %}     
+	<br><p>
       <div class="row">
         <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
       </div>
@@ -1491,10 +1493,440 @@ def dump_usage_to_elk():
     <script> var data = {{ questions_data|tojson }};</script> 
     <script src="/static/js/jquery.min.js"></script>
     <script type="text/javascript">
-    <<main-js>>
+    var feedbackForm = window.data;
+    var labelQues, formGroup;
+    console.log(feedbackForm);
+    document.getElementById("version").innerHTML = "version : "+feedbackForm.version;
+    function renderQuesLabel() {
+        formGroup = document.createElement("div");
+        formGroup.className = "form-group"
+        newline = document.createElement('p');
+        formGroup.appendChild(newline);
+        labelQues1 = document.createElement('label');
+        formGroup.appendChild(labelQues1);
+        labelQues = document.createElement('label');
+        $("#questions_list").append(formGroup);
+        formGroup.appendChild(labelQues);
+        labelQues2 = document.createElement('label');
+        formGroup.appendChild(labelQues2);
+    
+    }
+    
+    function renderFeedbackform() {
+        if(feedbackForm.lab_name){
+    	$("#lab_name_label").html("Lab Name");
+    	$("#lab_name_value").val(feedbackForm.lab_name)
+        }
+        else if(feedbackForm.version == "generic-lab-feedback-v2.0" || feedbackForm.version == "generic-exp-feedback-v2.0"){
+    	$("#lab_name_label").html("Lab Name");
+    	document.getElementById("lab_name_value").disabled = false;
+    	document.getElementById("lab_name_value").required = true;
+    	document.getElementById("lab_name_value").placeholder = "Enter Lab Name";
+    	document.getElementById("lab_mandatory").innerHTML = "&nbsp;<font color='maroon'>*</font>";
+        }
+        else{
+    	var elem = document.getElementById("lab_name_label");
+    	elem.parentNode.removeChild(elem);
+    	var elem1 = document.getElementById("lab_name_value");
+    	elem1.parentNode.removeChild(elem1);
+    
+        }
+        if(feedbackForm.exp_name){
+    
+    	$("#exp_name_label").html("Experiment Name");
+    	$("#exp_name_value").val(feedbackForm.exp_name);
+        }
+        else if(feedbackForm.version == "generic-exp-feedback-v2.0"){
+    	$("#exp_name_label").html("Experiment Name");
+    	document.getElementById("exp_name_value").disabled = false;
+    	document.getElementById("exp_name_value").required = true;
+    	document.getElementById("exp_name_value").placeholder = "Enter Experiment Name";
+    	document.getElementById("exp_mandatory").innerHTML = "&nbsp;<font color='maroon'>*</font>";
+        }
+        else
+    	{
+    	    var elem = document.getElementById("exp_name_label");
+    	    elem.parentNode.removeChild(elem);
+    	    var elem1 = document.getElementById("exp_name_value");
+    	    elem1.parentNode.removeChild(elem1);
+    	}
+    
+        var quesArray = feedbackForm.questions.length;
+        for (var i = 0; i < quesArray; i++) {
+    	if (feedbackForm.questions[i].type === "checkbox") {
+    	    renderQuesLabel();
+    	    labelQues.innerHTML = feedbackForm.questions[i].name;
+    	    var optionsDiv = document.createElement("div");
+    	    optionsDiv.id = feedbackForm.questions[i].name;
+    	    var optionsLength = feedbackForm.questions[i].options.length;
+    
+    	    for (var j = 0; j < optionsLength; j++) {
+    		checkOption = document.createElement('input');
+    		checkOption.type = "checkbox";
+    		checkOption.value = feedbackForm.questions[i].options[j];
+    
+    		ansLabel = document.createElement('label');
+    		ansLabel.className = "checkbox-inline"
+    		ansLabel.innerHTML = feedbackForm.questions[i].options[j];
+    
+    		optionsDiv.appendChild(ansLabel);
+    		ansLabel.insertBefore(checkOption, ansLabel.firstChild);
+    		formGroup.appendChild(optionsDiv);
+    		questions_list.appendChild(formGroup);
+    	    }
+    	}
+    
+    	else if(feedbackForm.questions[i].type === "radio") {
+    	    renderQuesLabel();
+    	    labelQues1.innerHTML = feedbackForm.questions[i].id+".&nbsp;&nbsp;";
+    	    labelQues.innerHTML = feedbackForm.questions[i].name;
+    	    if(feedbackForm.questions[i].mandatory == "Yes"){
+    		labelQues2.innerHTML = "&nbsp;<font color='maroon'>*</font>";
+    	    }
+    
+    	    var optionsDiv1 = document.createElement("div");
+    	    optionsDiv1.id = feedbackForm.questions[i].id;
+    	    var optionsLength = feedbackForm.questions[i].options.length;
+    	    function GenerateTable(arg1, arg2, arg3, table_id) {
+    		var customers = new Array();
+    		customers.push([arg1, arg2, arg3]);
+    
+    		//Create a HTML Table element.
+    		var table = document.createElement("TABLE");
+    		table.border = "0";
+    
+    		//Get the count of columns.
+    		var columnCount = customers[0].length;
+    
+    		//Add the header row.
+    		var row = table.insertRow(-1);
+    		for (var i = 0; i < columnCount; i++) {
+    		    var headerCell = document.createElement("Td");
+    		    headerCell.innerHTML = customers[0][i];
+    		    row.appendChild(headerCell);
+    		}
+    		var dvTable = document.getElementById(table_id);
+    		dvTable.innerHTML = "";
+    		dvTable.appendChild(table);
+    	    }
+    	    if(i == 4 && (feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || feedbackForm.version == "generic-exp-feedback-v2.0") || i == 1 && (feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab" || feedbackForm.version == "generic-lab-feedback-v2.0" )){
+    	      //  renderQuesLabel();
+    		labelQues = document.createElement('div');
+    		labelQues.id="dvTable";
+    		formGroup.appendChild(labelQues);
+    		GenerateTable("Not at all", "To some extent", "Very well", "dvTable");
+    	    }
+    	    else if(i == 6 && (feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || feedbackForm.version == "generic-exp-feedback-v2.0") || i == 4 && (feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab" || feedbackForm.version == "generic-lab-feedback-v2.0")){
+    
+    	      //renderQuesLabel();
+    		labelQues = document.createElement('div');
+    		labelQues.id="dvTable1";
+    		formGroup.appendChild(labelQues);
+    		GenerateTable("Not at all", "To some extent", "Very well","dvTable1");
+    	    }
+    
+    	    else if(i == 7 && (feedbackForm.version == "open-edx-virtual-labs-v2.0_for_experiment" || feedbackForm.version == "generic-exp-feedback-v2.0") || i == 5 && (feedbackForm.version == "open-edx-virtual-labs-v2.0_for_lab" || feedbackForm.version == "generic-lab-feedback-v2.0")){
+    
+    	      //  renderQuesLabel();
+    		labelQues = document.createElement('div');
+    		labelQues.id="dvTable2";
+    		formGroup.appendChild(labelQues);
+    		GenerateTable("Not at all", "May Recommend", "Will definitely","dvTable2");
+    	    }
+    	    function answer(flag, question_id){
+    		if(flag == "No"){
+    		    var element = document.getElementById("answer");
+    		    if(element != null){
+    			element.outerHTML = "";
+    			delete element;
+    		    }
+    		}
+    		else{
+    		    if(document.getElementById("answer") == null){
+    			var div = document.getElementById(question_id);
+    			var answer = document.createElement('div');
+    			answer.id = "answer";
+    			div.appendChild(answer);
+    			labelQues = document.createElement('br');
+    			var answer_id = document.getElementById("answer");
+    			answer_id.appendChild(labelQues);
+    
+    			ansTextArea = document.createElement("textarea");
+    			ansTextArea.className = "form-control";
+    			ansTextArea.style.width = "35em";
+    			ansTextArea.style.height = "7em";
+    			ansTextArea.id = "bug-answer";
+    			ansTextArea.placeholder = "Please specify the bug details here";
+    			ansTextArea.maxLength = "160";
+    			answer_id.appendChild(ansTextArea);
+    
+    		    }
+    		}
+    
+    	    }
+    	    function driver(questions, value, flag){
+    		for(var i=0; i<questions.length;i++){
+    		    var questionElement = document.getElementById(questions[i]);
+    		    var children = questionElement.querySelectorAll('input');
+    		    for(var j = 0; j < children.length; j++) {
+    			var child = children[j];
+    
+    			if(flag == "false"){
+    			    child.checked = false;
+    
+    			}
+    			else if(flag == "true" && child.value == value){
+    			    child.checked = true;
+    			}
+    
+    		    }
+    
+    		}
+    	    }
+    
+    	    for (var k = 0; k < optionsLength; k++) {
+    
+    		radioOption = document.createElement('input');
+    		radioOption.type = "radio";
+    		radioOption.className = "";
+    		
+    		if(i == 0 && k == 0){
+    		    radioOption.checked = true;
+    		}
+    		if(i == 1 && k == 0 && feedbackForm.questions[i].driver.length!=0){
+    		    var questions = feedbackForm.questions[i].driver;
+    		    radioOption.onclick = function(){driver(questions, 'Not applicable', 'false'); };
+    		}
+    		if(i == 1 && k == 1  && feedbackForm.questions[i].driver.length!=0){
+    		    var questions = feedbackForm.questions[i].driver;
+    		    radioOption.onclick = function(){ driver(questions, 'Not applicable', 'true'); };
+    		}
+    		if(feedbackForm.questions[i].linked_answer == "Yes" && k == 0){
+    		    var id = feedbackForm.questions[i].id;
+    		    radioOption.onclick = function(){ answer("Yes", id); };
+    		}
+    		if(feedbackForm.questions[i].linked_answer == "Yes" && k == 1){
+    		    var id = feedbackForm.questions[i].id;
+    		    radioOption.onclick = function(){ answer("No", id); };
+    		}
+    		if(feedbackForm.questions[i].linked_answer == "Yes" && k == 2){
+    		    var id = feedbackForm.questions[i].id;
+    		    radioOption.onclick = function(){ answer("No", id); };
+    		}
+    		radioOption.name = feedbackForm.questions[i].name;
+    		radioOption.value = feedbackForm.questions[i].options[k];
+    		radioLabel = document.createElement('label');
+    		radioLabel.className = "radio-inline";
+    		radioLabel.innerHTML = feedbackForm.questions[i].options[k];
+    
+    		optionsDiv1.appendChild(radioLabel);
+    		radioLabel.insertBefore(radioOption, radioLabel.firstChild);
+    		formGroup.appendChild(optionsDiv1);
+    		questions_list.appendChild(formGroup);
+    	    }
+    
+    	}
+    	else if (feedbackForm.questions[i].type === "textarea") {
+    	    var ansTextArea;
+    	    renderQuesLabel();
+    	    labelQues.innerHTML = feedbackForm.questions[i].name;
+    	    labelQues1.innerHTML = feedbackForm.questions[i].id+".&nbsp;&nbsp;";
+    	    if(feedbackForm.questions[i].mandatory == "Yes"){
+    		labelQues2.innerHTML = "&nbsp;<font color='maroon'>*</font>";
+    	    }
+    	    ansTextArea = document.createElement("textarea");
+    	    ansTextArea.className = "form-control";
+    	    ansTextArea.id = feedbackForm.questions[i].id;
+    	    ansTextArea.style.width = "38em";
+    	    ansTextArea.style.height = "6em";
+    	    ansTextArea.maxLength = "160";
+    
+    	    formGroup.appendChild(ansTextArea);
+    	    
+    	}
+    	else if(feedbackForm.questions[i].type === "text") {
+    	    var ansTextBox;
+    	    renderQuesLabel();
+    	    labelQues.innerHTML = feedbackForm.questions[i].name;
+    	    labelQues1.innerHTML = feedbackForm.questions[i].id+".&nbsp;&nbsp;";
+    	    if(feedbackForm.questions[i].mandatory == "Yes"){
+    		labelQues2.innerHTML = "&nbsp;<font color='maroon'>*</font>";
+    	    }
+    	    ansTextBox = document.createElement("input");
+    	    ansTextBox.className = "form-control"
+    	    ansTextBox.placeholder = feedbackForm.questions[i].placeholder;
+    	    ansTextBox.style.width = "25em";
+    	    ansTextBox.id = feedbackForm.questions[i].id;
+    	    formGroup.appendChild(ansTextBox);
+    	}
+    
+        }
+    }
+    
+    function submitFeedback(event) {
+    
+        event.preventDefault();
+        var feedback = {}; // the final feedback object
+        if(feedbackForm.lab_name){
+    	feedback.lab_name = feedbackForm.lab_name;
+        }
+        if(feedbackForm.exp_name){
+    	feedback.exp_name = feedbackForm.exp_name;
+        }
+        if(feedbackForm.user_id){
+        feedback.user_id = feedbackForm.user_id;
+        }
+        feedback.version = feedbackForm.version;
+        if(feedbackForm.key){
+    	feedback.key = feedbackForm.key;
+        }
+        if(document.getElementById("lab_name_value")){
+    	feedback.lab_name = document.getElementById("lab_name_value").value;
+        }
+        if(document.getElementById("exp_name_value")){
+    	feedback.exp_name = document.getElementById("exp_name_value").value;
+        }
+        feedback.responses = []; // the list of questions and user answers
+        var quesArray = feedbackForm.questions.length;
+        // loop over the questions
+        for (var i = 0; i < quesArray; i++) {
+    	var questionElement = document.getElementById(feedbackForm.questions[i].id);
+    	var answer = null;
+    	if(feedbackForm.questions[i].type === 'radio') {
+    	    answer = []
+    	    var children = questionElement.querySelectorAll('input');
+    	    for(var j = 0; j < children.length; j++) {
+    		var child = children[j];
+    		// console.log('child', child, child.type, child.checked);
+    		if(child.type === 'radio' && child.checked === true) {
+    
+    		    if(children.length == 10){
+    			var ans = child.value + "/"+ String(Number(children.length))
+    			answer.push(ans);
+    		    }
+    		    else if(children.length == 11){
+                            var ans = child.value;
+    			if(ans != "Not applicable"){
+    			    var ans = child.value + "/"+ String(Number(children.length)-1)
+    			    answer.push(ans);
+    			}
+    			else{
+    			    answer.push(ans);
+    			}
+    		    }
+    
+    		    else{
+    			if(i == 2 ){
+    			    if(document.getElementById("bug-answer") != null){
+    				var text = document.getElementById("bug-answer").value;
+    				console.log(text);
+    				answer.push(text);
+    			    }
+    			}
+    			answer.push(child.value);
+    		    }
+    
+    		}
+    	    }
+    	}
+    	else if(feedbackForm.questions[i].type === 'checkbox') {
+    	    answer = [];
+    	    var children = questionElement.querySelectorAll('input');
+    	    for(var j = 0; j < children.length; j++) {
+    		var child = children[j];
+    		if(child.checked === true) {
+    		    // console.log('selected', child.value);
+    		    answer.push(child.value);
+    		}
+    	    }
+    	}
+    	else if(feedbackForm.questions[i].type === 'textarea') {
+    	    answer = [];
+    	    var input = questionElement;
+    	    answer.push(input.value);
+    	}
+    	else if(feedbackForm.questions[i].type === 'text') {
+    	    answer = [];
+    	    var input = questionElement;
+    	    //console.log(input);
+    	    answer.push(input.value);
+    	}
+    	// create an object to insert the current question data
+    	var question = {};
+    	question.name = feedbackForm.questions[i].name;
+    	//question.type = feedbackForm.questions[i].type;
+    	question.answers = answer;
+    	feedback.responses.push(question);
+        }
+        // Posting json data to /feedback api
+    
+        console.log(feedback);
+        function add_feedback(){
+    	$.ajax({
+    	    url: '/feedback',
+    	    type: 'POST',
+    	    data: JSON.stringify(feedback),
+    	    contentType: 'application/json',
+    	    success: function (data) {
+    		window.location.href="/success";
+    		console.log(data);
+    	    },
+    
+    	    error: function(data){
+    		//alert("error");
+    		console.log("Error in submitted feedback");
+    		console.log(data); 
+    	    }
+    
+    	});  
+        }
+        function add_generic_feedback(){
+    	$.ajax({
+    	    url: '/',
+    	    type: 'POST',
+    	    data: JSON.stringify(feedback),
+    	    contentType: 'application/json',
+    	    success: function (data) {
+    		window.location.href="/success";
+    		console.log(data);
+    	    },
+    
+    	    error: function(data){
+    		//alert("error");
+    		console.log("Error in submitted feedback");
+    		console.log(data); 
+    	    }
+    
+    	});  
+        }
+        var count = 0;
+        var not_answered = []
+        for(var i=0;i<feedback.responses.length;i++){
+    	if(feedbackForm.questions[i].mandatory == "Yes" && (feedback.responses[i].answers.length == 0 || feedback.responses[i].answers[0] == "")){
+    	    //alert("Some of the questions are not answered");
+    	    //alert("Quesion No " + (i+1) +" is not answered");
+    	    count++;
+    	    not_answered.push(i+1);
+    //	      break;
+    	}
+        }
+        if(count == 0){
+    	if(feedbackForm.version == "generic-feedback-v2.0" || feedbackForm.version == "generic-exp-feedback-v2.0" || feedbackForm.version == "generic-lab-feedback-v2.0"){
+    	    add_generic_feedback();
+    	    }
+    	else{
+    	    add_feedback();
+    	}
+        }
+        else{
+    	alert(not_answered + " Question(s) are not answered");
+        }
+    
+    
+    }
+        
     </script>
   </html>
-  
 #+END_SRC
 
 
@@ -1539,63 +1971,68 @@ def dump_usage_to_elk():
 
 ** Header HTML
 #+BEGIN_SRC html :tangle ./templates/header.html :eval no :noweb yes
-      <header>
-        <link rel = "stylesheet" href = "/static/css/main.css">
-        <link rel = "stylesheet" href = "/static/css/bootstrap.min.css">
-        <nav class="navbar navbar-default " style="background-color: white !important; margin-bottom: 0px !important;">
-          <div class="container-fluid">
-            <div class="navbar-header page-scroll">
-              <button aria-controls="bs-navbar" aria-expanded="true"  type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar #bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar" style="background-color: #77BB41"></span>
-                <span class="icon-bar" style="background-color: #77BB41"></span>
-                <span class="icon-bar" style="background-color: #77BB41"></span>
-              </button>
-              <a class="navbar-brand main-logo-a" href="https://vlabs.ac.in"><img src="/static/img/logo.png"  style="width:5em" class="img-responsive main-logo" /></a>
-            </div>                  
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
-              <ul class="nav navbar-nav navbar-right menu-ul search-ul" style="position: relative; top: -5px;">
-                <li></li>
-              </ul>
-              <ul class="nav navbar-nav navbar-right menu-ul">
-                <li class="page-scroll menu-li " >
-                  <a href="https://vlabs.ac.in" class="menu-a" >HOME</a>
-                </li>
-                <li class="page-scroll menu-li">
-                  <a href="https://vlabs.ac.in/courses"  class="menu-a " >ALL LABS</a>
-                </li>
-                <li class="page-scroll menu-li" >
-                  <a href="https://vlabs.ac.in/#partner" class="menu-a" >PARTNERS</a>
-                </li><li class="page-scroll menu-li " >
-                  <a href="https://vlabs.ac.in/#partner" class="menu-a" >CONTACT</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav>
-      </header>
+<header>
+  <link rel = "stylesheet" href = "/static/css/main.css">
+  <link rel = "stylesheet" href = "/static/css/bootstrap.min.css">
+  <nav class="navbar navbar-default " style="background-color: white !important; margin-bottom: 0px !important; border : 0px;  !important">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header page-scroll">
+	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+	  <span class="sr-only">Toggle navigation</span>
+	  <span class="icon-bar" style="background-color: #77BB41"></span>
+	  <span class="icon-bar" style="background-color: #77BB41"></span>
+	  <span class="icon-bar" style="background-color: #77BB41"></span>
+	</button>
+	<a class="navbar-brand main-logo-a" href="https://vlabs.ac.in"><img src="/static/img/logo.png"  style="width:7em" class="img-responsive main-logo" /></a>
+      </div>
+      <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
+	<ul class="nav navbar-nav navbar-right menu-ul search-ul" style="position: relative; top: -5px;">
+	  <li>
+	    <form method="get" action="search-result.html">
+	    </form>
+	  </li>
+	</ul>	
+	<ul class="nav navbar-nav navbar-right menu-ul">
+	  <li class="page-scroll menu-li ">
+	    <a href="https://vlabs.ac.in" class="menu-a">HOME</a>
+	  </li>
+	  <li class="page-scroll menu-li menu-li-active">
+	    <a href="https://vlabs.ac.in/courses" class="menu-a menu-a-active">ALL LABS</a>
+	  </li>
+	  <li class="page-scroll menu-li ">
+	    <a href="https://vlabs.ac.in/#partner" class="menu-a">PARTNERS</a>
+	  </li><li class="page-scroll menu-li ">
+	    <a href="http://vlabs.ac.in:5959/contactus" class="menu-a">CONTACT</a>
+	  </li>
+	</ul>	
+      </div>
+    </div>	
+  </nav>
+</header>
 
 #+END_SRC
    
    
 ** Footer HTML
 #+BEGIN_SRC html :tangle ./templates/footer.html :eval no :noweb yes
-  <head>
-<script type="text/css">
+
+<head>
+<style type="text/css">
 .text-h2-lightblue-small
 {
 	color: #2C99CE;
-	font-size: 1.5em;
+	font-size: 1.2em;
+        font-family: Raleway;
 }
 .border-right-green-dotted
 {
-	border-right: 2px dotted;
-	 margin-top: 30px;
-	 border-right-color: #678f48;
-	 min-height: 115px;
-	line-height:1em;
-	height:15em;
+      border-right: 2px dotted;
+      margin-top: 30px;
+      border-right-color: #678f48;
+      min-height: 115px;
+      line-height:1em;
+      height:15em;
 
 
 }
@@ -1622,41 +2059,61 @@ margin-top:120px;
 .text-normal-gray-small:hover{
 color:green;
 }
+.social-share {
+   display: inline-block;
+   display: inline;
+   list-style: none;
+   padding: 0;
+   margin: 0;
+   margin-top: 7px;
+   margin-left: 280px;
+}
 
-</script>
+</style>
 </head>
 <div class="container-fluid footer-div" style="background: #404040; margin-top: 40px;  padding: 20px;">
   <div class="col-md-4 border-right-green-dotted">
-    <h2 class="text-h2-lightblue-small" style="font-weight: bold;margin-top: 0px;">Updates</h2>
-    <a href="http://community.virtual-labs.ac.in/w/index.php/Download" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Lab Integration Kit Releases</a><br>
-    <a href="http://community.virtual-labs.ac.in/w/index.php/First_Integration_workshop" class="text-normal-gray-small nounderline" style="color: white" target="_blank">First Integration Workshop at IIIT Hyderabad</a><br>
-    <a href="http://community.virtual-labs.ac.in/w/index.php/Summer_Sprint_Integration_workshop" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Summer Integration Workshop at IIT Guwahati</a><br>
-    <a href="http://community.virtual-labs.ac.in/w/index.php/QA/Integration_workshop" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> QA Integration
-      Workshop at IIIT Hyderabad</a><br>
-    <a href="http://community.virtual-labs.ac.in/w/index.php/A_new_set_of_25_Virtual_Labs_on_Portable_Media" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> A new set of 25 Virtual Labs on Portable Media</a>
+				<h2 class="text-h2-lightblue-small" style="font-weight: bold;margin-top: 0px;">UPDATES</h2>
+				<a href="http://community.virtual-labs.ac.in/w/index.php/Download" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Lab Integration Kit Releases</a><br>
+				<a href="http://community.virtual-labs.ac.in/w/index.php/First_Integration_workshop" class="text-normal-gray-small nounderline" style="color: white" target="_blank">First Integration Workshop at IIIT Hyderabad</a><br>
+				<a href="http://community.virtual-labs.ac.in/w/index.php/Summer_Sprint_Integration_workshop" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Summer Integration Workshop at IIT Guwahati</a><br>
+				<a href="http://community.virtual-labs.ac.in/w/index.php/QA/Integration_workshop" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> QA Integration
+				Workshop at IIIT Hyderabad</a><br>
+				<a href="http://community.virtual-labs.ac.in/w/index.php/A_new_set_of_25_Virtual_Labs_on_Portable_Media" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> A new set of 25 Virtual Labs on Portable Media</a>
+
   </div>
-  <div class="col-md-2 border-right-green-dotted" id="contact">
-    <h2 class="text-h2-lightblue-small" style="font-weight: bold;margin-top: 0px;"> Contact us</h2>
+  <div class="col-md-3 border-right-green-dotted" id="contact">
+    <a href="http://vlabs.ac.in:5959/contactus" class="text-normal-gray-small nounderline" style="color:white" target="_blank">Contact us</a><br>
+    
     <a href="http://feedback.vlabs.ac.in/" class="text-normal-gray-small nounderline" style="color:white" target="_blank"> Feedback</a><br>
-    <a style="color:white" class="text-normal-gray-small nounderline" href="mailto:support@vlabs.ac.in" target="_blank">support@vlabs.ac.in</a><br>
-    <a href="http://118.102.191.38/labassessment/assessmentform.html" class="text-normal-gray-small nounderline" style="color:white; line-height:20px;" target="_blank"> Lab Assessment Form</a>
+    
+    <a href="http://vlabs.ac.in:5959/licensing/" class="text-normal-gray-small nounderline" target="_blank" style="color:white; line-height:20px;"> Licensing</a>
+    
+    <a href="https://plus.google.com/communities/104131148292250423165" class="text-normal-gray-small nounderline" target="_blank" style="color:white; line-height:40px;"> Teachers' Community</a>
+    
+    <a href="http://118.102.191.38/labassessment/assessmentform.html" class="text-normal-gray-small nounderline" target="_blank" style="color:white;"> Lab Assessment Form</a><br>
+    <a href="http://vlabs.ac.in:5959/college-cloud-edition" class="text-normal-gray-small nounderline" style="color:white" target="_blank"> College Cloud Edition</a><br>
+    
+    <a href="http://vlabs.ac.in:5959/workshops" class="text-normal-gray-small nounderline" style="color:white" target="_blank"> Expression of Interest for Workshop</a>
   </div>
   <div class="col-md-3 border-right-green-dotted">
     <a href="http://vlabs.ac.in:5959/faq/" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> FAQ</a><br>
     <a href="http://community.virtual-labs.ac.in/w/index.php/Main_Page" class="text-normal-gray-small nounderline" style="color: white" target="_blank">Community</a><br>
+    <a href="http://outreach.virtual-labs.ac.in/ncentres" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Nodal Centers</a><br>
     <a href="http://www.sakshat.ac.in/" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Sakshat Portal</a><br>
     <a href="http://outreach.vlabs.ac.in/" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Outreach Portal</a><br>
-    <a href="http://outreach.vlabs.ac.in/ncentres" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Nodal Centers</a><br>
+    <a href="http://vlabs.ac.in:5959/announcements/index.html" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Announcements</a><br>
     <a href="http://118.102.191.38/vlabiitece/" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Labs Developed by Nodal Centers</a>
   </div>
-  <div class="col-md-3">
+  
+  <div class="col-md-2">
     <div class="social">
       <ul class="social-share" style="margin-top:2em">
 	<ul>
-	  <li style="display:inline"><a href="https://www.facebook.com/pages/Virtual-Labs-IIT-Delhi/301510159983871"><img src="/static/img/fb.png"></a></li>
-	  <li style="display:inline "><a href="https://twitter.com/TheVirtualLabs"><img src="/static/img/twitter.png"></a></li>
-	  <li style="display:inline"><a href="http://linkedin.com"><img src="/static/img/linkedin.png"></a></li> 
-	  <li style="display:inline"><a href="https://www.youtube.com/watch?v=mVBYNXLaDdg"><img src="/static/img/youtube.png"></a></li>
+	  <li style="display:inline"><a href="https://www.facebook.com/pages/Virtual-Labs-IIT-Delhi/301510159983871" target="_blank"><img src="/static/img/fb.png"></a></li>
+	  <li style="display:inline "><a href="https://twitter.com/TheVirtualLabs" target="_blank"><img src="/static/img/twitter.png"></a></li>
+	  <li style="display:inline"><a href="http://linkedin.com" target="_blank"><img src="/static/img/linkedin.png"></a></li> 
+	  <li style="display:inline"><a href="https://www.youtube.com/watch?v=mVBYNXLaDdg" target="_blank"><img src="/static/img/youtube.png"></a></li>
 	</ul>
       </ul>
     </div>
