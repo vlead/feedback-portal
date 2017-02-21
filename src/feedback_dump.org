@@ -49,7 +49,8 @@ def get_feedback_dump(API_URL):
 
 def post_feedback_to_elastic_db(feedbacks):
     try:
-	resp = requests.post(ELASTIC_DUMP_URL, data=json.dumps(feedbacks))
+        headers = {'content-type': 'application/json'}
+	resp = requests.post(ELASTIC_DUMP_URL, data=json.dumps(feedbacks), headers=headers)
 	if not resp.status_code == 200:
 	    return False
 	else:
@@ -63,7 +64,7 @@ def post_feedback_to_elastic_db(feedbacks):
 if(status_code == 200):
     data_dict = {
 	"feedbacks" : feedback_dump,
-	"key" : FEEDBACK_KEY
+	"key" : KEY
     }
     if(post_feedback_to_elastic_db(data_dict)):
 	print "Feedbacks : %s is added" % (feedback_dump)
@@ -77,13 +78,15 @@ def dump_historic_feedback_data(start_date, end_date):
     for dt in rrule(DAILY, dtstart=start_date, until=end_date):
 	date = dt.strftime("%d-%m-%Y")
 	FEEDBACK_DUMP_URL = "%s/feedback_dump?date=%s&key=%s" % (FEEDBACK_URL, date, KEY)
-	print FEEDBACK_DUMP_URL
-	(status_code, feedback_dump) = get_feedback_dump(FEEDBACK_DUMP_URL)
-	print status_code
+        try:               
+            (status_code, feedback_dump) = get_feedback_dump(FEEDBACK_DUMP_URL)                                            |
+        except Exception as e:                               
+            print "No feedbacks found on date : %s" % (date) 
+
 	if(status_code == 200):
 	    data_dict = {
 		"feedbacks" : feedback_dump,
-		"key" : FEEDBACK_KEY
+		"key" : KEY
 	    }
 	    if(post_feedback_to_elastic_db(data_dict)):
 		print "Feedbacks : %s is added" % (feedback_dump)
