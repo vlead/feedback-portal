@@ -1960,6 +1960,7 @@ def dump_usage_to_elk():
     <body onload="renderFeedbackform();">
       <div id="header">
         {% include 'header.html' %}        
+      <br><p>
       <div class="row">
         <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
       </div>
@@ -2002,7 +2003,7 @@ def dump_usage_to_elk():
 	    <a href="https://vlabs.ac.in" class="menu-a">HOME</a>
 	  </li>
 	  <li class="page-scroll menu-li menu-li-active">
-	    <a href="https://vlabs.ac.in/courses" class="menu-a menu-a-active">ALL LABS</a>
+	    <a href="https://vlabs.ac.in/courses" class="menu-a">ALL LABS</a>
 	  </li>
 	  <li class="page-scroll menu-li ">
 	    <a href="https://vlabs.ac.in/#partner" class="menu-a">PARTNERS</a>
