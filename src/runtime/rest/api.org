@@ -1468,17 +1468,18 @@ def dump_usage_to_elk():
       <div class="container">
         <h1> Virtual Labs Feedback Form </h1>
         <form class="form" id="feedback-form" onsubmit="submitFeedback(event)">
-          <div class="form-group">
+          <div class="form-group" id="lab">
             <label class="" id="lab_name_label"></label>
             <label class="" id="lab_mandatory"></label>
             <input class="form-control" id="lab_name_value" disabled="true">
           </div>
-          <div class="form-group">
+          <div class="form-group" id="exp">
             <label class="" id="exp_name_label"></label>
             <label class="" id="exp_mandatory"></label>
             <input class="form-control" id="exp_name_value" disabled="true">
           </div>
           <div class="form-group" id="questions_list"></div>
+          <p>
           <button class="btn btn-primary" >Submit</button>
         </form>
         <div align="right">
@@ -1986,7 +1987,7 @@ def dump_usage_to_elk():
 	</button>
 	<a class="navbar-brand main-logo-a" href="https://vlabs.ac.in"><img src="/static/img/logo.png"  style="width:7em" class="img-responsive main-logo" /></a>
       </div>
-      <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;">
+      <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;margin-top:35px;">
 	<ul class="nav navbar-nav navbar-right menu-ul search-ul" style="position: relative; top: -5px;">
 	  <li>
 	    <form method="get" action="search-result.html">
@@ -2181,14 +2182,11 @@ function renderFeedbackform() {
            elem.parentNode.removeChild(elem);
            var elem1 = document.getElementById("exp");
     	    elem1.parentNode.removeChild(elem1);
-
-
     }
     else
 	{
 	    var elem = document.getElementById("exp");
 	    elem.parentNode.removeChild(elem);
-
 	}
 
     var quesArray = feedbackForm.questions.length;
