@@ -2176,12 +2176,19 @@ function renderFeedbackform() {
 	document.getElementById("exp_name_value").placeholder = "Enter Experiment Name";
 	document.getElementById("exp_mandatory").innerHTML = "&nbsp;<font color='maroon'>*</font>";
     }
+    else if(feedbackForm.version == "generic-feedback-v2.0"){
+           var elem = document.getElementById("lab");
+           elem.parentNode.removeChild(elem);
+           var elem1 = document.getElementById("exp");
+    	    elem1.parentNode.removeChild(elem1);
+
+
+    }
     else
 	{
-	    var elem = document.getElementById("exp_name_label");
+	    var elem = document.getElementById("exp");
 	    elem.parentNode.removeChild(elem);
-	    var elem1 = document.getElementById("exp_name_value");
-	    elem1.parentNode.removeChild(elem1);
+
 	}
 
     var quesArray = feedbackForm.questions.length;
@@ -2565,6 +2572,7 @@ function submitFeedback(event) {
 #+BEGIN_SRC css :tangle ./static/css/main.css :eval no :noweb yes
 body {
     font-family:'Raleway' !important;
+    overflow-x: hidden;
 #    font-family:  sans-serif;
     font-size: 14px;
     color: #767676;
