@@ -18,11 +18,10 @@
 #+NAME: get_add_generic_feedback
 #+BEGIN_SRC python
 def post_data_to_elastic_search(index_name, doc_name, record):                                                                                          
-    try:                                                                                                                                                
-        current_app.logger.debug("index_name: %s, doc_name: %s, record: %s" % (index_name, doc_name, record))                                           
-        ELASTIC_SEARCH_URL = "%s/%s/%s" % ("http://10.100.0.15:9200", index_name, doc_name)                                                             
-        current_app.logger.debug("ELASTIC_SEARCH_URL : %s" %(ELASTIC_SEARCH_URL))                                                                       
-        resp = requests.post(ELASTIC_SEARCH_URL, data=json.dumps(record))                                                                               
+    try:
+        FEEDBACK_ELASTIC_DB_URL = "%s/%s/%s" % (ELASTIC_DB_URL, index_name, doc_name)                                                                                                                                                
+        current_app.logger.debug("FEEDBACK_ELASTIC_DB_URL : %s" % (FEEDBACK_ELASTIC_DB_URL))                                           
+        resp = requests.post(FEEDBACK_ELASTIC_DB_URL, data=json.dumps(record))                                                                               
         if not resp.status_code == 201:                                                                                                                 
             current_app.logger.debug("Error_code : %s" % (resp.status_code))                                                                            
             return False                                                                                                                                
@@ -1330,11 +1329,11 @@ def dump_cc_details_to_elk():
 	    key = data_dict['key']
 	    current_app.logger.debug("College Data : %s " % (cc_details))
 	    mac_id = cc_details['mac_id']            
-	    ELASTIC_SEARCH_GET_URL = "%s/id=%s" %(ELASTIC_SEARCH_URL, str(mac_id))
+	    ELASTIC_SEARCH_GET_URL = "%s/id=%s" %(ELASTIC_DB_URL, str(mac_id))
 	    current_app.logger.debug("ELASTIC SEARCH GET URL : %s " % (ELASTIC_SEARCH_GET_URL))
 	    college_data = requests.get(ELASTIC_SEARCH_GET_URL)
 	    if college_data.json()['found'] == False:
-		ELASTIC_SEARCH_POST_URL = "%s/id=%s" % (ELASTIC_SEARCH_URL, str(mac_id))
+		ELASTIC_SEARCH_POST_URL = "%s/id=%s" % (ELASTIC_DB_URL, str(mac_id))
 		create_college = requests.post(ELASTIC_SEARCH_POST_URL, data=json.dumps(cc_details))
 		if create_college.status_code == 201:
 		    current_app.logger.debug("Added college details : %s " % (cc_details))
@@ -1349,17 +1348,17 @@ def dump_cc_details_to_elk():
 	    abort(500, str(e))
 #+END_SRC
 
+
 ** Dump Feedback to ELK
    REST API to get and add feedback to ELK stack
 
-#+NAME: add_feedback_to_elk
+#+NAME: add_feedback_to_elastic_db
 #+BEGIN_SRC python
-@api.route('/dump_feedback_to_elk', methods=['GET', 'POST'])
+@api.route('/dump_feedback_to_elastic_db', methods=['GET', 'POST'])
 def dump_feedback_to_elk():
     if request.method == 'GET':
-	return True
+	return "Method not allowed"
     if request.method == 'POST':
-	#URL = "http://10.100.0.15:9200/college_cloud/details"
 	data_json = json.dumps(request.get_json())
 	data_dict = yaml.safe_load(data_json)
 	if 'feedbacks' not in data_dict:
@@ -1370,13 +1369,14 @@ def dump_feedback_to_elk():
 
 	feedbacks = data_dict['feedbacks']
 	key = data_dict['key']        
-	current_app.logger.debug("Elastic Search URL : %s " % (ELASTIC_SEARCH_URL))
+	
 
 	if 'mac_id' in data_dict:
 	    mac_id = str(data_dict['mac_id'])
-	    r = requests.get(ELASTIC_SEARCH_URL+"/id="+mac_id)
-	    if r.json()['found'] == False:
-		current_app.logger.debug("ELASTIC SEARCH URL : %s " % (ELASTIC_SEARCH_URL))
+            cc_details_elastic_db_url = "%s/college_cloud/details/id=%s" % (ELASTIC_DB_URL, mac_id)
+            current_app.logger.debug("college cloud elastic db url : %s " % (cc_details_elastic_db_url))
+	    r = requests.get(cc_details_elastic_db_url)
+	    if r.json()['found'] == False:		
 		return jsonify({"status" : "failed", "error" : "College cloud is not registered"})
 	    else:
 		current_app.logger.debug("College Cloud Details : %s " % (r.json()))
@@ -1386,6 +1386,7 @@ def dump_feedback_to_elk():
 	else:
 	    index_name = "vlabs"
 	    doc_name = "feedback"
+            current_app.logger.debug("Elastic Search URL : %s " % (ELASTIC_DB_URL))
 	    current_app.logger.debug("index_name : %s, doc_name : %s " % (index_name, doc_name))
 
 	for feedback in feedbacks:
@@ -1398,6 +1399,7 @@ def dump_feedback_to_elk():
 	return jsonify({"status" : "success"})
                   
 #+END_SRC
+
 
 ** Dump Usage to ELK
    REST API to get and add usage to ELK stack
@@ -1523,7 +1525,7 @@ def dump_usage_to_elk():
       <link rel = "stylesheet" href = "/static/css/main.css">
       <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
     </head>
-    <body onload="renderFeedbackform();">
+    <body>
       <div id="header">
         {% include 'header.html' %}        
       <br><p>
@@ -2303,7 +2305,7 @@ from runtime.utils.type_utils import jsonify_list
 from runtime.exceptions.custom_exceptions import *
 from runtime.system.system_interface import SystemInterface
 from runtime.config.flask_app_config import GENERIC_FEEDBACK_VERSION,\
-     GENERIC_LAB_FEEDBACK_VERSION, GENERIC_EXP_FEEDBACK_VERSION, ELASTIC_SEARCH_URL
+     GENERIC_LAB_FEEDBACK_VERSION, GENERIC_EXP_FEEDBACK_VERSION, ELASTIC_DB_URL
 
 import yaml
 
@@ -2357,6 +2359,7 @@ if __name__ == '__main__':
 <<update_and_delete_question>>
 <<get_and_add_feedback_to_elk>>
 <<get_and_add_usage_to_elk>>
+<<add_feedback_to_elastic_db>>
 #+END_SRC
 
 

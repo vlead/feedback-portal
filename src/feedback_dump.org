@@ -33,7 +33,7 @@ yestr_day = datetime.now() - timedelta(days=1)
 yestr_day_date = yestr_day.strftime('%d-%m-%Y')
 
 FEEDBACK_DUMP_URL = "%s/feedback_dump?date=%s&key=%s" % (FEEDBACK_URL, yestr_day_date, KEY)
-ELASTIC_DUMP_URL = "%s/dump_feedback_to_elk" % (FEEDBACK_URL)
+ELASTIC_DUMP_URL = "%s/dump_feedback_to_elastic_db" % (FEEDBACK_URL)
 
 def get_feedback_dump(API_URL):
     try:
@@ -57,7 +57,7 @@ def post_feedback_to_elastic_db(feedbacks):
     except Exception as e:
 	print str(e)
 	return False
-
+"""
 (status_code, feedback_dump) = get_feedback_dump(FEEDBACK_DUMP_URL)
 
 if(status_code == 200):
@@ -95,5 +95,5 @@ def dump_historic_feedback_data(start_date, end_date):
 start_date = date(2016, 10, 23)
 end_date = date(2016, 10, 30)
 dump_historic_feedback_data(start_date, end_date)
-"""
+
 #+END_SRC
