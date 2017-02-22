@@ -1310,15 +1310,15 @@ class TestDeleteQuestion(TestCase):
 
 #+NAME: add_college_details_to_elk
 #+BEGIN_SRC python
-@api.route('/dump_cc_details_to_elk', methods=['GET', 'POST'])
+@api.route('/dump_cc_details_to_elastic_db', methods=['GET', 'POST'])
 def dump_cc_details_to_elk():
     if request.method == 'GET':
-	return True
+	return "Method not allowed"
     if request.method == 'POST':
 	try:
-	    #ELASTIC_SEARCH_URL = "http://10.100.0.15:9200/college_cloud/details"
 	    data_json = json.dumps(request.get_json())
 	    data_dict = yaml.safe_load(data_json)
+
             if 'college_details' not in data_dict:
                 abort(400, 'college_details attribute is not passed')
 
@@ -1329,9 +1329,9 @@ def dump_cc_details_to_elk():
 	    key = data_dict['key']
 	    current_app.logger.debug("College Data : %s " % (cc_details))
 	    mac_id = cc_details['mac_id']            
-	    ELASTIC_SEARCH_GET_URL = "%s/id=%s" %(ELASTIC_DB_URL, str(mac_id))
-	    current_app.logger.debug("ELASTIC SEARCH GET URL : %s " % (ELASTIC_SEARCH_GET_URL))
-	    college_data = requests.get(ELASTIC_SEARCH_GET_URL)
+            cc_details_elastic_db_url = "%s/college_cloud/details/id=%s" % (ELASTIC_DB_URL, mac_id)
+            current_app.logger.debug("college cloud elastic db url : %s " % (cc_details_elastic_db_url))
+	    college_data = requests.get(cc_details_elastic_db_url)
 	    if college_data.json()['found'] == False:
 		ELASTIC_SEARCH_POST_URL = "%s/id=%s" % (ELASTIC_DB_URL, str(mac_id))
 		create_college = requests.post(ELASTIC_SEARCH_POST_URL, data=json.dumps(cc_details))
@@ -1406,12 +1406,11 @@ def dump_feedback_to_elk():
 
 #+NAME: add_usage_to_elk
 #+BEGIN_SRC python
-@api.route('/dump_usage_to_elk', methods=['GET', 'POST'])
+@api.route('/dump_usage_to_elastic_db', methods=['GET', 'POST'])
 def dump_usage_to_elk():
     if request.method == 'GET':
-	return True
+	return "Method not allowed"
     if request.method == 'POST':
-	#URL = "http://10.100.0.15:9200/college_cloud/details"
 	data_json = json.dumps(request.get_json())
 	data_dict = yaml.safe_load(data_json)
 
@@ -1424,11 +1423,14 @@ def dump_usage_to_elk():
 	usages = data_dict['usages']
 	mac_id = data_dict['mac_id']
 	key = data_dict['key']
-	current_app.logger.debug("ELASTIC SEARCH URL : %s " % (ELASTIC_SEARCH_URL))
+        mac_id = str(data_dict['mac_id'])
+        cc_details_elastic_db_url = "%s/college_cloud/details/id=%s" % (ELASTIC_DB_URL, mac_id)
+        current_app.logger.debug("college cloud elastic db url : %s " % (cc_details_elastic_db_url))
+	
 	try:
-	    r = requests.get(ELASTIC_SEARCH_URL+"/id="+str(mac_id))
+            r = requests.get(cc_details_elastic_db_url)	    
 	    if r.json()['found'] == False:
-		current_app.logger.debug("ELASTIC SEARCH URL : %s " % (ELASTIC_SEARCH_URL))
+		current_app.logger.debug("ELASTIC DB URL : %s " % (ELASTIC_DB_URL))
 		return jsonify({"status" : "failed", "error" : "College cloud is not registered"})
 	    else:
 		current_app.logger.debug("College Cloud Details : %s " % (r.json()))
