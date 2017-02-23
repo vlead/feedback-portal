@@ -12,9 +12,6 @@
 ** Configuration
   Configuration variable of both =feedback= and =elasticsearch= micro services.
 #+BEGIN_SRC python :tangle config.py
-ELASTIC_SEARCH_URL = "http://10.2.56.2:9200"
-ELASTIC_SEARCH_INDEX_NAME = "feedback"
-ELASTIC_SEARCH_DOCUMENT_TYPE = "feedback_dump"
 FEEDBACK_URL = "http://localhost:5000"
 KEY = "place-key-here"
 #+END_SRC

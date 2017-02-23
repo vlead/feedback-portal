@@ -1305,8 +1305,9 @@ class TestDeleteQuestion(TestCase):
  #+END_SRC
    
 
-** Dump College Details to ELK
-   REST API to add college details to ELK
+** Dump College Details to Elastic Database
+   REST API to dump the college cloud details into vlead's central
+   elastic search database.
 
 #+NAME: add_college_details_to_elk
 #+BEGIN_SRC python
@@ -1347,10 +1348,109 @@ def dump_cc_details_to_elk():
 	except Exception as e:
 	    abort(500, str(e))
 #+END_SRC
+*** TestDumpCollegeDetailsToElk
+ #+NAME: test_dump_college_details_to_elk
+ #+BEGIN_SRC python
+ class TestDumpCollegeDetailsToElk(TestCase):
+     TESTING = True
+     def create_app(self):
+	 app = create_app(config)
+	 return app
+
+     def setUp(self):
+	 db.create_all()
+
+     def tearDown(self):
+	 db.session.remove()
+	 db.drop_all()
+
+     def test_dump_college_details_to_elk(self):
+	 print "test_dump_college_details_to_elk"
+	 payload = {
+	     'key' : KEY,
+	     'feedbacks': [
+		 {
+		     "user_id": "Null",
+		     "responses": [
+			 {
+			     "question": {
+				 "name": "Please provide any other feedback about Virtual Labs",
+				 "question_type": "textarea",
+				 "id": 21
+			     },
+			     "answers": [
+				 {
+				     "name": "test",
+				     "id": 18
+				 }
+			     ],
+			     "id": 40
+			 },
+			 {
+			     "question": {
+				 "name": "Designation",
+				 "question_type": "radio",
+				 "id": 22
+			     },
+			     "answers": [
+				 {
+				     "name": "Student",
+				     "id": 1
+				 }
+			     ],
+			     "id": 1
+			 },
+			 {
+			     "question": {
+				 "name": "Did you attempt any experiments ?",
+				 "question_type": "radio",
+				 "id": 23
+			     },
+			     "answers": [
+				 {
+				     "name": "No",
+				     "id": 2
+				 }
+			     ],
+			     "id": 10
+			 },
+			 {
+			     "question": {
+				 "name": "Please rate your experience",
+				 "question_type": "radio",
+				 "id": 24
+			     },
+			     "answers": [
+				 {
+				     "name": "2/10",
+				     "id": 4
+				 }
+			     ],
+			     "id": 11
+			 }
+		     ],
+		     "exp_name": "Null",
+		     "lab_name": "generic feedback",
+		     "version": "generic-feedback-v2.0",
+		     "gateway_ip": "10.100.1.7",
+		     "date": "21-10-2016",
+		     "id": 14
+		 }
+	     ]
+	 }
+
+	 headers = {'Content-Type': 'application/json'}
+
+	 response = self.client.post("/dump_cc_details_to_elastic_db", data=json.dumps(payload),
+				  headers=headers)
+
+	 self.assertEqual(response.status_code, 200)
+   
+#+END_SRC
 
 
 ** Dump Feedback to ELK
-   REST API to get and add feedback to ELK stack
+   REST API to dump the feedbacks into the elastic search database
 
 #+NAME: add_feedback_to_elastic_db
 #+BEGIN_SRC python
@@ -1399,10 +1499,109 @@ def dump_feedback_to_elk():
 	return jsonify({"status" : "success"})
                   
 #+END_SRC
+*** TestDumpFeedbackDetailsToElk
+ #+NAME: test_feedback_details_to_elk
+ #+BEGIN_SRC python
+ class TestFeedbackDumpToElk(TestCase):
+     TESTING = True
+     def create_app(self):
+	 app = create_app(config)
+	 return app
+
+     def setUp(self):
+	 db.create_all()
+
+     def tearDown(self):
+	 db.session.remove()
+	 db.drop_all()
+
+     def test_feedback_details_to_elk(self):
+	 print "test_dump_college_details_to_elk"
+	 payload = {
+	     'key' : KEY,
+	     'feedbacks': [
+		 {
+		     "user_id": "Null",
+		     "responses": [
+			 {
+			     "question": {
+				 "name": "Please provide any other feedback about Virtual Labs",
+				 "question_type": "textarea",
+				 "id": 21
+			     },
+			     "answers": [
+				 {
+				     "name": "test",
+				     "id": 18
+				 }
+			     ],
+			     "id": 40
+			 },
+			 {
+			     "question": {
+				 "name": "Designation",
+				 "question_type": "radio",
+				 "id": 22
+			     },
+			     "answers": [
+				 {
+				     "name": "Student",
+				     "id": 1
+				 }
+			     ],
+			     "id": 1
+			 },
+			 {
+			     "question": {
+				 "name": "Did you attempt any experiments ?",
+				 "question_type": "radio",
+				 "id": 23
+			     },
+			     "answers": [
+				 {
+				     "name": "No",
+				     "id": 2
+				 }
+			     ],
+			     "id": 10
+			 },
+			 {
+			     "question": {
+				 "name": "Please rate your experience",
+				 "question_type": "radio",
+				 "id": 24
+			     },
+			     "answers": [
+				 {
+				     "name": "2/10",
+				     "id": 4
+				 }
+			     ],
+			     "id": 11
+			 }
+		     ],
+		     "exp_name": "Null",
+		     "lab_name": "generic feedback",
+		     "version": "generic-feedback-v2.0",
+		     "gateway_ip": "10.100.1.7",
+		     "date": "21-10-2016",
+		     "id": 14
+		 }
+	     ]
+	 }
+
+	 headers = {'Content-Type': 'application/json'}
+
+	 response = self.client.post("/dump_feedback_to_elastic_db", data=json.dumps(payload),
+				  headers=headers)
+
+	 self.assertEqual(response.status_code, 200)
+   
+#+END_SRC
 
 
 ** Dump Usage to ELK
-   REST API to get and add usage to ELK stack
+   REST API to dump the usage data into elastic search database.
 
 #+NAME: add_usage_to_elk
 #+BEGIN_SRC python
@@ -1448,6 +1647,49 @@ def dump_usage_to_elk():
 		return jsonify({"status" : "success"})
 	except Exception as e:
 	    abort(500, str(e))
+#+END_SRC
+*** TestDumpUsageToElk
+ #+NAME: test_dump_usages_details_to_elk
+ #+BEGIN_SRC python
+  class TestDumpUsageDetailsToElk(TestCase):
+      TESTING = True
+      def create_app(self):
+	  app = create_app(config)
+	  return app
+
+      def setUp(self):
+	  db.create_all()
+
+      def tearDown(self):
+	  db.session.remove()
+	  db.drop_all()
+
+      def test_dump_usage_details_to_elk(self):
+	  print "test_dump_usage_details_to_elk"
+	  payload = {
+	      'key' : KEY,
+	      'usages' : [
+		  {
+		      "LAB_ID": "CSE19",
+		      "DATE_OF_EXPERIMENT": "2017-01-04",
+		      "STUDENT_ID": "106ecd878f4148a5cabb6bbb0979b730",
+		      "REGION": "anonymous",
+		      "LAB_NAME": "Image Processing Lab",
+		      "EXPERIMENT_NAME": "Distance and Connectivity",
+		      "EXPERIMENT_ID": "E99751",
+		      "TIME_OF_EXPERIMENT": "16:38",
+		      "IP_ADDRESS": "10.100.1.7"
+		  }
+	      ]
+	  }
+
+	  headers = {'Content-Type': 'application/json'}
+
+	  response = self.client.post("/dump_usage_to_elastic_db", data=json.dumps(payload),
+				   headers=headers)
+
+	  self.assertEqual(response.status_code, 200)
+      
 #+END_SRC
 
  
@@ -2379,6 +2621,9 @@ if __name__ == '__main__':
 <<test_update_question>>
 <<test_delete_question>>
 <<test_get_questions>>
+#<<test_dump_college_details_to_elk>>
+#<<test_dump_usages_details_to_elk>>
+#<<test_dump_college_details_to_elk>>
 <<run_test_cases>>
 #+end_src
 
