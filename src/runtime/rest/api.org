@@ -2604,6 +2604,8 @@ if __name__ == '__main__':
 <<get_and_add_feedback_to_elk>>
 <<get_and_add_usage_to_elk>>
 <<add_feedback_to_elastic_db>>
+<<add_college_details_to_elk>>
+<<add_usage_to_elk>>
 #+END_SRC
 
 
