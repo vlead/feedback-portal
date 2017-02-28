@@ -1329,12 +1329,13 @@ def dump_cc_details_to_elk():
 	    cc_details = data_dict['college_details']
 	    key = data_dict['key']
 	    current_app.logger.debug("College Data : %s " % (cc_details))
-	    mac_id = cc_details['mac_id']            
+	    mac_id = cc_details['mac_addr']            
             cc_details_elastic_db_url = "%s/college_cloud/details/id=%s" % (ELASTIC_DB_URL, mac_id)
             current_app.logger.debug("college cloud elastic db url : %s " % (cc_details_elastic_db_url))
 	    college_data = requests.get(cc_details_elastic_db_url)
 	    if college_data.json()['found'] == False:
-		ELASTIC_SEARCH_POST_URL = "%s/id=%s" % (ELASTIC_DB_URL, str(mac_id))
+		ELASTIC_SEARCH_POST_URL = "%s/college_cloud/details/id=%s" % (ELASTIC_DB_URL, str(mac_id))
+                current_app.logger.debug("ELASTIC_SEARCH_POST_URL : %s " % (ELASTIC_SEARCH_POST_URL))
 		create_college = requests.post(ELASTIC_SEARCH_POST_URL, data=json.dumps(cc_details))
 		if create_college.status_code == 201:
 		    current_app.logger.debug("Added college details : %s " % (cc_details))
