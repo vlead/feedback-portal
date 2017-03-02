@@ -1600,7 +1600,7 @@ def dump_feedback_to_elk():
    
 #+END_SRC
 
-
+    
 ** Dump Usage to ELK
    REST API to dump the usage data into elastic search database.
 
