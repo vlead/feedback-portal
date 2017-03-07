@@ -1670,9 +1670,11 @@ def dump_usage_to_elk():
 		return jsonify({"status" : "failed", "error" : "College cloud is not registered"})
 	    else:
 		current_app.logger.debug("College Cloud Details : %s " % (r.json()))
-		index_name = str(mac_addr) + "_"+ str(r.json()['_source']['college_name'])
+                college_name = str(r.json()['_source']['college_name'])
+		index_name = str(mac_addr) + "_"+ college_name.replace("", "-")
 		doc_name = "usages"
-		current_app.logger.debug("index_name : %s, doc_name: %s " % (index_name, doc_name))
+		current_app.logger.debug("index_name : %s, doc_name: %s " \
+                                     % (index_name, doc_name))
 
 		for usage in usages:
 		    if(post_data_to_elastic_search(index_name, doc_name, usage)):
