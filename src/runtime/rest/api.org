@@ -1476,8 +1476,83 @@ class TestFeedbackDumpToElk(TestCase):
 	 db.session.remove()
 	 db.drop_all()
 
-     def test_feedback_details_to_elk(self):
-	 print "test_dump_feedback_details_to_elk"
+     def test_feedback_details_to_elk_aws_cloud(self):
+	 print "test_dump_feedback_details_to_elk_aws_cloud"
+	 payload = {
+	     'key' : KEY,
+	     'feedbacks': [
+		 {
+		     "user_id": "Null",
+		     "responses": [
+			 {
+			     "question": {
+				 "name": "Please provide any other feedback about Virtual Labs",
+				 "question_type": "textarea",
+				 "id": 21
+			     },
+			     "answers": [
+				 {
+				     "name": "test",
+				     "id": 18
+				 }
+			     ],
+			     "id": 40
+			 },
+			 {
+			     "question": {
+				 "name": "Designation",
+				 "question_type": "radio",
+				 "id": 22
+			     },
+			     "answers": [
+				 {
+				     "name": "Student",
+				     "id": 1
+				 }
+			     ],
+			     "id": 1
+			 },
+			 {
+			     "question": {
+				 "name": "Did you attempt any experiments ?",
+				 "question_type": "radio",
+				 "id": 23
+			     },
+			     "answers": [
+				 {
+				     "name": "No",
+				     "id": 2
+				 }
+			     ],
+			     "id": 10
+			 },
+			 {
+			     "question": {
+				 "name": "Please rate your experience",
+				 "question_type": "radio",
+				 "id": 24
+			     },
+			     "answers": [
+				 {
+				     "name": "2/10",
+				     "id": 4
+				 }
+			     ],
+			     "id": 11
+			 }
+		     ],
+		     "exp_name": "Null",
+		     "lab_name": "generic feedback",
+		     "version": "generic-feedback-v2.0",
+		     "gateway_ip": "10.100.1.7",
+		     "date": "21-10-2016",
+		     "id": 14
+		 }
+	     ]
+	 }
+
+     def test_feedback_details_to_elk_college_cloud(self):
+	 print "test_dump_feedback_details_to_elk_college_cloud"
 	 payload = {
 	     'key' : KEY,
 	     'feedbacks': [
