@@ -1351,7 +1351,8 @@ def dump_cc_details_to_elk():
                 create_college = requests.post(ELASTIC_SEARCH_POST_URL,
                                            data=json.dumps(cc_details))
 
-		if create_college.status_code == 201:
+		if create_college.status_code == 200 or \
+            create_college.status_code == 201:
 		    current_app.logger.debug("Added college details : %s "
                                          % (cc_details))
 		    return jsonify({"status" : "success"})

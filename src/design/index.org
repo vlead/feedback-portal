@@ -525,6 +525,59 @@ http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&use
        request" }
 
 
+** Dump college cloud data to ELK
+
+   - URL :: /dump_cc_details_to_elastic_db
+
+   - Method :: POST
+
+   - Data Params ::
+
+   {
+"college_details":{ 
+"college_address":"<address>", 
+"college_name": "<college name>", 
+"college_pincode":"<pincode>", 
+"contact_name":"<name>", 
+"contact_no":"<mobile>", 
+"email_id":"<email>",
+"mac_addr":"<mac_addr>" },
+"key":"<key>"
+ }
+   - Success Response ::
+     + Code: 200
+
+     + Content:
+
+       #+BEGIN_EXAMPLE
+       {
+  "status": "success"
+}
+       
+       #+END_EXAMPLE
+   
+  - Error Response ::
+    + Code: 401 UNAUTHORIZED
+
+    + Content: { error : "Not Authorized error: not Authorized to perform this action" }
+
+    OR
+
+    + Code: 400 Bad Request
+
+    + Content: { error : "Malformed arguments" }
+
+    OR
+
+    + Code: 500
+
+    + Content: { error : Exception String}
+  - Example ::
+    #+BEGIN_EXAMPLE
+    http://localhost:5000/dump_cc_details_to_elastic_db
+    #+END_EXAMPLE
+
+
 ** Dump feedback to ELK stack
   :PROPERTIES:
   :CUSTOM_ID: dump_feedback
