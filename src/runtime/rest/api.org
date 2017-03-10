@@ -1346,9 +1346,7 @@ def dump_cc_details_to_elk():
 
 	  if college_data.json()['found'] == False:
 
-	      current_app.logger.debug("ELASTIC_SEARCH_POST_URL : %s " \
-				       % (ELASTIC_SEARCH_POST_URL))
-	      create_college = requests.post(ELASTIC_SEARCH_POST_URL,
+	      create_college = requests.post(cc_details_elastic_db_url,
 					     data=json.dumps(cc_details))
 
 	      if create_college.status_code == 200 or create_college.status_code == 201:
@@ -1429,7 +1427,7 @@ def dump_feedback_to_elk():
 
 	feedbacks = data_dict['feedbacks']
 	key = data_dict['key']        
-	
+        doc_name = "feedback"
 
 	if 'mac_addr' in data_dict:
 	    mac_addr = str(data_dict['mac_addr'])
@@ -1441,11 +1439,9 @@ def dump_feedback_to_elk():
 	    else:
 		current_app.logger.debug("College Cloud Details : %s " % (r.json()))
 		index_name = str(mac_addr) + "_"+ str(r.json()['_source']['college_name'])
-		doc_name = "feedback"
 		current_app.logger.debug("index_name : %s, doc_name : %s " % (index_name, doc_name))
 	else:
 	    index_name = "vlabs"
-	    doc_name = "feedback"
             current_app.logger.debug("Elastic Search URL : %s " % (ELASTIC_DB_URL))
 	    current_app.logger.debug("index_name : %s, doc_name : %s " % (index_name, doc_name))
 
@@ -1669,7 +1665,7 @@ def dump_usage_to_elk():
 	    else:
 		current_app.logger.debug("College Cloud Details : %s " % (r.json()))
                 college_name = str(r.json()['_source']['college_name'])
-		index_name = str(mac_addr) + "_"+ college_name.replace("", "-")
+		index_name = college_name + "_" + str(mac_addr)
 		doc_name = "usages"
 		current_app.logger.debug("index_name : %s, doc_name: %s " \
                                      % (index_name, doc_name))
