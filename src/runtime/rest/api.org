@@ -1405,7 +1405,11 @@ class TestDumpCollegeDetailsToElk(TestCase):
 
 
 ** Dump Feedback to ELK
-   REST API to dump the feedbacks into the elastic search database
+   - This API is used by the college cloud's post processing script
+     which will dump the college cloud feedback data which is in json
+     format (list of feedbacks) into elastic search database.
+   - Only If the college cloud is registered with elastic search
+     database then only feedbacks will be dumped into database.
 
 #+NAME: add_feedback_to_elastic_db
 #+BEGIN_SRC python
@@ -1632,7 +1636,12 @@ class TestFeedbackDumpToElk(TestCase):
 
     
 ** Dump Usage to ELK
-   REST API to dump the usage data into elastic search database.
+
+   - This API is used by the college cloud's post processing script
+     which will dump the college cloud usage data which is in json
+     format (list of usage) into elastic search database.
+   - Only If the college cloud is registered with elastic search
+     database then only usages will be dumped into database.
 
 #+NAME: add_usage_to_elk
 #+BEGIN_SRC python
