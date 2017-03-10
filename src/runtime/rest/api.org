@@ -1343,8 +1343,7 @@ def dump_cc_details_to_elk():
 	  current_app.logger.debug("college cloud elastic db url : %s " \
 				   % (cc_details_elastic_db_url))
 	  college_data = requests.get(cc_details_elastic_db_url)
-
-	  if college_data.json()['found'] == False:
+          if college_data.json()['status'] == 404 or college_data.json()['found'] == False:
 
 	      create_college = requests.post(cc_details_elastic_db_url,
 					     data=json.dumps(cc_details))
