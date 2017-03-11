@@ -1860,7 +1860,7 @@ class TestDumpUsageDetailsToElk(TestCase):
 	  <span class="icon-bar" style="background-color: #77BB41"></span>
 	  <span class="icon-bar" style="background-color: #77BB41"></span>
 	</button>
-	<a class="navbar-brand main-logo-a" href="https://vlabs.ac.in"><img src="/static/img/logo.png"  style="width:7em" class="img-responsive main-logo" /></a>
+	<a class="navbar-brand main-logo-a" href="https://vlabs.ac.in"><img src="/static/img/logo.png"  style="width:6em" class="img-responsive main-logo" /></a>
       </div>      
       <div class="top-bar top-bar-header">
 	<div class="row">
