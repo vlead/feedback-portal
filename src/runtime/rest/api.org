@@ -1861,29 +1861,38 @@ class TestDumpUsageDetailsToElk(TestCase):
 	  <span class="icon-bar" style="background-color: #77BB41"></span>
 	</button>
 	<a class="navbar-brand main-logo-a" href="https://vlabs.ac.in"><img src="/static/img/logo.png"  style="width:7em" class="img-responsive main-logo" /></a>
-      </div>
-      <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px;margin-top:35px;">
-	<ul class="nav navbar-nav navbar-right menu-ul search-ul" style="position: relative; top: -5px;">
-	  <li>
-	    <form method="get" action="search-result.html">
-	    </form>
-	  </li>
-	</ul>	
-	<ul class="nav navbar-nav navbar-right menu-ul">
-	  <li class="page-scroll menu-li ">
-	    <a href="https://vlabs.ac.in" class="menu-a">HOME</a>
-	  </li>
-	  <li class="page-scroll menu-li">
-	    <a href="https://vlabs.ac.in/courses" class="menu-a">ALL LABS</a>
-	  </li>
-	  <li class="page-scroll menu-li ">
-	    <a href="https://vlabs.ac.in/#partner" class="menu-a">PARTNERS</a>
-	  </li><li class="page-scroll menu-li ">
-	    <a href="http://vlabs.ac.in:5959/contactus" class="menu-a">CONTACT</a>
-	  </li>
-	</ul>	
-      </div>
-    </div>	
+      </div>      
+      <div class="top-bar top-bar-header">
+	<div class="row">
+          <div class="col-md-12">            
+	    <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px; margin-top:-42px;">	      
+	      <ul class="nav navbar-nav navbar-left menu-ul">
+		<li class="page-scroll menu-li ">
+		  <a href="http://vlabs.ac.in:5959/search_feature/disciplines/ElectronicsAndCommunications/index.html" class="menu-a">All Labs</a>
+		</li>
+		<li class="page-scroll menu-li ">
+                  <a href="https://vlabs.ac.in/courses" class="menu-a">All Labs on OpenedX</a>
+                </li>
+		<li class="page-scroll menu-li ">
+		  <a target="_blank" href="https://plus.google.com/communities/104131148292250423165" class="menu-a">Teachers' Community</a>		  
+		</li>		
+		<li class="page-scroll menu-li ">
+		  <a href="http://vlabs.ac.in:5959/workshops/" class="menu-a">Workshops</a>
+		</li>
+		<li class="page-scroll menu-li ">
+		  <a href="http://vlabs.ac.in:5959/college-cloud-edition/" class="menu-a">College Cloud Edition</a>
+		</li>		
+		<li class="page-scroll menu-li ">
+		  <a href="http://vlabs.ac.in:5959/contactus" class="menu-a">Contact</a>
+		</li>
+		<li class="page-scroll menu-li ">
+		  <a href="http://vlabs.ac.in:5959/faq/" class="menu-a">FAQ</a>
+		</li>		
+	      </ul>	      
+	    </div>	    
+          </div>
+	</div>
+      </div>      
   </nav>
 </header>
 
@@ -1892,138 +1901,53 @@ class TestDumpUsageDetailsToElk(TestCase):
    
 ** Footer HTML
 #+BEGIN_SRC html :tangle ./templates/footer.html :eval no :noweb yes
-
-<head>
-<style type="text/css">
-.text-h2-lightblue-small
-{
-	color: #2C99CE;
-	font-size: 1.2em;
-        font-family: Raleway;
-}
-.border-right-green-dotted
-{
-      border-right: 2px dotted;
-      margin-top: 30px;
-      border-right-color: #678f48;
-      min-height: 115px;
-      line-height:1em;
-      height:15em;
-
-
-}
-.border-right-green-dotted a{
-	/*padding-left: 10px;*/
-	display: block;
-	/*margin-bottom: 10px;*/
-	line-height:1.2em;
-}
-a:focus
-{
-	color: #72AB44 !important;
-}
-
-.footer-div
-{
-margin-top:120px;
-}
-.text-normal-gray-small
-{
-	color: #888;
-	font-size: 16px;
-}
-.text-normal-gray-small:hover{
-color:green;
-}
-.social-share {
-   display: inline-block;
-   display: inline;
-   list-style: none;
-   padding: 0;
-   margin: 0;
-   margin-top: 7px;
-   margin-left: 280px;
-}
-
-</style>
-</head>
-
+<link rel="stylesheet" href="/static/css/style.css">
 <div class="container-fluid footer-div" style="background: #404040; margin-top: 40px;  padding: 20px;">
   <div class="col-md-4 border-right-green-dotted">
-    <h2 class="text-h2-lightblue-small" style="font-weight: bold;margin-top: 0px;">Updates</h2>
+    <h2 class="text-h2-lightblue-small" style="font-weight: bold;margin-top: 0px; line-height:42px">UPDATES</h2>
     <a href="http://community.virtual-labs.ac.in/w/index.php/Download" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Lab Integration Kit Releases</a><br>
     <a href="http://community.virtual-labs.ac.in/w/index.php/First_Integration_workshop" class="text-normal-gray-small nounderline" style="color: white" target="_blank">First Integration Workshop at IIIT Hyderabad</a><br>
     <a href="http://community.virtual-labs.ac.in/w/index.php/Summer_Sprint_Integration_workshop" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> Summer Integration Workshop at IIT Guwahati</a><br>
     <a href="http://community.virtual-labs.ac.in/w/index.php/QA/Integration_workshop" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> QA Integration
-				Workshop at IIIT Hyderabad</a><br>
-    <a href="http://community.virtual-labs.ac.in/w/index.php/A_new_set_of_25_Virtual_Labs_on_Portable_Media" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> A new set of 25 Virtual Labs on Portable Media</a>
-
+      Workshop at IIIT Hyderabad</a><br>
+    <a href="http://community.virtual-labs.ac.in/w/index.php/A_new_set_of_25_Virtual_Labs_on_Portable_Media" class="text-normal-gray-small nounderline" style="color: white" target="_blank"> A new set of 25 Virtual Labs on Portable Media</a>    
   </div>
-
-
   <div class="col-md-3 border-right-green-dotted" id="contact">
-    <a href="http://vlabs.ac.in:5959/contactus" class="text-normal-gray-small nounderline" style="color:white" target="_blank">Contact us</a><br>
-
+    <a href="http://vlabs.ac.in:5959/contactus" class="text-normal-gray-small nounderline" style="color:white" target="_blank">Contact us</a><br>    
     <a href="http://feedback.vlabs.ac.in/" class="text-normal-gray-small nounderline" style="color:white" target="_blank"> Feedback</a><br>
-
     <a href="http://vlabs.ac.in:5959/licensing/" class="text-normal-gray-small nounderline" target="_blank" style="color:white; line-height:20px;"> Licensing</a>
-
     <a href="https://plus.google.com/communities/104131148292250423165" class="text-normal-gray-small nounderline" target="_blank" style="color:white; line-height:40px;"> Teachers' Community</a>
-
     <a href="http://209.211.220.205/labassessment/assessmentform.html" class="text-normal-gray-small nounderline" target="_blank" style="color:white;"> Lab Assessment Form</a><br>
     <a href="http://vlabs.ac.in:5959/college-cloud-edition" class="text-normal-gray-small nounderline" style="color:white" target="_blank"> College Cloud Edition</a><br>
-    
     <a href="http://vlabs.ac.in:5959/workshops" class="text-normal-gray-small nounderline" style="color:white" target="_blank"> Expression of Interest for Workshop</a>
-
   </div>
-
-
   <div class="col-md-3 border-right-green-dotted">
-    <!-- 				<h2 class="text-h2-lightblue-small" style="font-weight: bold;margin-top: 0px;">Nodal Centers</h2>
-				        <div><a href="#" class="text-a-lightgreen" style="text-decoration: underline;" > REGISTRATION</a></div>
-				        <div><a href="#" class="text-a-lightgreen" style="text-decoration: underline;" > LOGIN</a></div> -->
-    <!-- <div><a href="#" class="text-a-lightgreen" style="text-decoration: underline;" > Outreach Portal</a></div> -->
-    
     <a href="http://vlabs.ac.in:5959/faq/" class="text-normal-gray-small nounderline" style="color: white"> FAQ</a><br>
     <a href="http://community.virtual-labs.ac.in/w/index.php/Main_Page" class="text-normal-gray-small nounderline" style="color: white">Community</a><br>
     <a href="http://outreach.virtual-labs.ac.in/ncentres" class="text-normal-gray-small nounderline" style="color: white"> Nodal Centers</a><br>
-
-
     <a href="http://www.sakshat.ac.in/" class="text-normal-gray-small nounderline" style="color: white"> Sakshat Portal</a><br>
-<a href="http://outreach.vlabs.ac.in/" class="text-normal-gray-small nounderline" style="color: white"> Outreach Portal</a><br>
-<a href="http://vlabs.ac.in:5959/announcements/index.html" class="text-normal-gray-small nounderline" style="color: white"> Announcements</a><br>
-<a href="http://209.211.220.205/vlabiitece/" class="text-normal-gray-small nounderline" style="color: white"> Labs Developed by Nodal Centers</a>
+    <a href="http://outreach.vlabs.ac.in/" class="text-normal-gray-small nounderline" style="color: white"> Outreach Portal</a><br>
+    <a href="http://vlabs.ac.in:5959/announcements/index.html" class="text-normal-gray-small nounderline" style="color: white"> Announcements</a><br>
+    <a href="http://209.211.220.205/vlabiitece/" class="text-normal-gray-small nounderline" style="color: white"> Labs Developed by Nodal Centers</a>
   </div>
-
   <div class="col-md-2">
-    <div class="social">
-
+    <div class="social">			    
       <ul class="social-share" style="margin-top:2em; margin-left:-5em;">
-        <!-- <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-             <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-        <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-        <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
-        <li><a href="#"><i class="fa fa-skype"></i></a></li>
-<h2 class="text-h2-lightblue-small" style="font-weight: bold;margin-top: 0px;"> Follow us</h2>-->
-        <ul>
-          <li style="display:inline"><a target="_blank" href="https://www.facebook.com/pages/Virtual-Labs-IIT-Delhi/301510159983871"><img src="images/fb.png"></a></li>
-          <li style="display:inline "><a href="https://twitter.com/TheVirtualLabs"><img src="images/twitter.png"></a></li>
-          <li style="display:inline"><a target="_blank" href="https://in.linkedin.com/in/virtual-labs-008ba9136"><img src="images/linkedin.png"></a></li>
-          <li style="display:inline"><a target="_blank" href="https://www.youtube.com/watch?v=mVBYNXLaDdg"><img src="images/youtube.png"></a></li>
-                           
-        </ul>
-
-        <div><img class="poweredby" src="images/logo-open-edx-powerdby.png"> </div>
-        
-    </ul></div>
-
-  </div>
-
+	<ul>
+	  <li style="display:inline"><a target="_blank" href="https://www.facebook.com/pages/Virtual-Labs-IIT-Delhi/301510159983871"><img src="/static/img/fb.png"></a></li>
+          <li style="display:inline "><a href="https://twitter.com/TheVirtualLabs"><img src="/static/img/twitter.png"></a></li>
+          <li style="display:inline"><a target="_blank" href="https://in.linkedin.com/in/virtual-labs-008ba9136"><img src="/static/img/linkedin.png"></a></li>
+          <li style="display:inline"><a target="_blank" href="https://www.youtube.com/watch?v=mVBYNXLaDdg"><img src="/static/img/youtube.png"></a></li>
+	</ul>
+	<div><img class="poweredby" src="/static/img/logo-open-edx-powerdby.png"> </div>	
+    </ul>
+    </div>
+  </div>			
 </div>
 
 #+END_SRC
 
-
+   
 ** JS
 #+NAME: main-js
 #+BEGIN_SRC javascript
