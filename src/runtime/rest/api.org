@@ -1402,6 +1402,7 @@ class TestDumpCollegeDetailsToElk(TestCase):
      
 #+END_SRC
 
+
 ** Dump Feedback to ELK
    - This API is used by the college cloud's post processing script
      which will dump the college cloud feedback data which is in json
@@ -1440,7 +1441,7 @@ def dump_feedback_to_elk():
 		return jsonify({"status" : "failed", "error" : "College cloud is not registered"})
 	    else:
 		current_app.logger.debug("College Cloud Details : %s " % (r.json()))
-		index_name = str(mac_addr) + "_"+ str(r.json()['_source']['college_name'])
+		index_name = str(r.json()['_source']['college_name']) + "_" + str(mac_addr) 
 		current_app.logger.debug("index_name : %s, doc_name : %s " % (index_name, doc_name))
 	else:
 	    index_name = "vlabs"
