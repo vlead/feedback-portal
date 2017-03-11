@@ -1324,12 +1324,8 @@ def dump_cc_details_to_elk():
 	  data_json = json.dumps(request.get_json())
 	  data_dict = yaml.safe_load(data_json)
 
-	  if 'college_details' not in data_dict:
-	      print "college_details attribute is not passed"
-	      abort(400, 'college_details attribute is not passed')
-
-          if 'key' not in data_dict:
-    	      abort(500, 'key attribute is missing')
+	  if 'college_details' not in data_dict or 'key' not in data_dict:
+	      abort(400, 'college_details or key attribute is not passed')
 
           if 'key' != KEY:
 	      abort(401, 'Unauthorized to perform this operation')
@@ -1429,13 +1425,10 @@ def dump_feedback_to_elk():
 	data_json = json.dumps(request.get_json())
 	data_dict = yaml.safe_load(data_json)
 
-	if 'feedbacks' not in data_dict:
-	    abort(400, 'feedbacks attribute is not passed')
-        
-        if 'key' not in data_dict:
-	    abort(500, 'key attribute is missing')
+	if 'feedbacks' not in data_dict or 'key' not in data_dict:
+	    abort(400, 'feedbacks or key attribute is not passed')
 
-        if 'key' != KEY:
+        if data_dict['key'] != KEY:
 	    abort(401, 'Unauthorized to perform this operation')
 	
 	feedbacks = data_dict['feedbacks']
@@ -1662,11 +1655,8 @@ def dump_usage_to_elk():
 	data_json = json.dumps(request.get_json())
 	data_dict = yaml.safe_load(data_json)
 
-	if 'usages' not in data_dict or 'mac_addr' not in data_dict:
-	    abort(400, 'usages attribute or mac_addr attribute is not passed')
-
-	if 'key' not in data_dict:
-	    abort(500, 'key attribute is missing')
+	if 'usages' not in data_dict or 'mac_addr' not in data_dict or 'key' not in data_dict:
+	    abort(400, 'usages attribute or mac_addr or key attribute is not passed')
 
         if 'key' != KEY:
 	    abort(401, 'Unauthorized to perform this operation')
