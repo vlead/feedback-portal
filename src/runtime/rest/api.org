@@ -1327,7 +1327,7 @@ def dump_cc_details_to_elk():
 	  if 'college_details' not in data_dict or 'key' not in data_dict:
 	      abort(400, 'college_details or key attribute is not passed')
 
-          if 'key' != KEY:
+          if data_dict['key'] != KEY:
 	      abort(401, 'Unauthorized to perform this operation')
 
 
@@ -1658,7 +1658,7 @@ def dump_usage_to_elk():
 	if 'usages' not in data_dict or 'mac_addr' not in data_dict or 'key' not in data_dict:
 	    abort(400, 'usages attribute or mac_addr or key attribute is not passed')
 
-        if 'key' != KEY:
+        if data_dict['key'] != KEY:
 	    abort(401, 'Unauthorized to perform this operation')
 
 	usages = data_dict['usages']
