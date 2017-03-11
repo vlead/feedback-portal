@@ -1328,6 +1328,13 @@ def dump_cc_details_to_elk():
 	      print "college_details attribute is not passed"
 	      abort(400, 'college_details attribute is not passed')
 
+          if 'key' not in data_dict:
+    	      abort(500, 'key attribute is missing')
+
+          if 'key' != KEY:
+	      abort(401, 'Unauthorized to perform this operation')
+
+
 	  if 'key' not in data_dict:
 	      print "Unauthorized to perform this operation"
 	      abort(401, 'Unauthorized to perform this operation')
@@ -1424,10 +1431,13 @@ def dump_feedback_to_elk():
 
 	if 'feedbacks' not in data_dict:
 	    abort(400, 'feedbacks attribute is not passed')
+        
+        if 'key' not in data_dict:
+	    abort(500, 'key attribute is missing')
 
-	if 'key' not in data_dict:
+        if 'key' != KEY:
 	    abort(401, 'Unauthorized to perform this operation')
-
+	
 	feedbacks = data_dict['feedbacks']
 	key = data_dict['key']        
         doc_name = "feedback"
@@ -1656,6 +1666,9 @@ def dump_usage_to_elk():
 	    abort(400, 'usages attribute or mac_addr attribute is not passed')
 
 	if 'key' not in data_dict:
+	    abort(500, 'key attribute is missing')
+
+        if 'key' != KEY:
 	    abort(401, 'Unauthorized to perform this operation')
 
 	usages = data_dict['usages']
