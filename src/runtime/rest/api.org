@@ -1306,11 +1306,13 @@ class TestDeleteQuestion(TestCase):
    
 
 ** Dump College Details into the Elastic Database
-  
-   - This API is used by the college cloud's post processing script
-     which will dump the college cloud details which is json format into elastic search database.
-   - Based on above college cloud details this API internally forms elastic
-     search API as =/college-name_macid= to POST the data.
+   - This REST API is consumed by the college cloud's post processing script ([[https://github.com/openedx-vlead/college-cloud/blob/cc-april-delhi/src/runtime/implementation/index.org#post-process-script][Reference]])
+   - This REST API is expects college cloud details as a json data.
+   - It forms the REST API for the elastic search to dump the json data based on college cloud's
+     json data. sample API looks like =http://<elastic-search-db-hostname>/college_cloud/details/id=<mac_id>=
+   - Every individual college cloud details are identified by the =MAC_ADDRESS= of college cloud details
+   - It will parse the college cloud details json data and checks in elastic search database for
+     the existing records using =MAC_ADDRESS= if not present it will add a new record.
 
 #+NAME: add_college_details_to_elk
 #+BEGIN_SRC python
@@ -1405,13 +1407,21 @@ class TestDumpCollegeDetailsToElk(TestCase):
      
 #+END_SRC
 
-
+    
 ** Dump Feedback to ELK
-   - This API is used by the college cloud's post processing script
-     which will dump the college cloud feedback data which is in json
-     format (list of feedbacks) into elastic search database.
-   - Only If the college cloud is registered with elastic search
-     database then only feedbacks will be dumped into database.
+   - This API consumed by the college cloud's post processing script
+     ([[https://github.com/openedx-vlead/college-cloud/blob/cc-april-delhi/src/runtime/implementation/index.org#post-process-script][Reference]]) to dump the college cloud's feedback
+     forms data which is in json format into the elastic search
+     database.
+   - If the college cloud details are registered with elastic search
+     database only then feedbacks will be dumped into the elastic
+     database.
+   - Also this API is used by the script (reference) to dump the
+     production feedback forms data into the elastic search database.
+     (list of feedbacks) into elastic search database.
+   - Every individual feedback is a single json record.
+   - Every feedback json record is stored as a seperate record in elastic
+     search database.
 
 #+NAME: add_feedback_to_elastic_db
 #+BEGIN_SRC python
@@ -1639,11 +1649,15 @@ class TestFeedbackDumpToElk(TestCase):
     
 ** Dump Usage to ELK
 
-   - This API is used by the college cloud's post processing script
-     which will dump the college cloud usage data which is in json
-     format (list of usage) into elastic search database.
-   - Only If the college cloud is registered with elastic search
-     database then only usages will be dumped into database.
+   - This API is consumed by the college cloud's post processing
+     script ([[https://github.com/openedx-vlead/college-cloud/blob/cc-april-delhi/src/runtime/implementation/index.org#post-process-script][Reference]]) to dump the college cloud's usage data
+     which is in json format into elastic search database.
+   - Every individual usage is a single json record.
+   - Every usage json record is stored as a seperate record in elastic
+     search database.
+   - If the college cloud details registered with elastic search
+     database only then usages will be dumped into elastic search
+     database.
 
 #+NAME: add_usage_to_elk
 #+BEGIN_SRC python
