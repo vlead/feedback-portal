@@ -1866,7 +1866,7 @@ class TestDumpUsageDetailsToElk(TestCase):
 	<div class="row">
           <div class="col-md-12">            
 	    <div class="collapse navbar-collapse menu-div" id="bs-example-navbar-collapse-1" style="border: 0px; margin-top:-42px;">	      
-	      <ul class="nav navbar-nav navbar-left menu-ul">
+	      <ul class="nav navbar-nav navbar-left menu-ul" style="margin-top: 75px">
 		<li class="page-scroll menu-li ">
 		  <a href="http://vlabs.ac.in:5959/search_feature/disciplines/ElectronicsAndCommunications/index.html" class="menu-a">All Labs</a>
 		</li>
