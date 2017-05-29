@@ -1696,10 +1696,10 @@ def dump_usage_to_elk():
                                      % (index_name, doc_name))
 
 		for usage in usages:
-		    if(post_data_to_elastic_search(index_name, doc_name, usage)):
-			current_app.logger.debug("Added usage : %s " % (usage))
+		    if(post_data_to_elastic_search(index_name, doc_name, usage['_source'])):
+			current_app.logger.debug("Added usage : %s " % (usage['_source']))
 		    else:
-			current_app.logger.error("failed to add usage: %s " % (usage))
+			current_app.logger.error("failed to add usage: %s " % (usage['_source']))
 			abort(500)
 
 		return jsonify({"status" : "success"})
