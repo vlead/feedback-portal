@@ -1751,10 +1751,11 @@ class TestDumpUsageDetailsToElk(TestCase):
       
 #+END_SRC
 
- 
+
 * WebApp
 
 ** Index HTML
+
 #+BEGIN_SRC html :tangle ./templates/index.html :eval no :noweb yes
 
   <!DOCTYPE html>
@@ -2543,6 +2544,7 @@ tr:nth-child(even) {
 * Infra                                                         :boilerplate:
 
 ** sources
+
 *** Imports 
 #+name: imports_for_sources
 #+BEGIN_SRC python
