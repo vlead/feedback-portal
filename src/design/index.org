@@ -298,7 +298,7 @@ http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&use
   :PROPERTIES:
   :CUSTOM_ID: get_workshop_usage
   :END:       
-    - URL :: /usage_from_feedback?ip=:ip&date=:date&key=:key
+    - URL :: /usage_from_feedback?gateway_ip=:ip&date=:date&key=:key
 
     - Method :: GET
 
@@ -531,19 +531,36 @@ http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&use
 
    - Method :: POST
 
-   - Data Params ::
-
+   - Payload ::
+#+BEGIN_EXAMPLE
    {
-"college_details":{ 
-"college_address":"<address>", 
-"college_name": "<college name>", 
-"college_pincode":"<pincode>", 
-"contact_name":"<name>", 
-"contact_no":"<mobile>", 
-"email_id":"<email>",
-"mac_addr":"<mac_addr>" },
-"key":"<key>"
- }
+    "college_details":{ 
+        "college_address":"<address>", 
+        "college_name": "<college name>", 
+        "college_pincode":"<pincode>", 
+        "contact_name":"<name>", 
+        "contact_no":"<mobile>", 
+        "email_id":"<email>",
+        "mac_addr":"<mac_addr>" },
+    "key":"<key>"
+   }
+
+#+END_EXAMPLE
+   - Example Payload ::
+#+BEGIN_EXAMPLE
+{
+  "college_details": {
+    "college_address": "Gachibowli, Hyderabad",
+    "college_name": "iiit-h",
+    "college_pincode": "516329",
+    "contact_name": "VLEAD",
+    "contact_no": "999999999",
+    "email_id": "example@example.com",
+    "mac_addr": "d8:02:99:5d:aa:fd"
+  },
+  "key": "defaultkey"
+}
+#+END_EXAMPLE                     
    - Success Response ::
      + Code: 200
 
@@ -551,8 +568,8 @@ http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&use
 
        #+BEGIN_EXAMPLE
        {
-  "status": "success"
-}
+       "status": "success"
+       }
        
        #+END_EXAMPLE
    
@@ -583,18 +600,91 @@ http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&use
   :CUSTOM_ID: dump_feedback
   :END:    
 
-   - URL :: /dump_feedback_to_elk
+   - URL :: /dump_feedback_to_elastic_db
 
    - Method :: POST
 
    - Payload ::
      {
-      'tag_name': 'college_name',
       'feedbacks': ['list_of_feedbacks'],
-      'server_name' : 'http://<elastic-search-domain>',
       'key': 'key'
      }
+   - Example Payload ::
+     #+BEGIN_EXAMPLE
 
+      {
+        "key": "defaultkey",
+        "feedbacks": [
+          {
+            "user_id": "Null",
+            "responses": [
+              {
+                "question": {
+                  "name": "Please provide any other feedback about Virtual Labs",
+                  "question_type": "textarea",
+                  "id": 21
+                },
+                "answers": [
+                  {
+                    "name": "test",
+                    "id": 18
+                  }
+                ],
+                "id": 40
+              },
+              {
+                "question": {
+                  "name": "Designation",
+                  "question_type": "radio",
+                  "id": 22
+                },
+                "answers": [
+                  {
+                    "name": "Student",
+                    "id": 1
+                  }
+                ],
+                "id": 1
+              },
+              {
+                "question": {
+                  "name": "Did you attempt any experiments ?",
+                  "question_type": "radio",
+                  "id": 23
+                },
+                "answers": [
+                  {
+                    "name": "No",
+                    "id": 2
+                  }
+                ],
+                "id": 10
+              },
+              {
+                "question": {
+                  "name": "Please rate your experience",
+                  "question_type": "radio",
+                  "id": 24
+                },
+                "answers": [
+                  {
+                    "name": "2/10",
+                    "id": 4
+                  }
+                ],
+                "id": 11
+              }
+            ],
+            "exp_name": "Null",
+            "lab_name": "generic feedback",
+            "version": "generic-feedback-v2.0",
+            "gateway_ip": "10.100.1.7",
+            "date": "21-10-2016",
+            "id": 14
+          }
+        ]
+      }
+     #+END_EXAMPLE
    - Success Response ::
      + Code: 200
      + Content:
@@ -620,17 +710,38 @@ http://localhost:5000/feedback?lab_name=datastructures&exp_name=binarysearch&use
   :CUSTOM_ID: dump_usage
   :END:    
 
-   - URL :: /dump_usage_to_elk
+   - URL :: /dump_usage_to_elastic_db
 
    - Method :: POST
 
    - Payload ::
      {
-      'tag_name': 'college_name',
+      'mac-addr': '<mac_addr>',
       'usages': ['list_of_usages'],
-      'server_name' : 'http://<elastic-search-domain>',
       'key': 'key'
      }
+
+   - Example Payload :: 
+     #+BEGIN_EXAMPLE
+     {
+              "key" : "defaultkey",
+              "mac_addr": "d8:02:99:5d:aa:fd",
+              "usages" : [
+                  {
+                      "LAB_ID": "CSE19",
+                      "DATE_OF_EXPERIMENT": "2017-01-04",
+                      "STUDENT_ID": "106ecd878f4148a5cabb6bbb0979b730",
+                      "REGION": "anonymous",
+                      "LAB_NAME": "Image Processing Lab",
+                      "EXPERIMENT_NAME": "Distance and Connectivity",
+                      "EXPERIMENT_ID": "E99751",
+                      "TIME_OF_EXPERIMENT": "16:38",
+                      "IP_ADDRESS": "10.100.1.7"
+                  }
+              ]
+          }
+
+     #+END_EXAMPLE
 
    - Success Response ::
      + Code: 200
