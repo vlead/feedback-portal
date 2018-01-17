@@ -1766,8 +1766,14 @@ class TestDumpUsageDetailsToElk(TestCase):
     </head>
     <body onload="renderFeedbackform();">
       <div id="header">
+      <div class="navbar-header page-scroll">
+	
+	<a class="navbar-brand main-logo-a" href="https://vlabs.ac.in"><img src="/static/img/logo.png" style="width:6em" class="img-responsive main-logo"></a>
+      </div>
 	<br><p>
-     
+      <div class="row">
+        <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
+      </div>
       <div class="container">
         <h1> Virtual Labs Feedback Form </h1>
         <form class="form" id="feedback-form" onsubmit="submitFeedback(event)">
