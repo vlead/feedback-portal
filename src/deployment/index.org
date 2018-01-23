@@ -426,7 +426,7 @@ update_app_config () {
 ** Configre the web server
    The wsgi conduit is configured with the apache.  This is
    necessary since apache web server has to forward the
-   traffic on the =/= to the LDS application that uses flask
+   traffic on the =/= to the feedback application that uses flask
    web server.
 #+name: configure-wserver
 #+BEGIN_SRC sh
