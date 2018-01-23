@@ -39,7 +39,7 @@ def get_generic_feedback():
         response = SystemInterface.get_generic_feedback_form\
           (GENERIC_FEEDBACK_VERSION)
         return render_template('index.html', 
-                            questions_data=response)
+                            questions_data=response, footer_url=FOOTER_URL)
     if request.method == 'POST':
         current_app.logger.debug("generic feedback post")
         if request.is_json:
@@ -243,7 +243,7 @@ def get_add_feedback():
                                 user_id)
             current_app.logger.debug("executed get_feedback_form")                            
             return render_template('index.html', 
-                    questions_data=response)
+                    questions_data=response, footer_url=FOOTER_URL)
 
         except NotAuthorizedError as err:
             error_message = 'Not Authorized error: %s' % str(err)
@@ -495,14 +495,14 @@ def get_add_generic_lab_and_exp_feedback(string):
               (GENERIC_LAB_FEEDBACK_VERSION)
             current_app.logger.debug("executed get_generic_feedback_form")
             return render_template('index.html', 
-                                questions_data=response)
+                                questions_data=response, footer_url=FOOTER_URL)
         elif string == 'experiment':
             current_app.logger.debug("execute get_generic_feedback_form")
             response = SystemInterface.get_generic_feedback_form\
               (GENERIC_EXP_FEEDBACK_VERSION)
             current_app.logger.debug("executed get_generic_feedback_form")
             return render_template('index.html', 
-                                questions_data=response)
+                                questions_data=response, footer_url=FOOTER_URL)
 
     if request.method == 'POST':
         if request.is_json:
@@ -1751,7 +1751,7 @@ class TestDumpUsageDetailsToElk(TestCase):
       
 #+END_SRC
 
-
+    
 * WebApp
 
 ** Index HTML
@@ -1791,7 +1791,7 @@ class TestDumpUsageDetailsToElk(TestCase):
 	  <span id="version"></span>
 	</div>
       </div>
-     <iframe height="390" width="100%" frameborder="0" id="footerIframe" >
+     <iframe height="390" width="100%" frameborder="0" src={{ footer_url }} id="footerIframe" >
      </iframe>
    </div>
  </body>
@@ -1799,7 +1799,6 @@ class TestDumpUsageDetailsToElk(TestCase):
     <script src="/static/js/jquery.min.js"></script>
     <script type="text/javascript">
     <<main-js>>  
-     setFooterUrlToFooterIframe (); 
     </script>
   </html>
 
@@ -2321,14 +2320,6 @@ function submitFeedback(event) {
 
 
 }
-// footer url js
-var footerUrl = "http://footer.vlabs.ac.in/footer";
-var setFooterUrlToFooterIframe = function() {
-  var iframe = document.getElementById("footerIframe");
-  iframe.src = footerUrl;
-};
-
-  
     
 #+END_SRC
    
@@ -2493,7 +2484,7 @@ from runtime.config.system_config import KEY
 from runtime.exceptions.custom_exceptions import *
 from runtime.system.system_interface import SystemInterface
 from runtime.config.flask_app_config import GENERIC_FEEDBACK_VERSION,\
-     GENERIC_LAB_FEEDBACK_VERSION, GENERIC_EXP_FEEDBACK_VERSION, ELASTIC_DB_URL
+     GENERIC_LAB_FEEDBACK_VERSION, GENERIC_EXP_FEEDBACK_VERSION, ELASTIC_DB_URL, FOOTER_URL
 
 import yaml
 
