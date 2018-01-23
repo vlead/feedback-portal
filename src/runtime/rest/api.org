@@ -2295,6 +2295,7 @@ function submitFeedback(event) {
 
 
 }
+// footer url js
 var footerUrl="http://footer.vlabs.ac.in/footer";
 var setFooterUrlToFooterIframe = function() {
   var iframe = document.getElementById("footerIframe");
