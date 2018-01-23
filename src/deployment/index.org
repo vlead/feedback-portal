@@ -10,7 +10,7 @@
   This document will illustrate installation of all the dependencies required
   for setting up the application.
 
-* Install dependendent python packages
+* Utility to install dependendent python packages
   Here we use the =setuptools= module from the standard lib, to make a
   =setup.py= file, which will install all the python library dependencies.
 
@@ -18,24 +18,28 @@
 from setuptools import setup
 
 requires = [
-    'flask',
+    'Flask',
     'Flask-SQLAlchemy',
     'oursql',
-    'flask-cors',
-    'flask-testing',
+    'Flask-cors',
+    'Flask-testing',
     'requests',
     'pyyaml'
 ]
 
 setup(
     name='feedback',
-    version='2.0',
+    version='2.0.0',
     install_requires=requires
 )
 
 #+END_SRC
 
-* Program to set up the database
+* Program to populate initial data in the database
+  This is used to run the service in developer's
+  environment.  Otherwise, mostly the database on production
+  is updated from a dump of previous instance.
+
 #+BEGIN_SRC python :tangle db_setup.py :eval no
 
 from runtime.rest.app import create_app
@@ -210,73 +214,108 @@ for index in range(1, len(fbs)):
      print response.status_code
 
 #+END_SRC
-* Install all dependencies and setup the software
-  Install all dependencies, including the OS related packages, Python packages,
-  setup the database, configure the webserver, and finally deploy the
-  application.
-
-#+BEGIN_SRC sh :tangle setup.sh :eval no
-#!/bin/bash
-# Shell script to install deb package dependencies as well as python package
-# dependencies for dataservice.
-
-# if any proxy server
-#PROXY=""
-# file to store the generated password
-DB_PASS_FILE="db_pass.txt"
-
-if [[ `id -u` -ne 0 ]]; then
-  echo "You have to execute this script as super user!"
-  exit 1;
-fi
-
-# Update the packages
+* Install mysql db, dependencies and python packages
+** Install OS related Packages
+   Install pre-requsite dependencies: python-dev,
+   libmysqld-dev, python-setuptools, apache2,
+   libapache2-mod-wsgi
+#+name: os-pack
+#+BEGIN_SRC sh
 echo "Updating package cache.."
 apt-get -y update
-if [[ $? -ne 0 ]]; then
+if [ $? -ne 0 ]; then
   echo "Updating package cache failed!"
   exit 1;
 fi
 
-echo "Installing MySQL database.."
-if [ ! -f $DB_PASS_FILE ]; then
-  # generate a random password for the database and store it in the $DB_PASS_FILE
-  # file
-#  DBPASS=$(date +%s | sha256sum | head -c 32)
-  DBPASS="root"
-  echo $DBPASS > $DB_PASS_FILE
-fi
-
-# Install MySQL Server in a Non-Interactive mode.
-echo "mysql-server mysql-server/root_password password $DBPASS" | sudo debconf-set-selections
-echo "mysql-server mysql-server/root_password_again password $DBPASS" | sudo debconf-set-selections
-apt-get install -y mysql-server
-if [[ $? -ne 0 ]]; then
-  echo "FATAL: MySQL installation failed!"
-  exit 1;
-fi
-
-# Install pre-requsite dependencies: python-dev, mysqld-dev, setuptools,
-# apache, mod_wsgi etc.
 echo "Installing pre-requisite dependencies.."
-apt-get install -y python-dev libmysqld-dev python-setuptools apache2 libapache2-mod-wsgi
-if [[ $? -ne 0 ]]; then
-  echo "FATAL: Installing pre-requisite dependencies failed!"
+
+apt-get install -y python-dev libmysqld-dev python-setuptools apache2 libapache2-mod-wsgi python-mysqldb
+
+if [ $? -ne 0 ]; then
+  echo "FATAL: Installing os-related packages failed!"
   exit 1;
 fi
 
+#+END_SRC
+
+** Enable mod wsgi
+   WSGI mode is needed for one web server to talk to
+   another.  In our case, Flask and Apache2 need to
+   communicate.  To make this happen, wsgi is enabled.
+#+name: enable-mod-wsgi
+#+BEGIN_SRC sh
 echo "Enabling the mod WSGI on apache"
 a2enmod wsgi
-if [[ $? -ne 0 ]]; then
+if [ $? -ne 0 ]; then
   echo "FATAL: Unable to enable mod wsgi!"
   exit 1;
 fi
 
-# Installing python dependencies
+#+END_SRC
+** Install mysql db
+   Install mysql db.  The idea to generate a random password
+   while installaing the mysql.  This same password that is
+   stored in a file is used by the application to connect to
+   the database.  Currently, this is not implemented,
+   instead the password is set to =root=.  The database can
+   only be installed by a super user. 
+
+#+name: install-mysql
+#+BEGIN_SRC sh
+
+
+DB_PASS_FILE="db_pass.txt"
+
+if [ `id -u` -ne 0 ]; then
+  echo "You have to execute this script as super user!"
+  exit 1;
+fi
+
+echo "Installing MySQL database.."
+
+DBPASS="root"
+# Install MySQL Server in a Non-Interactive mode.
+echo "mysql-server mysql-server/root_password password $DBPASS" | debconf-set-selections
+echo "mysql-server mysql-server/root_password_again password $DBPASS" | debconf-set-selections
+apt-get install -y mysql-server
+
+if [ $? -ne 0 ]; then
+  echo "FATAL: MySQL installation failed!"
+  exit 1;
+fi
+
+echo $DBPASS > $DB_PASS_FILE
+#+END_SRC
+
+** Install Pip
+   pip is python package insaller.
+#+name: install-pip
+#+BEGIN_SRC sh
+echo "Installing PIP"
+apt-get remove -y python-pip
+apt-get purge python-pip
+mkdir -p build/pip
+cd build/pip
+wget https://pypi.python.org/packages/11/b6/abcb525026a4be042b486df43905d6893fb04f05aac21c32c638e939e447/pip-9.0.1.tar.gz
+tar xvf pip-9.0.1.tar.gz
+cd pip-9.0.1
+python setup.py install
+if [ $? -ne 0 ]; then
+  echo "FATAL: PIP installation failed!"
+  exit 1;
+fi
+
+#+END_SRC
+
+** Install Python packages
+   The flask application needs the following python
+   packages.  =oursql= package is installed from sources.
+   Others are installed using pip package manager.
+#+name: py-pack
+#+BEGIN_SRC sh
 echo "Installing dependencies.."
-#export http_proxy=$PROXY
-#export https_proxy=$PROXY
-#python setup.py install
+
 mkdir -p build/oursql
 cd build/oursql
 wget https://pypi.python.org/packages/8c/88/9f53a314a2af6f56c0a1249c5673ee384b85dc791bac5c1228772ced3502/oursql-0.9.3.2.tar.gz#md5=ade5959a6571b1626966d47f3ab2d315
@@ -284,30 +323,66 @@ tar xvf oursql-0.9.3.2.tar.gz
 cd oursql-0.9.3.2
 python setup.py install
 
-pip install Flask Flask-SQLAlchemy oursql requests flask-cors flask-testing
+pip install Flask Flask-SQLAlchemy Flask-cors Flask-testing oursql requests pyyaml
 
-if [[ $? -ne 0 ]]; then
-  echo "FATAL: Installation failed!"
+if [ $? -ne 0 ]; then
+  echo "FATAL: Python package installation failed!"
   exit 1;
 fi
+
+#+END_SRC
+
+** All the above steps will be part of =setup.sh=
+#+BEGIN_SRC sh :tangle setup.sh :eval no :noweb yes
+#!/bin/bash
+
+<<os-pack>>
+
+<<enable-mod-wsgi>>
+
+<<install-mysql>>
+
+<<install-pip>>
+
+<<py-pack>>
 
 exit 0
 
 #+END_SRC
 
-* Configuring the application and its deployment
-  The following program configures the application, configures the web server
-  to use WSGI and use the application scripts, and finally calls the database
-  setup scripts to actually setup the database with tables.
+* Configuration
+** Create the WSGI conduit
+   Provide one end of the flask application to the apache
+   server for it to route the traffic to flask application.
 
-#+BEGIN_SRC sh :tangle configure.sh :eval no
-#!/bin/bash
-# Configure the application in the deployment environment
-# 1. Update the config.py file with appropriate values
-# 2. Update the apache config to server via WSGI
-# 3. Run the database setup scripts to setup the database
+#+BEGIN_SRC python :tangle feedback.wsgi :eval no
 
-if [[ `id -u` -ne 0 ]]; then
+import sys, os
+
+BASE_DIR = BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+
+#sys.path.insert(0, BASE_DIR)
+sys.path.insert(0, "/var/www")
+
+from runtime.rest.app import create_app
+from runtime.config import flask_app_config as config
+
+application = create_app(config)
+
+#+END_SRC
+** Configure the application
+   Configuring the application involves:
+   1. set up the configuration parameters of the
+      application.  These include:
+      - Database parameters :: database userId, Password,
+           dbname, dbhost
+      - Cross origin pameters :: Whitelist IPs, allowed
+           origins.  These parameters are not set currently.
+
+#+name: configure-app
+#+BEGIN_SRC sh
+
+if [ `id -u` -ne 0 ]; then
   echo "You have to execute this script as super user!"
   exit 1;
 fi
@@ -318,7 +393,7 @@ update_app_config () {
   CONFIG_FILE="../runtime/config/flask_app_config.py"
   DB_USER="root"
   DB_PASS=$(cat db_pass.txt)
-  DB_NAME="feedback"
+  DB_NAME="lds"
   DB_SERVER="localhost"
 
   # the list of white-listed IPs for POST/PUT requests to data service
@@ -335,6 +410,7 @@ update_app_config () {
   sed -i "s/<db_name>/$DB_NAME/" $ABS_PATH_DS/$CONFIG_FILE
   # update SQLALCHEMY_ECHO
   sed -i "s/^SQLALCHEMY_ECHO.*$/SQLALCHEMY_ECHO = False/" $ABS_PATH_DS/$CONFIG_FILE
+
   # update WHITELIST_IPS
   #sed -i "s/^WHITELIST_IPS.*$/WHITELIST_IPS = $WHITELIST_IPS/" $CONFIG_FILE
   # update ALLOWED_ORIGINS
@@ -345,71 +421,82 @@ update_app_config () {
   # necessary
 }
 
+#+END_SRC
+
+** Configre the web server
+   The wsgi conduit is configured with the apache.  This is
+   necessary since apache web server has to forward the
+   traffic on the =/= to the LDS application that uses flask
+   web server.
+#+name: configure-wserver
+#+BEGIN_SRC sh
+
 update_apache_config() {
-  PROC_NAME="feedback"
-  WSGI_SCRIPT="feedback.wsgi"
-  APACHE_VHOST_FILE="/etc/apache2/sites-available/default"
+  PROC_NAME="lds"
+  WSGI_SCRIPT="lds.wsgi"
+  APACHE_VHOST_FILE="/etc/apache2/sites-available/000-default.conf"
 
   sed -i "/<\/VirtualHost>/i \
     WSGIScriptAlias / $ABS_PATH_DS/$WSGI_SCRIPT
   " $APACHE_VHOST_FILE
 
-  #sed -i '/<\/VirtualHost>/i \
-  #  WSGIDaemonProcess $PROC_NAME user=www-data group=www-data threads=5
-  #  WSGIScriptAlias / $ABS_PATH_DS/$WSGI_SCRIPT
-
-  #  <Directory $ABS_PATH_DS>
-  #    WSGIProcessGroup $PROC_NAME
-  #    WSGIApplicationGroup %{GLOBAL}
-  #    Order deny,allow
-  #    Allow from all
-  #  </Directory>
-  #' $APACHE_VHOST_FILE
-
 }
+
+#+END_SRC
+** Create the database
+   An empty database is created for the application to use. 
+#+name: create-db
+#+BEGIN_SRC sh
 
 setup_db() {
   echo "Creating database: $DB_NAME"
   mysql -u $DB_USER -p$DB_PASS -Bse "create database $DB_NAME;"
-  if [[ $? -ne 0 ]]; then
+  if [ $? -ne 0 ]; then
     echo "Failed to create database $DB_NAME"
     exit 1;
   fi
 
 }
 
+#+END_SRC
+
+** All the above steps will be part of =configure.sh=
+#+BEGIN_SRC sh :tangle configure.sh :eval no :noweb yes
+#!/bin/bash
+
+<<configure-app>>
+
+<<configure-wserver>>
+
+<<create-db>>
+
 update_app_config
-if [[ $? -ne 0 ]]; then
+if [ $? -ne 0 ]; then
   echo "FATAL: Failed to update application flask_app_config.py"
   exit 1;
 fi
+
 update_apache_config
-if [[ $? -ne 0 ]]; then
+if [ $? -ne 0 ]; then
   echo "FATAL: Failed to update apache config"
   exit 1;
 fi
 
 service apache2 restart
 export PYTHONPATH="/var/www"
+if [ $? -ne 0 ]; then
+  echo "FATAL: Failed to restart apache2 webserver"
+  exit 1;
+fi
+
+
 setup_db
-exit 0;
-#+END_SRC
+if [ $? -ne 0 ]; then
+  echo "FATAL: Failed to create database"
+  exit 1;
+fi
 
-* Deploying the application
-
-#+BEGIN_SRC python :tangle feedback.wsgi :eval no
-
-import sys, os
-
-BASE_DIR = BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)))
-
-#sys.path.insert(0, BASE_DIR)
-sys.path.insert(0, "/var/www")
-
-from runtime.rest.app import create_app
-from runtime.config import flask_app_config as config
-
-application = create_app(config)
+exit 0
 
 #+END_SRC
 
