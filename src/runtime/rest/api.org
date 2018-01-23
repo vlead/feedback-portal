@@ -1757,18 +1757,16 @@ class TestDumpUsageDetailsToElk(TestCase):
 ** Index HTML
 
 #+BEGIN_SRC html :tangle ./templates/index.html :eval no :noweb yes
-  <!DOCTYPE html>
+   <!DOCTYPE html>
   <html>
     <head>
       <title>Feedback Portal</title>
         <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
     </head>
     <body onload="renderFeedbackform();">
-     
-       <div id="header">
+      <div id="header">
         {% include 'header.html' %}     
 	<br><p>
-      
       <div class="row">
         <hr style="background:#ff6600 !important;  height: 8px; margin-top: 0px;">
       </div>
@@ -1793,23 +1791,18 @@ class TestDumpUsageDetailsToElk(TestCase):
 	  <span id="version"></span>
 	</div>
       </div>
-
-      <iframe height="390" width="100%" frameborder="0" id="footerIframe" >
-     
-      </iframe>
-
-
-
-      </div>
-    </body>
+     <iframe height="390" width="100%" frameborder="0" id="footerIframe" >
+     </iframe>
+   </div>
+ </body>
     <script> var data = {{ questions_data|tojson }};</script> 
     <script src="/static/js/jquery.min.js"></script>
     <script type="text/javascript">
-    <<main-js>>      
-    <<set-footer-content-in-iframe>>  
-    setFooterUrlToFooterIframe();
+    <<main-js>>  
+     setFooterUrlToFooterIframe (); 
     </script>
   </html>
+
 #+END_SRC
 
 
@@ -1855,7 +1848,6 @@ class TestDumpUsageDetailsToElk(TestCase):
 
 
 ** JS
-*** main-js
 #+NAME: main-js
 #+BEGIN_SRC javascript
 var feedbackForm = window.data;
@@ -2303,27 +2295,17 @@ function submitFeedback(event) {
 
 
 }
-
-  
-    
-#+END_SRC
-   
- 
-*** footer-js
-   This function set the footer service with in the footer iframe. We
-   give =http://footer.vlabs.ac.in/footer= as source of the
-   iframe. The content of the footer will be dynamically served from
-   the footer service.
-#+NAME: set-footer-content-in-iframe
-#+BEGIN_SRC javascript
 var footerUrl="http://footer.vlabs.ac.in/footer";
 var setFooterUrlToFooterIframe = function() {
   var iframe = document.getElementById("footerIframe");
   iframe.src = footerUrl;
 };
 
-
+  
+    
 #+END_SRC
+   
+ 
 
 ** CSS 
 #+BEGIN_SRC css :tangle ./static/css/main.css :eval no :noweb yes
