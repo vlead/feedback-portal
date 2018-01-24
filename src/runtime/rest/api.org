@@ -1791,7 +1791,7 @@ class TestDumpUsageDetailsToElk(TestCase):
 	  <span id="version"></span>
 	</div>
       </div>
-     <iframe height="390" width="100%" frameborder="0" src={{ footer_url }} id="footerIframe" >
+     <iframe height="155" width="100%" frameborder="0" src={{ footer_url }} id="footerIframe" >
      </iframe>
    </div>
  </body>
@@ -2362,10 +2362,10 @@ body {
     border: 0;
 }
 
-.footer-div
+/*.footer-div
 {
     margin-top:120px;
-}
+}*/
 
 .main-logo-a {
     height: auto;
@@ -2441,10 +2441,10 @@ body {
 	 border-right-color: #678f48;
 	 min-height: 115px;
 }
-.footer-div
+/*.footer-div
 {
 margin-top:120px;
-}
+}*/
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
