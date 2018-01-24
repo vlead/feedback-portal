@@ -153,7 +153,7 @@ GENERIC_LAB_FEEDBACK_VERSION = 'generic-lab-feedback-v2.0'
 GENERIC_EXP_FEEDBACK_VERSION = 'generic-exp-feedback-v2.0'
 
 ELASTIC_DB_URL = "http://10.100.0.15:9200"
-FOOTER_URL = "http://footer.vlabs.ac.in/footer"
+FOOTER_URL = "http://footer.base1.vlabs.ac.in/footer"
 #+END_SRC
 
 
