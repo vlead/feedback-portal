@@ -2177,10 +2177,25 @@ function submitFeedback(event) {
 	feedback.key = feedbackForm.key;
     }
     if(document.getElementById("lab_name_value")){
-	feedback.lab_name = document.getElementById("lab_name_value").value;
+        lab_name_value = document.getElementById("lab_name_value").value
+        if(lab_name_value.match(/^[A-Za-z ]+$/)){
+            feedback.lab_name = lab_name_value;
+        }
+        else{
+            alert("enter only text for lab name ...)
+            return false;
+        }
     }
     if(document.getElementById("exp_name_value")){
-	feedback.exp_name = document.getElementById("exp_name_value").value;
+        exp_name_value = document.getElementById("exp_name_value").value
+        if(exp_name_value.match(/^[A-Za-z ]+$/)){
+            feedback.exp_name = exp_name_value;
+        }
+        else{
+            alert("enter only text for experiment name ...)
+            return false;
+        }
+
     }
     feedback.responses = []; // the list of questions and user answers
     var quesArray = feedbackForm.questions.length;
@@ -2236,17 +2251,29 @@ function submitFeedback(event) {
 		}
 	    }
 	}
-	else if(feedbackForm.questions[i].type === 'textarea') {
-	    answer = [];
-	    var input = questionElement;
-	    answer.push(input.value);
-	}
+        else if(feedbackForm.questions[i].type === 'textarea') {
+         answer = [];
+	 var input = questionElement;
+         if(input.value.match(/^[A-Za-z ]+$/) || input.value === ''){
+	   answer.push(input.value);
+         }
+         else{
+           alert("enter only text in text area...");
+           return false;
+         }
+        }
 	else if(feedbackForm.questions[i].type === 'text') {
 	    answer = [];
 	    var input = questionElement;
-	    //console.log(input);
+            if(input.value.match(/^[A-Za-z ]+$/)){
 	    answer.push(input.value);
-	}
+	    }
+            else{
+            alert("enter only text...");
+            return false;
+            }
+         }
+
 	// create an object to insert the current question data
 	var question = {};
 	question.name = feedbackForm.questions[i].name;
