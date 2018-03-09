@@ -210,13 +210,24 @@ def get_add_feedback():
             error_message = 'Either lab_name or key or both arguments are not passed'
             return render_template('error.html', data=error_message)
         else:
-            lab_name = str(request.args['lab_name'])
+            lab_name_value = str(request.args['lab_name'])
+            if re.match('a-zA-Z ]+', lab_name_value)
+                lab_name = lab_name_value
+            else:
+                error_message = 'Type Mismatch: Not of type Lab name'
+                return render_template('error.html', data=error_message)
             key = str(request.args['key'])
 
         if 'exp_name' not in request.args:
             exp_name = None
         else:
-            exp_name = str(request.args['exp_name'])
+            exp_name_value = str(request.args['exp_name'])
+            if re.match('a-zA-Z ]+', exp_name_value)
+                exp_name = exp_name_value
+            else:
+                error_message = 'Type Mismatch: Not of type Experiment name'
+                return render_template('error.html', data=error_message)
+            key = str(request.args['key'])
 
         if 'date' not in request.args:
             date = None
@@ -2503,6 +2514,7 @@ tr:nth-child(even) {
 import os
 import requests
 import json
+import re
 from flask import session, render_template, Blueprint, request, \
      jsonify, abort, current_app, redirect, url_for
 from flask import Flask
