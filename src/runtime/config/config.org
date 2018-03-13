@@ -134,7 +134,8 @@ SQLALCHEMY_ECHO = False
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # List of allowed origins for CORS
-ALLOWED_ORIGINS = "['*']"
+#ALLOWED_ORIGINS = "['*']"
+ALLOWED_ORIGIN = "http://outreach.vlabs.ac.in"
 
 # List of allowed IPs
 WHITELIST_IPS = ["127.0.0.1"]
