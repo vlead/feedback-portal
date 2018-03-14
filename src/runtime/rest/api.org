@@ -2193,7 +2193,7 @@ function submitFeedback(event) {
             feedback.lab_name = lab_name_value;
         }
         else{
-            alert("enter only text for lab name ...)
+            alert("enter only text for lab name ...")
             return false;
         }
     }
@@ -2203,7 +2203,7 @@ function submitFeedback(event) {
             feedback.exp_name = exp_name_value;
         }
         else{
-            alert("enter only text for experiment name ...)
+            alert("enter only text for experiment name ...")
             return false;
         }
 
