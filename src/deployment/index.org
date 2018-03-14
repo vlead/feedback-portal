@@ -443,22 +443,6 @@ update_apache_config() {
 }
 
 #+END_SRC
-** Configure the web server not to disclose the server signature
-   Web server should not disclose the server signature, this
-   will let hackers to know more about internal server
-   configurations. Following function will disable the server
-   signature
-#+name: disable-apache-signature
-#+BEGIN_SRC sh
-
-disable_apche_sign() {
-    echo "ServerSignature Off" >> /etc/apache2/apache2.conf
-    echo "ServerTokens Prod" >> /etc/apache2/apache2.conf
-
-}
-
-#+END_SRC
-
 ** Create the database
    An empty database is created for the application to use. 
 #+name: create-db
@@ -484,8 +468,6 @@ setup_db() {
 
 <<configure-wserver>>
 
-<<disable-apache-signature>>
-
 <<create-db>>
 
 update_app_config
@@ -497,12 +479,6 @@ fi
 update_apache_config
 if [ $? -ne 0 ]; then
   echo "FATAL: Failed to update apache config"
-  exit 1;
-fi
-
-disable_apche_sign
-if [ $? -ne 0 ]; then
-  echo "FATAL: Failed to disable apache server signature"
   exit 1;
 fi
 
@@ -524,6 +500,33 @@ exit 0
 
 #+END_SRC
 
+** COMMENT Security headers
+   #+BEGIN_EXAMPLE
+   apt-get install libapache2-modsecurity
+   #+END_EXAMPLE
+   #+BEGIN_EXAMPLE
+   a2enmod headers
+   sudo a2enmod rewrite && sudo service apache2 restart
+   #+END_EXAMPLE
+   Copy the content from 
+   #+BEGIN_EXAMPLE
+   https://github.com/virtadpt/ubuntu-hardening/blob/master/14.04-lts/apache2/conf-available/security.conf
+   #+END_EXAMPLE
+   #+BEGIN_EXAMPLE
+   emacs /etc/apache2/conf-enabled/security.conf
+   #+END_EXAMPLE
+   #+BEGIN_EXAMPLE
+   service apache2 restart
+   #+END_EXAMPLE
+   for disable options method
+   #+BEGIN_EXAMPLE
+   add the following line /etc/apache2/apache2.conf inside <Directoy />..
+   #+END_EXAMPLE
+   #+BEGIN_EXAMPLE
+    <LimitExcept HEAD POST GET>
+     Deny from all
+    </LimitExcept>
+   #+END_EXAMPLE
 * Tangle                                       :boilerplate:
 #+BEGIN_SRC python :eval no :tangle __init__.py
 print "deployment package"

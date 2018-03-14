@@ -97,7 +97,7 @@
         },
         "installer": [
           "rsync -avz apache2.conf /etc/apache2/",
-          "rsync -avz security.conf /etc/apache2/conf-enabled/security.conf",
+          "rsync -avz security.conf /etc/apache2/conf-available/security.conf",
           "apt-get install libapache2-modsecurity -y",
           "a2enmod headers",
           "a2enmod rewrite",
