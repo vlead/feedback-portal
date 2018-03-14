@@ -211,7 +211,7 @@ def get_add_feedback():
             return render_template('error.html', data=error_message)
         else:
             lab_name_value = str(request.args['lab_name'])
-            if re.match('a-zA-Z ]+', lab_name_value):
+            if re.match('^[a-zA-Z ]+$', lab_name_value):
                 lab_name = lab_name_value
             else:
                 error_message = 'Type Mismatch: Not of type Lab name'
@@ -222,7 +222,7 @@ def get_add_feedback():
             exp_name = None
         else:
             exp_name_value = str(request.args['exp_name'])
-            if re.match('a-zA-Z ]+', exp_name_value):
+            if re.match('^[a-zA-Z ]+$', exp_name_value):
                 exp_name = exp_name_value
             else:
                 error_message = 'Type Mismatch: Not of type Experiment name'
