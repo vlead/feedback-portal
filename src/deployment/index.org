@@ -423,7 +423,7 @@ update_app_config () {
 
 #+END_SRC
 
-** Configre the web server
+** Configure the web server
    The wsgi conduit is configured with the apache.  This is
    necessary since apache web server has to forward the
    traffic on the =/= to the feedback application that uses flask
@@ -443,6 +443,22 @@ update_apache_config() {
 }
 
 #+END_SRC
+** Configure the web server not to disclose the server signature
+   Web server should not disclose the server signature, this
+   will let hackers to know more about internal server
+   configurations. Following function will disable the server
+   signature
+#+name: disable-apache-signature
+#+BEGIN_SRC sh
+
+disable_apche_sign() {
+    echo "ServerSignature Off" >> /etc/apache2/apache2.conf
+    echo "ServerTokens Prod" >> /etc/apache2/apache2.conf
+
+}
+
+#+END_SRC
+
 ** Create the database
    An empty database is created for the application to use. 
 #+name: create-db
@@ -468,6 +484,8 @@ setup_db() {
 
 <<configure-wserver>>
 
+<<disable-apache-signature>>
+
 <<create-db>>
 
 update_app_config
@@ -479,6 +497,12 @@ fi
 update_apache_config
 if [ $? -ne 0 ]; then
   echo "FATAL: Failed to update apache config"
+  exit 1;
+fi
+
+disable_apche_sign
+if [ $? -ne 0 ]; then
+  echo "FATAL: Failed to disable apache server signature"
   exit 1;
 fi
 
