@@ -214,7 +214,7 @@ def get_add_feedback():
             if re.match('^[a-zA-Z ]+$', lab_name_value):
                 lab_name = lab_name_value
             else:
-                error_message = 'Type Mismatch: Not of type Lab name'
+                error_message = 'Type Mismatch: Invalid Lab name entered'
                 return render_template('error.html', data=error_message)
             key = str(request.args['key'])
 
@@ -225,7 +225,7 @@ def get_add_feedback():
             if re.match('^[a-zA-Z ]+$', exp_name_value):
                 exp_name = exp_name_value
             else:
-                error_message = 'Type Mismatch: Not of type Experiment name'
+                error_message = 'Type Mismatch: Invalid Experiment name entered'
                 return render_template('error.html', data=error_message)
             key = str(request.args['key'])
 
@@ -2193,7 +2193,7 @@ function submitFeedback(event) {
             feedback.lab_name = lab_name_value;
         }
         else{
-            alert("enter only text for lab name ...")
+            alert("Invalid Input. Please enter valid lab name...")
             return false;
         }
     }
@@ -2203,7 +2203,7 @@ function submitFeedback(event) {
             feedback.exp_name = exp_name_value;
         }
         else{
-            alert("enter only text for experiment name ...")
+            alert("Invalid Input. Please enter valid experiment name ...")
             return false;
         }
 
@@ -2269,7 +2269,7 @@ function submitFeedback(event) {
 	   answer.push(input.value);
          }
          else{
-           alert("enter only text in text area...");
+           alert("Invalid Input data.");
            return false;
          }
         }
