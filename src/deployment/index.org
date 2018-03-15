@@ -423,7 +423,7 @@ update_app_config () {
 
 #+END_SRC
 
-** Configre the web server
+** Configure the web server
    The wsgi conduit is configured with the apache.  This is
    necessary since apache web server has to forward the
    traffic on the =/= to the feedback application that uses flask
@@ -500,6 +500,33 @@ exit 0
 
 #+END_SRC
 
+** COMMENT Security headers
+   #+BEGIN_EXAMPLE
+   apt-get install libapache2-modsecurity
+   #+END_EXAMPLE
+   #+BEGIN_EXAMPLE
+   a2enmod headers
+   sudo a2enmod rewrite && sudo service apache2 restart
+   #+END_EXAMPLE
+   Copy the content from 
+   #+BEGIN_EXAMPLE
+   https://github.com/virtadpt/ubuntu-hardening/blob/master/14.04-lts/apache2/conf-available/security.conf
+   #+END_EXAMPLE
+   #+BEGIN_EXAMPLE
+   emacs /etc/apache2/conf-enabled/security.conf
+   #+END_EXAMPLE
+   #+BEGIN_EXAMPLE
+   service apache2 restart
+   #+END_EXAMPLE
+   for disable options method
+   #+BEGIN_EXAMPLE
+   add the following line /etc/apache2/apache2.conf inside <Directoy />..
+   #+END_EXAMPLE
+   #+BEGIN_EXAMPLE
+    <LimitExcept HEAD POST GET>
+     Deny from all
+    </LimitExcept>
+   #+END_EXAMPLE
 * Tangle                                       :boilerplate:
 #+BEGIN_SRC python :eval no :tangle __init__.py
 print "deployment package"
