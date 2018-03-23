@@ -211,10 +211,10 @@ def get_add_feedback():
             return render_template('error.html', data=error_message)
         else:
             lab_name_value = str(request.args['lab_name'])
-            if re.match('a-zA-Z ]+', lab_name_value):
+            if re.match('^[a-zA-Z0-9., ]+$', lab_name_value):
                 lab_name = lab_name_value
             else:
-                error_message = 'Type Mismatch: Not of type Lab name'
+                error_message = 'Type Mismatch: Invalid Lab name entered'
                 return render_template('error.html', data=error_message)
             key = str(request.args['key'])
 
@@ -222,10 +222,10 @@ def get_add_feedback():
             exp_name = None
         else:
             exp_name_value = str(request.args['exp_name'])
-            if re.match('a-zA-Z ]+', exp_name_value):
+            if re.match('^[a-zA-Z0-9., ]+$', exp_name_value):
                 exp_name = exp_name_value
             else:
-                error_message = 'Type Mismatch: Not of type Experiment name'
+                error_message = 'Type Mismatch: Invalid Experiment name entered'
                 return render_template('error.html', data=error_message)
             key = str(request.args['key'])
 
@@ -491,7 +491,6 @@ class TestAddFeedback(TestCase):
         self.assertEqual(result['exp_name'], "tuples")
 '''
  #+END_SRC
-
 
 ** Get Generic Lab and Exp Feedback 
    REST API to get generic lab and experiment feedback. 
@@ -2189,21 +2188,21 @@ function submitFeedback(event) {
     }
     if(document.getElementById("lab_name_value")){
         lab_name_value = document.getElementById("lab_name_value").value
-        if(lab_name_value.match(/^[A-Za-z ]+$/)){
+        if(lab_name_value.match(/^[A-Za-z0-9., ]+$/)){
             feedback.lab_name = lab_name_value;
         }
         else{
-            alert("enter only text for lab name ...")
+            alert("Invalid Input. Please enter valid lab name...")
             return false;
         }
     }
     if(document.getElementById("exp_name_value")){
         exp_name_value = document.getElementById("exp_name_value").value
-        if(exp_name_value.match(/^[A-Za-z ]+$/)){
+        if(exp_name_value.match(/^[A-Za-z0-9., ]+$/)){
             feedback.exp_name = exp_name_value;
         }
         else{
-            alert("enter only text for experiment name ...")
+            alert("Invalid Input. Please enter valid experiment name ...")
             return false;
         }
 
@@ -2265,18 +2264,18 @@ function submitFeedback(event) {
         else if(feedbackForm.questions[i].type === 'textarea') {
          answer = [];
 	 var input = questionElement;
-         if(input.value.match(/^[A-Za-z ]+$/) || input.value === ''){
+         if(input.value.match(/^[A-Za-z0-9., ]+$/) || input.value === ''){
 	   answer.push(input.value);
          }
          else{
-           alert("enter only text in text area...");
+           alert("Invalid Input data.");
            return false;
          }
         }
 	else if(feedbackForm.questions[i].type === 'text') {
 	    answer = [];
 	    var input = questionElement;
-            if(input.value.match(/^[A-Za-z ]+$/)){
+            if(input.value.match(/^[A-Za-z0-9., ]+$/)){
 	    answer.push(input.value);
 	    }
             else{
