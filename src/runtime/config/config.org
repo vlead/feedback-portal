@@ -134,6 +134,7 @@ SQLALCHEMY_ECHO = False
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # List of allowed origins for CORS
+# CORS is set on apache server instead on flask
 ALLOWED_ORIGINS = "['*']"
 
 # List of allowed IPs
