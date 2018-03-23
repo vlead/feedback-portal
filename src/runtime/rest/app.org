@@ -20,8 +20,9 @@ def create_app(config):
     app.secret_key = 'djfjsdkjXXS7979dfdfd'
     # load config values from the config file
     app.config.from_object(config)
-    cors = CORS(app, resources=\
-                {r"/*": {"origins": ALLOWED_ORIGINS}})
+    # CORS is set on apache server hence this can be ignored
+    # cors = CORS(app, resources=\
+    #             {r"/*": {"origins": ALLOWED_ORIGINS}})
     # init sqlalchemy db instance
     db.init_app(app)
     db.app = app
