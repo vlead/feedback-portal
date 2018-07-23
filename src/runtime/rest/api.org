@@ -1032,6 +1032,17 @@ def add_question():
         else:
             abort(500, "the request does not contain data in json")
 
+        if 'name' not in data_dict or 'key' not in data_dict or \
+           'question_type' not in data_dict:
+            abort(400, 'Either name or key or question_type'
+                      ' are not passed')
+        else:
+            question_name = data_dict['name']
+	    if re.match('^[a-zA-Z0-9.,? ]+$', question_name):
+	        data_dict['name'] = question_name
+            else:
+                abort(400, "invalid input")
+
         try:
             current_app.logger.debug("execute add_question")
             q1 = SystemInterface.add_question(data_dict)
