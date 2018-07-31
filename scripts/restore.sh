@@ -2,8 +2,6 @@
 
 DB_NAME="feedback"
 DB_PASS="xxx"
-VERSION="V2.3.0"
-
 BACKUP_FILE=$1
 
 usage() {
