@@ -1157,7 +1157,7 @@ class TestGetQuestion(TestCase):
    REST API to update and delete question.
 #+NAME: update_and_delete_question
 #+BEGIN_SRC python
-@api.route('/questions/<id>', methods=['GET', 'PUT', 'DELETE'])
+@api.route('/questions/<int:id>', methods=['GET', 'PUT', 'DELETE'])
 def update_and_delete_question(id):
     if request.method == 'GET':
         try:
