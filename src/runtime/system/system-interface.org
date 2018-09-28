@@ -904,8 +904,25 @@ class TestGetFeedbackDump(TestCase):
         question_cls = System.delegate.entities['question']
 
         session = session_cls(key=data_dict['key'])
-        question = question_cls(name=data_dict['name'],
-                                question_type=data_dict['question_type'])
+
+        if 'name' not in data_dict:
+            name=str(question.get("name"))
+        else:
+            if re.match('^[a-zA-Z? ]+$', data_dict['name']):
+                name = data_dict['name']
+            else:
+                abort(400, "Invalid Input. Type Mismatch: Not of type 'name'")
+
+        if 'question_type' not in data_dict:
+            question_type=str(question.get("question_type"))
+	else:
+            if re.match('^[a-zA-Z ]+$', data_dict['question_type']):
+                question_type = data_dict['question_type']
+            else:
+                abort(400, "Invalid Input. Type Mismatch: Not of type 'question_type'")
+
+        question = question_cls(name=name, question_type=question_type)
+
         try:
             current_app.logger.debug("running operation add_question")
             question = System.do("add_question", question=question, 
@@ -976,7 +993,6 @@ class TestAddQuestion(TestCase):
             SystemInterface.add_question(data_dict)
 
  #+END_SRC
-
 
 ** DeleteQuestion
 
@@ -1057,12 +1073,18 @@ class TestDeleteQuestion(TestCase):
         if 'name' not in data_dict:
             name=str(question.get("name"))
         else:
-            name=data_dict['name']
+            if re.match('^[a-zA-Z? ]+$', data_dict['name']):
+                name = data_dict['name']
+            else:
+                abort(400, "Invalid Input. Type Mismatch: Not of type 'name'")
 
         if 'question_type' not in data_dict:
             question_type=str(question.get("question_type"))
-        else:
-            question_type=data_dict['question_type']
+	else:
+            if re.match('^[a-zA-Z ]+$', data_dict['question_type']):
+                question_type = data_dict['question_type']
+            else:
+                abort(400, "Invalid Input. Type Mismatch: Not of type 'question_type'")
 
         try:
             current_app.logger.debug("running operation update_question")
@@ -1315,9 +1337,10 @@ class TestGetQuestionById(TestCase):
 #+name: imports_for_sources
 #+BEGIN_SRC python
 # -*- coding: utf-8 -*-
-from runtime.system.system import *
 import datetime
-from flask import current_app
+import re
+from runtime.system.system import *
+from flask import current_app, abort, render_template
 from runtime.config.feedback_forms import feedback_forms
 from runtime.config.system_config import KEY
 
